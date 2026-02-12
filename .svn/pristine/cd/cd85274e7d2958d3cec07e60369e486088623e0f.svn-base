@@ -1,0 +1,60 @@
+// user_center/pages/invoiceDownload/invoiceDownload.js
+import http from '../../../utils/http';
+
+Page({
+  data: {
+      dataList:[],
+      invoiceList:'',
+      FormStateName:''
+  },
+  onLoad: function (options) {
+    console.log(options)
+    this.setData({
+        FormStateName:options.FormStateName
+    })
+    this.getdataList(options.itemId)
+  },
+  onShow(){
+   
+  },
+  onUnload(){
+   
+  },
+  getdataList(itemId) {
+    var usreinfo = wx.getStorageSync('userInfo');
+        let _this = this;
+        let reqData = {
+            "Personal":usreinfo.Id,
+            "Id":itemId
+        }
+      http.postRequest("/Api/DispatchMobile/GetMemberInvoiceInfo", reqData, wx.getStorageSync('header'), res => {
+          console.log(res)
+          _this.setData({
+            dataList:res.data,
+            invoiceList:res.totalRow
+          })
+        }, err => {
+        
+        })
+  
+  },
+  look_invoice() {
+    console.log('查看发票')
+    let _this = this;
+    wx.navigateTo({
+      url: '/user_center/pages/invoiceImg/invoiceImg?invoiceList=' + JSON.stringify(_this.data.invoiceList),
+    })
+  },
+  //重新开票
+  reissueInvoice() {
+    console.log('重新开票')
+    let _this = this;
+    wx.navigateTo({
+        url: '/user_center/pages/invoice/invoice?ids=' + _this.data.invoiceList.Id,
+      })
+  },
+  //到达底部
+  scrollToLower: function (e) {
+  
+  },
+})

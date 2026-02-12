@@ -1,0 +1,73 @@
+view {
+  box-sizing: border-box;
+}
+
+.scroll-box {
+  width: 100%;
+  height: 100vh;
+  background-color: #F2F2F2;
+  padding-top: 20rpx;
+  box-sizing: border-box;
+}
+
+.item {
+  width: 100%;
+  margin-bottom: 20rpx;
+  background-color: #fff;
+}
+
+.order-num {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 30rpx;
+  font-size: 28rpx;
+  border-bottom: 2rpx solid #f2f2f2;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 120rpx;
+  line-height: 120rpx;
+  padding: 0 30rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  border-bottom: 2rpx solid #f2f2f2;
+}
+
+.desc {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 30rpx;
+  font-size: 28rpx;
+}
+
+.no-data {
+  width: 100%;
+  height: 100vh;
+  background-color: #fff;
+  border-top: 20rpx solid #f2f2f2;
+  padding-top: 200rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #FF8008;
+}
+
+.no-data-img {
+  width: 300rpx;
+  height: 300rpx;
+  margin: 0 auto 20rpx;
+}
+.godui{
+  width: 25%;
+  margin-top: 40rpx;
+  background-color: #FF8008;
+  color: #fff;
+  font-size: 30rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  border-radius: 40rpx;
+}

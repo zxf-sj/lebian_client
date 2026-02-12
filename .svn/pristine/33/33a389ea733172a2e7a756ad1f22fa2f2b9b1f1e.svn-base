@@ -1,0 +1,92 @@
+<view>
+  <view hidden="{{isDriverFriends || fixedLine}}">
+    <view class="map_container">
+      <map class='map' id="indexMap" style="width:{{ScreenTotalW}}rpx;height:{{ScreenTotalH}}rpx;" longitude='{{longitude}}' latitude='{{latitude}}' scale='{{scale}}' markers='{{markers}}' polyline='{{polyline}}' circles="{{circles}}" bindregionchange="bindregionchange" show-location="true">
+        <image class="current-site-icon" src="/assets/images/weizhi.png"></image>
+        <image bindtap="getMyLocation" class="current-mylocation" src="../../assets/images/location.png"></image>
+      </map>
+    </view>
+  </view>
+  <view class="footer-address">
+    <view class="footer-start">
+      <view class="footer-stratname">{{startCity}}</view>
+    </view>
+    <view class="footer-lineimg">
+      <image class="lineimg" src="/assets/images/zhongd.png"></image>
+    </view>
+    <view class="footer-end">
+      <view class="footer-endname" bindtap="toDestination">{{endCity||"选择线路"}}</view>
+    </view>
+  </view>
+  <!-- 扫码 -->
+  <view class="footerBox {{fromScan?'scan-ft':''}}" wx:if="{{!isDriverFriends && !fixedLine}}">
+    <view class="nowTime">
+      <view class="circle-str"></view>
+      <view bindtap="toStarting">
+        <view class="didi-input-str" style="color: #6BBFC1">{{startAddress}}</view>
+      </view>
+      <view bindtap="toDestination1">
+        <view class="didi-input-end" style="color: #999">{{destination || '您要去哪儿'}}</view>
+      </view>
+      <view class="circle-end"></view>
+    </view>
+  </view>
+  <!-- 通知/优惠券 -->
+  <view class="notice-cover" wx:if="{{showNotice || showCoupon}}">
+    <block wx:if="{{showNotice}}">
+      <view class="notice-wrapper">
+        <swiper class="notice-swiper" indicator-dots="true" indicator-active-color="#FF8008" autoplay="true" interval="5000" circular="true">
+          <block>
+            <swiper-item>
+              <view class="notice_tit">特大喜讯</view>
+            </swiper-item>
+          </block>
+        </swiper>
+        <view class="close-notice" bindtap="closeNotice">
+          <image src="/assets/images/close.png"></image>
+        </view>
+      </view>
+    </block>
+    <block wx:if="{{showCoupon}}">
+      <view class="coupon-wrapper">
+        <image class="bg_bg" src="/assets/images/yhjnotice.png"></image>
+        <view class="cou_tit"></view>
+        <view class="cou_cont">
+          <scroll-view class="cou_scroll" scroll-y="true" enable-flex="true">
+            <view class="cou_item">
+              <image class="ci_bg" src="/assets/images/yhjback.png"></image>
+              <view class="cou_left">
+                <view class="cou_price">￥<text>5</text></view>
+                <!-- <view class="cou_price" wx:if="{{item.couponType == 2}}"><text>{{item.couponValue}}</text>折</view> -->
+              </view>
+              <view class="cou_right">
+                <view class="cou_name">新人优惠卷</view>
+                <view class="cou_time">2024-04-03 23:59:59</view>
+              </view>
+              <view class="cou_num"></view>
+            </view>
+          </scroll-view>
+        </view>
+        <view class="cou_btn" bindtap="couponCheck">
+          <view class="cou_check">立即领取</view>
+        </view>
+        <view class="close_cou" bindtap="closeCoupon">
+          <image src="/assets/images/close.png"></image>
+        </view>
+      </view>
+    </block>
+  </view>
+  <!-- 远程 -->
+
+
+  <!-- 城市未开通服务 -->
+  <view class="city-no-service" hidden="{{hideCityNoService}}">当前区域未开通服务，敬请期待</view>
+
+  <!-- 积分图标 -->
+  <movable-area wx:if="{{currentTab !== 0}}" class="movable-area">
+    <movable-view class="movable-view" direction="all" x="350" catchtap="toMyIntegral">
+      <image class="integral-img" src="/assets/images/jifeng.gif"></image>
+    </movable-view>
+  </movable-area>
+
+</view>

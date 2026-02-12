@@ -1,0 +1,144 @@
+/* components/passenger/passenger.wxss */
+.passenger {
+	position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0,.7);
+  z-index: 9999;
+  overflow: hidden;
+}
+
+@keyframes slide-up{
+  from{
+    bottom: -650rpx;
+  }
+  to{
+    bottom: 0;
+  }
+}
+
+.inner{
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 650rpx;
+  background: linear-gradient(180deg, rgb(255, 255, 255) 0%,rgba(240,135,24,1) 100%);
+  box-sizing: border-box;
+  padding: 20rpx;
+  color: #333;
+	animation: slide-up .5s;
+}
+.title {
+	text-align: center;
+	color: #000;
+	font-weight: 700;
+}
+.txt {
+    text-indent: 2em;
+    font-size: 14px;
+    color: #969494;
+}
+.nav {
+	height: 70rpx;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.nav .nav_l {
+	display: flex;
+	flex: 1;
+}
+.nav .nav_l image {
+	margin-top: 6rpx;
+	width: 40rpx;
+	height: 40rpx;
+}
+.nav .nav_l .add {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	padding-left: 10rpx;
+	color: #F08718;
+}
+.nav .nav_r {
+	flex: 1;
+	
+}
+.nav .nav_r .submit {
+	width: 160rpx;
+	height: 60rpx;
+	line-height: 60rpx;
+	text-align: center;
+	color: #fff;
+	background: linear-gradient(180deg, rgba(253,209,0,1) 0%,rgba(240,135,24,1) 100%);
+	border-radius: 10rpx;
+	float: right;
+}
+.list {
+	height: 530rpx;
+	width: 100%;
+}
+.list .scroll-box{
+  width: 100%;
+  height: 360rpx;
+ 
+}
+.list .item {
+	height: 110rpx;
+	width: 100%;
+	display: flex;
+	border: 1px solid #BBBBBB;
+	border-radius: 10rpx;
+	margin-top: 20rpx;
+	background-color: #fff;
+}
+.list .item .item_l {
+	width: 80rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.list .item .item_c {
+	flex: 1;
+	font-size: 12px;
+	color: #6e6e6e;
+}
+.list .item .item_c .first {
+	display: flex;
+}
+.list .item .item_c .first .child {
+	margin-left: 10rpx;
+	color: #04d661;
+}
+.list .item .item_r {
+	width: 200rpx;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	padding-right: 20rpx;
+}
+.list .item .item_r image{
+	width: 40rpx;
+	height: 40rpx;
+}
+.goods-check{
+  float: left;
+  width: 74rpx;
+  text-align: center;
+  /* */
+  }
+  .serch {
+      display: flex;
+      height: 50rpx;
+      margin-top: 10rpx;
+      color: #969494;
+  }
+  .serchiNPUT {
+      border: 1px solid #ccc;
+      border-radius: 10rpx;
+      color: #969494;
+      font-size: 28rpx;
+  }

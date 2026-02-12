@@ -1,0 +1,54 @@
+<view class="container">
+	<view class="location">
+			<image class="arrow-icon" src="/assets/images/wz.png"></image>
+			<view class="dott_line1"></view>
+			<view class="dott_line2"></view>
+		<view class="location-city">
+			<text>{{destinationCity}}</text>
+		</view>
+		<input type="text" class="location-input" value="{{value}}" bindinput="searchInputend" placeholder="请输入线路地名" placeholder-style="color:#cccccc" />
+	  <view class="location-cancel" bindtap="searchCancel">取消</view>
+	</view>
+  <!-- <view class='hotcity-wrap'>
+      <view class='title1'>热点线路<image class="arrow-icon1" src="https://www.qierchuxing.com/upload/Annex/202405/AX-20240509-766802-800.png"></image></view>
+      <view class='item-wrap'>
+         <view class='hotcity-item' bindtap="bindArea" data-area="文水">文水</view>
+         <view class='hotcity-item' bindtap="bindArea" data-area="交城">交城</view>
+         <view class='hotcity-item' bindtap="bindArea" data-area="孝义">孝义</view>
+         <view class='hotcity-item' bindtap="bindArea" data-area="忻州">忻州</view>
+         <view class='hotcity-item' bindtap="bindArea" data-area="离石">离石</view>
+         <view class='hotcity-item' bindtap="bindArea" data-area="平遥">平遥</view>
+         <view class='hotcity-item' bindtap="bindArea" data-area="古交">古交</view>
+         <view class='hotcity-item' bindtap="bindArea" data-area="清徐">清徐</view>
+      </view>
+  </view> -->
+  <view  class="fixed-line">
+			<view class="list">
+				<view class="title">选择线路</view>
+			</view>
+	</view>
+	<view class="addressList" wx:if="{{address}}">
+		<scroll-view  style="height:85vh" scroll-y="true" class='hiddenBar' lower-threshold="100"  bindscrolltolower="loadMore">
+			<view class="destination" wx:for="{{address}}" bindtap="clickAddress" wx:key="index" data-item="{{item}}">
+				<view class="destination-content">
+					<view class="content-image">
+						<image src="/assets/images/weizhi.png"></image>
+					</view>
+					<view class="content">
+						<text class="content-name">{{item.Name}}</text>
+						<text class="content-detail">{{item.EndLocation_DetailAddress}}</text>
+					</view>
+				</view>
+			</view>
+      <view style="text-align: center;margin: 10px;font-size:28rpx">
+				<view wx:if="{{loading}}">加载中...</view>
+				<view wx:if="{{noMore}}">没有更多线路了</view>
+			</view>
+      <view class="no-line-list" wx:if="{{iskai==0}}">
+        <image src="/assets/images/wkt.png"></image>
+        <text>该城市暂时未开通服务</text>
+      </view>
+		</scroll-view>
+	</view>
+
+</view>

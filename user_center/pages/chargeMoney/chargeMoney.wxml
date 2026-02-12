@@ -1,0 +1,18 @@
+<view class="charging_my">
+  <view class="charging_my1">
+    <image src="/user_center/assets/images/rmb.png" style="width:60rpx;height:60rpx;"></image>
+    {{Balance}}</view>
+  <view class="charging_my2">我的余额</view>
+</view>
+<view class="charging">
+  <block wx:if="{{listempty==false}}">
+    <block wx:for="{{list}}" wx:for-index="index"  wx:for-item="item" wx:key="Id">
+      <view class="charging1 {{listindex==index?'charging1_click':''}}" data-index="{{index}}" bindtap="listclick">{{item.Money}}</view>
+    </block>
+    <view class="clear"></view>
+    <view class="tj_btn" bindtap="ChargingMoney">确认充值</view>
+  </block>
+  <block wx:else>
+    <view>暂无</view>
+  </block>
+</view>

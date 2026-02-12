@@ -1,0 +1,54 @@
+<!--user_center/pages/invoiceList/invoiceList.wxml-->
+<view class="container">
+    <view class="menu_box">
+        <text class='menu1 {{menuTapCurrent=="0"&&"borders"}}' data-current="0" catchtap="menuTap">可开订单</text>
+        <text class='menu2 {{menuTapCurrent=="1"&&"borders"}}' data-current="1" catchtap="menuTap">已开订单</text>
+        <!-- <text class='menu2 {{menuTapCurrent=="1"&&"borders"}}' data-current="1" catchtap="menuTap">已开订单</text> -->
+    </view>
+    <scroll-view style="{{ menuTapCurrent=='0' ? 'height:calc( 100vh - 230rpx)' : 'height:92vh' }}" wx:if="{{listData}}"  scroll-y="true" class='hiddenBar' lower-threshold="100"  bindscrolltolower="scrollToLower">
+        <checkbox-group bindchange="handleCheckboxChange">
+            <view class="listBox" wx:for="{{listData}}" wx:for-index="id" wx:for-item="item" wx:key="index">
+                <label class="item-label" wx:if="{{menuTapCurrent=='0'}}">
+                    <checkbox class="interestthreecheckbox" value="{{item.id}}" checked="{{item.checked}}" bindtap="onItemSelect" data-item="{{item}}" />
+                </label>
+                <view class="orderDetails">
+                    <view class="list-adress font-28">
+                        <text class="circle-str circle"></text>
+                        <text class="input-str">{{item.IntoLocation}}</text>
+                    </view>
+                    <view class="list-adress font-28">
+                        <text class="circle-end circle"></text>
+                        <text class="input-end">{{item.OffLocation}}</text>
+                    </view>
+                    <view class="list-time font-28">
+                        <image src="/assets/images/time.png"></image>
+                        <text class="time">{{item.CreateDate}}</text>
+                    </view>
+                </view>
+                <view class="price">
+                    <view class="car_type">{{item.Exclusive_Name}}</view>
+                    <view class="price_box">
+                    <view class="price_man">{{item.TotalAmount}}</view>元
+                    </view>
+                </view>
+            </view>
+        </checkbox-group>
+        <view style="text-align: center;margin: 10px;">
+            <view wx:if="{{loading}}">加载中...</view>
+            <view wx:if="{{noMore}}">没有更多了</view>
+            <view wx:if="{{loadingFailed}}">数据加载失败,请重试</view>
+        </view>
+    </scroll-view>
+   
+</view>
+<view class="sticky-bottom-bar" wx:if="{{menuTapCurrent=='0'}}">
+    <view class="btm_box">
+        <view>
+            <checkbox class="interestthreecheckbox"  bindtap="checkboxAll" checked="{{checkboxAllType}}" /> 本页全选
+        </view>
+        <view>
+            <checkbox class="interestthreecheckbox" bindtap="checkboxPageAll" checked="{{checkboxPageAllType}}" /> 全部全选
+        </view>
+    </view>
+    <view class="mini-btn goinvoice" type="primary"  bind:tap="goinvoice" style="{{hasSelection?'background-color:#fd9153;':'background-color:#cccccc;'}}">下一步</view>
+  </view>

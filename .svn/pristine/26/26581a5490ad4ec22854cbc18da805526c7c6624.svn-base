@@ -1,0 +1,17 @@
+<view class="modal-mask" wx:if="{{show}}" bindtap="onCancel">
+  <view class="modal-content" catchtap>
+    <view class="modal-title">{{title}}</view>
+    <view class="modal-title">{{prompt}}</view>
+    <input 
+      class="modal-input" 
+      value="{{value}}" 
+      placeholder="{{placeholder}}" 
+      bindinput="onInput" 
+      focus="{{true}}"
+    />
+    <view class="modal-buttons">
+      <button class="btn cancel" bindtap="onCancel">取消</button>
+      <button class="btn confirm" bindtap="onConfirm">确定</button>
+    </view>
+  </view>
+</view>

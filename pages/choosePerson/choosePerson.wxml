@@ -1,0 +1,64 @@
+<view class="page">
+  <view class="aa">
+    <view class="aa1">您的出行人数是....</view>
+    <view class="aa2">请选择乘车人</view>
+  </view>
+  <view class='carts'> 
+    <view class='goods' wx:for="{{goods}}" wx:key="goods">
+      <view class='goods-check'>
+        <icon wx:if="{{item.selected}}" type="success" color="red" bindtap="change" data-index="{{index}}" />
+        <icon wx:else type="circle" bindtap="change" data-index="{{index}}" />
+      </view>
+      <view class='goods-details'>
+        <view class='goods-img'>
+          <image src='/assets/images/chengke.png'></image>
+        </view>
+        <view class='goods-title'>
+          <view class='goods-name'>姓   名：{{item.RealName}}
+            <view class='goods-apply' wx:if="{{item.isChildren=='100004-0000010001'}}">儿童</view>
+          </view>
+          <!-- <view class="idcard">证件号：{{item.IdCard}}</view> -->
+          <view class='goods-bot'>
+            <text class='goods-pri'>电 话：{{item.Phone}}</text>
+          </view>
+
+        </view>
+      </view>
+    </view>
+  </view>
+  <!--服务评价-->
+  <view class="service">
+    <!--内容-->
+    <!-- <view class='content'>
+      <view class='left1'>
+        途径收费路段时
+      </view>
+      <view class='right'>
+        <text bindtap='label' class="{{label1===true?'labelColor':''}}" data-index="label1">车主支付</text>
+        <text bindtap='label' class="{{label2===true?'labelColor':''}}" data-index="label2">与车主平摊</text>
+        <text bindtap='label' class="{{label3===true?'labelColor':''}}" data-index="label3">乘客支付</text>
+      </view>
+    </view> -->
+    <view class='content'>
+      <view class='left1'>乘车备注</view>
+      <view class='right'>
+        <text bindtap='chooseRemark1' class="{{remark1===true?'labelColor':''}}" data-index="{{remark1}}" data-remark="大件行李需要后备箱">大件行李需要后备箱</text>
+        <text bindtap='chooseRemark2' class="{{remark2===true?'labelColor':''}}" data-index="{{remark2}}" data-remark="携带宠物,有宠物笼">携带宠物,有宠物笼</text>
+        <text bindtap='chooseRemark3' class="{{remark3===true?'labelColor':''}}" data-index="{{remark3}}" data-remark="儿童单独乘车">儿童单独乘车</text>
+        <text bindtap='chooseRemark4' class="{{remark4===true?'labelColor':''}}" data-index="{{remark4}}" data-remark="有孕妇，请多关照">有孕妇，请多关照</text>
+        <text bindtap='chooseRemark5' class="{{remark5===true?'labelColor':''}}" data-index="{{remark5}}" data-remark="酒后乘车，请多关照">酒后乘车，请多关照</text>
+      </view>
+    </view>
+  </view>
+  <view class="conts">
+    <textarea class="areas" placeholder='其他备注' minlength="{{min}}" maxlength="{{max}}" bindinput="bindInput">
+      </textarea>
+  </view>
+  <view class="emptyview"></view>
+  <view class="btnv">
+    <button class='btn' bindtap='handleBtn'>确定</button>
+  </view>
+  <view class="addUser" bindtap="addUser">
+      <image src="/assets/images/add-friend.png" style="width:80rpx;height:80rpx;"></image>
+  </view>
+</view>

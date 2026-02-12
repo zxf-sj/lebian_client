@@ -1,0 +1,108 @@
+page{
+  background: #f1f1f1;
+}
+.wdjf{
+  width:90vw;
+  height:45vw;
+  position: relative;
+  z-index: 999;
+  left:5vw;
+  top:5vw;
+  background: #67B2F5;
+  border-radius: 20rpx;
+  color:#fff;
+}
+.wdjf1{
+  width:94vw;
+  height:6vw;
+  font-size:34rpx;
+  position: relative;
+  top:2vw;
+  left:3vw;
+}
+.wdjf2{
+  width:84vw;
+  position: relative;
+  top:2vw;
+  left:3vw;
+}
+.wdjf2_1{
+  width:64vw;
+  height:18vw;
+  line-height: 18vw;
+  float:left;
+  font-size:80rpx;
+  margin-top: 50rpx;
+}
+.wdjf2_2{
+  width:25vw;
+  float:right;
+  font-size:40rpx;
+  margin-top: -92rpx;
+}
+.jfmx{
+  width:90vw;
+  margin:0 auto;
+  margin-top:12vw;
+}
+.jfbt{
+  background: #fff;
+  padding-left: 20rpx;
+  height: 100rpx;
+  line-height: 100rpx;
+  font-size: 36rpx;
+  font-weight: 800;
+  border-radius: 20rpx;
+}
+.mxlb{
+  margin-top:3vw;
+}
+.mxlbinfo {
+  width:84vw;
+  padding:3vw;
+  background: #fff;
+  border-radius: 20rpx;
+  margin-bottom: 2vw;
+  height: 140rpx;
+  border:2rpx solid #cacaca;
+}
+.mxlb1{
+  float:left;
+  text-align: left;
+  margin-top: 10rpx;
+}
+.mxlb2{
+  width:44vw;
+  float:right;
+  text-align: right;
+}
+.mxlb2_1{
+  color:#FA2209;
+  font-size:30rpx;
+}
+.mxlb2_2{
+  font-size:26rpx;
+  color: #777777;
+}
+.bg{
+  padding: 0 50rpx;
+  margin:60rpx auto 0;
+  text-align: center;
+  color: #9A9A9A;
+  font-size: 28rpx;
+}
+
+.bg-img{
+  width: 324rpx;
+  height: 317rpx;
+  margin-bottom: 21rpx;
+}
+
+.bg-cont{
+  color: #FF8008;
+}
+.chongzhi{
+  float: right;
+  margin-left: -20rpx;
+  width: 16vw;
+}

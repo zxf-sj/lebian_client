@@ -1,0 +1,104 @@
+const app = getApp()
+
+Page({
+  data: {
+    avatar: '',
+    nickName: '',
+    idcard:"",
+    isBalance:""
+  },
+
+  onLoad: function (options) {
+    var balance = wx.getStorageSync('IsBalance');
+    this.setData({
+      IsBalance:balance
+    })
+  },
+  onShow:function(){
+    var userinfo = wx.getStorageSync('userInfo');
+    if(userinfo){
+      this.setData({
+        nickName:userinfo.nickName?userinfo.nickName:userinfo.Name,
+        avatar:userinfo.HeadIcon?app.globalData.httpsUrl+userinfo.HeadIcon:'',
+        idcard:userinfo.IdentityCard
+      })
+    }
+  },
+  checkList() {
+    wx.navigateTo({
+      url: '/user_center/pages/travelList/travelList',
+    })
+  },
+  checkList2() {
+    wx.navigateTo({
+        url: '/user_center/pages/invoiceTitle/invoiceTitle',
+      })
+  },
+
+  checkWallet() {
+    wx.navigateTo({
+      url: '/user_center/pages/coupon/coupon',
+    })
+  },
+
+  myIntegral() {
+    wx.navigateTo({
+      url: '/user_center/pages/integral/integral',
+    })
+  },
+  // driverFriends(){
+  //   wx.navigateTo({
+  //     url: '/user_center/pages/driverFriends/driverFriends',
+  //   })
+  // },
+
+  checkSetting() {
+    wx.navigateTo({
+      url: '/user_center/pages/setting/setting',
+    })
+  },
+
+  toService(){
+    let servicePhone = wx.getStorageSync('servicePhone')
+    if(servicePhone){
+      wx.makePhoneCall({
+        phoneNumber: servicePhone,
+        success() {
+          console.log('拨打成功')
+        },
+        fail: function () {
+          console.log('拨打失败')
+        }
+      })
+    }else{
+      wx.navigateTo({
+        url: '/user_center/pages/login/login',
+      })
+    }
+  },
+  renzheng(){
+    wx.navigateTo({
+      url: '/user_center/pages/renzheng/renzheng',
+    })
+  },
+  goMy(){ 
+    wx.navigateTo({
+      url: '/user_center/pages/editInfo/editInfo',
+    })
+  },
+  toAddUser(){
+    wx.navigateTo({
+      url: '/user_center/pages/userList/userList',
+    })
+  },
+  goYue(){
+    wx.navigateTo({
+      url: '/user_center/pages/yue/yue',
+    })
+  },
+  goCoupon(){
+    wx.navigateTo({
+      url: '/user_center/pages/couponList/couponList',
+    })
+  }
+})

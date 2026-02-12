@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "orderBottom":"/components/orderBottom/orderBottom",
+    "information":"/components/information/information",
+    "distanceNav":"/components/distanceNav/distanceNav",
+    "travel":"/components/travel/travel",
+    "remarks":"/components/remarks/remarks"
+  },
+  "navigationBarTitleText": "乐遍小件物流"
+}

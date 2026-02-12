@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "开具发票",
+  "usingComponents": {
+    "daohang":"/components/daohang/daohang"
+  }
+}

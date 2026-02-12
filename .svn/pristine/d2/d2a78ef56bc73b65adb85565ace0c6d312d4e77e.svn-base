@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "选择下车地点",
+  "usingComponents": {
+    "daohang":"/components/daohang/daohang"
+  }
+}

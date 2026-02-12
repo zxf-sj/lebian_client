@@ -1,0 +1,130 @@
+  <view class="map_container">
+    <view class="lunbo">
+      <swiper indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" class="swipers">
+        <block wx:for="{{lunBoImg}}" wx:key="index">
+          <swiper-item>
+            <image src="{{imgUrl+item.ShowPicUrl}}" mode="widthFix" class="lunimg"/>
+          </swiper-item>
+        </block>
+      </swiper>
+    </view>
+    <view class="warn">
+      <image src="/assets/images/laba.png" style="width:40rpx;height:40rpx"></image>
+      <view class='marquee' style='width:{{marqueeWidth}}rpx;'>
+        <view class='marqueeTitle' style="width:{{length}}rpx;margin-left:{{marqueeMargin}}px;transform:translateX( {{marqueeDistance}}rpx);font-size: {{size}}rpx;">{{title}}</view>
+      </view>
+    </view>
+    <!-- 这是九宫格 -->
+    <view class="titleView">乐遍+</view>
+    <view class="grid-list">
+      <view class="grid-item" bindtap="chengji" wx:if="{{!ischeck}}">
+        <image src="/assets/images/pinche.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">乐遍城际</text>
+      </view>
+      <!-- <view class="grid-item" bindtap="ceshi" wx:if="{{!ischeck}}">
+        <image src="/assets/images/pinche.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">测试</text>
+      </view> -->
+      <view class="grid-item" bindtap="pingche" wx:if="{{!ischeck}}">
+        <image src="/assets/images/pinche.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">乐遍拼车</text>
+      </view>
+      <view class="grid-item" bindtap="duxiang" wx:if="{{!ischeck}}">
+        <image src="/assets/images/duxiang.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">乐遍包车</text>
+      </view>
+      <view class="grid-item" bindtap="zuche">
+        <image src="/assets/images/zuche.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">乐遍租车</text>
+      </view>
+      <view class="grid-item" bindtap="peizhen">
+        <image src="/assets/images/peizhen.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">乐遍安心陪诊</text>
+      </view>
+      <view class="grid-item" bindtap="lvyou">
+        <image src="/assets/images/lvyou.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">乐遍旅游</text>
+      </view>
+      <view class="grid-item {{hasNewOrder?'jiaobiao1':''}} " bindtap="order">
+        <image src="/assets/images/order.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">订单中心</text>
+      </view>
+      <view class="grid-item" bindtap="my">
+        <image src="{{avatar}}" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">个人中心</text>
+      </view>
+      <!-- <view class="grid-item jiaobiao" bindtap="bar">
+        <image src="/assets/images/bar.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">乐遍巴士</text>
+      </view> -->
+      <!-- <view class="grid-item" bindtap="shaohuo">
+        <image src="/assets/images/shaohuo.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">随车捎货</text>
+      </view> -->
+      <!-- <view class="grid-item jiaobiao" bindtap="huodong">
+        <image src="/assets/images/huodong.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">定制活动</text>
+      </view>
+      <view class="grid-item jiaobiao" bindtap="ad">
+        <image src="/assets/images/guanggao.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">乐遍广告</text>
+      </view> -->
+      <view class="grid-item " bindtap="hezuo">
+        <image src="/assets/images/hezuo.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">乐遍合作</text>
+      </view>
+      <!-- bindtap="kaipiao" -->
+       <!-- src="https://mp.weixin.qq.com/s/你的文章链接" -->
+       <!-- jiaobiao 内侧class -->
+      <view class="grid-item " bindtap="kaipiao">
+        <image src="/assets/images/kaipiao.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">我要开票</text>
+      </view>
+      <view class="grid-item " bindtap="tousu">
+        <image src="/assets/images/tousu.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">投诉建议</text>
+      </view>
+    </view>
+  </view>
+	<!-- 城市未开通服务 -->
+	<view class="city-no-service" hidden="{{hideCityNoService}}">当前区域未开通服务，敬请期待</view>
+  <view class="notice-cover" wx:if="{{showCoupon}}" bindtap="closeCoupon">
+    <!-- <block wx:if="{{showNotice}}">
+      <view class="notice-wrapper">
+        <swiper class="notice-swiper" indicator-dots="true" indicator-active-color="#FF8008" autoplay="true" interval="5000" circular="true">
+          <block wx:for="{{noticeCont}}" wx:key="index">
+            <swiper-item>
+              <view class="notice_tit">{{item.title}}</view>
+              <image wx:if="{{item.picUrl}}" class="notice_img" src="{{item.picUrl}}" bindtap="toOut" data-href="{{item.hrefUrl}}" class="swiperImg"></image>
+              <scroll-view wx:else class="notice_cont" scroll-y="true" enable-flex="true">
+                <view>{{item.content}}</view>
+              </scroll-view>
+            </swiper-item>
+          </block>
+        </swiper>
+        <view class="close-notice" bindtap="closeNotice">
+          <image src="http://scapp.xysc16.com/upload/wmp/imgs/close.png" class="closeImg"></image>
+        </view>
+      </view>
+    </block> -->
+		<block>
+			<view class="coupon-wrapper">
+				<image class="bg_bg" src="/assets/images/yhjnotice.png"></image>
+				<view class="cou_tit"></view>
+				<view class="cou_cont">
+          <view class="cou_item">
+            <image class="ci_bg" src="/assets/images/yhjback.png"></image>
+            <view class="cou_right">
+              <view class="cou_name">更多福利前往优惠中心领取</view>
+            </view>
+          </view>
+				</view>
+				<view class="cou_btn" bindtap="couponCheck">
+					<view class="cou_check">立即前往</view>
+				</view>
+				<view class="close_cou" catchtap="closeCoupon">
+					<image src="/assets/images/close.png" class="close_couImg"></image>
+				</view>
+			</view>
+		</block>
+  </view>

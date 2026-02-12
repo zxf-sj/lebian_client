@@ -1,0 +1,83 @@
+/* user_center/pages/invoice/invoice.wxss */
+
+/* pages/form/form.wxss */
+.container {
+    padding: 20rpx;
+    background-color: #f8f8f8;
+    font-size: 28rpx;
+  }
+  
+  .section {
+    background: #fff;
+    margin-bottom: 40rpx;
+    border-radius: 16rpx;
+    padding: 30rpx;
+    box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  }
+  
+  .title {
+    font-size: 32rpx;
+    font-weight: bold;
+    color: #333;
+    display: block;
+    margin-bottom: 30rpx;
+  }
+  
+  .input-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25rpx;
+    border-bottom: 1rpx solid #eee;
+    padding: 20rpx 0;
+  }
+  
+  .input-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .label {
+    width: 180rpx;
+    font-size: 28rpx;
+    color: #333;
+  }
+  
+  input, textarea {
+    flex: 1;
+    height: 60rpx;
+    line-height: 60rpx;
+    font-size: 28rpx;
+    color: #555;
+  }
+  
+  textarea {
+    height: 120rpx;
+    padding: 20rpx 0;
+  }
+  
+  .picker-view {
+    flex: 1;
+    height: 60rpx;
+    line-height: 60rpx;
+    color: #555;
+  }
+  
+  .textarea-item {
+    align-items: flex-start;
+  }
+  
+  .submit-btn {
+    background-color: #07c160;
+    color: white;
+    margin-top: 40rpx;
+    font-size: 30rpx;
+  }
+  
+  .reset-btn {
+    background-color: #aaa;
+    color: white;
+    margin-top: 20rpx;
+    font-size: 30rpx;
+  }
+  .xingxing {
+      color: #ff0000;
+  }

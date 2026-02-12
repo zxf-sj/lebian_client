@@ -1,0 +1,50 @@
+<!--user_center/pages/shaohuo/shaohuo.wxml-->
+<view class="page">
+	<information typeon="sh" bind:updatedData="updatedData" />
+	<view class="main">
+		<view class="belongings ">
+			<view class="item_l">
+				物品详情
+			</view>
+			<view class="item_r">
+				<input type="text"  placeholder="请描述具体物品"  value="{{belongings}}"  bindblur="belongingsInput" class="phcolor" placeholder-class='placeholder' style="{{belongings?'color:#101010;':''}}"></input>
+			</view>
+		</view>
+		<view class="pic">
+			<view>物品照片</view>
+			<view class="txt">*请上传物品照片确保货物是否可寄运</view>
+			<view class="uplode" bind:tap="handleUpload" wx:if="{{imgUrl == ''}}">
+				<image src="/assets/images/time.png" mode=""/>
+				上传照片
+			</view>
+			<view class="imgs"  wx:for="{{imgUrl}}" wx:key="index" bind:tap="handleUpload">
+				<image src="{{item.tempFilePath}}" mode=""/>
+			</view>
+		</view>
+		<view class="boxs">
+			<view class="sendMail">
+				<view class="items_l">寄件联系方式</view>
+				<view class="items_r">
+					<input type="text"  placeholder-class='placeholder' style="{{sendMailPhone?'color:#101010;':''}}"  placeholder="请填写寄件方联系方式"  value="{{sendMailPhone}}" maxlength="11" bindblur="sendMailInput" class="phcolor"></input>
+				</view>
+			</view>
+			<view class="pickUp">
+				<view class="items_l">收件联系方式</view>
+				<view class="items_r">
+					<input type="text"placeholder-class='placeholder' style="{{pickUpPhone?'color:#101010;':''}}" placeholder="请填写收件方联系方式" value="{{pickUpPhone}}" maxlength="11" bindblur="pickUpInput" class="phcolor"></input>
+				</view>
+			</view>
+		</view>
+		<view class="remarks">
+			<view class="item_l">寄件备注</view>
+			<view class="item_r" bind:tap="handlejijian" style="{{textareaValue?'color:#101010':'color:#bbbbbb'}}" >{{textareaValue?textareaValue:'请填写寄件备注'}}</view>
+		</view>
+	</view>
+	<view class="xing_txt">
+		订单确认：
+	</view>
+	<distanceNav update="{{update}}" />
+	<orderBottom />
+		<!-- 显示备注信息 -->
+		<remarks bind:textareaValue="handleTextareaValue"  wx:if="{{remark}}" remark="{{remark}}" />
+</view>

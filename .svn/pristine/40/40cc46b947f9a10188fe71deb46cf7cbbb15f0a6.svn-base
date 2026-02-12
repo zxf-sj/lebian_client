@@ -1,0 +1,31 @@
+<!--components/distanceNav/distanceNav.wxml-->
+<view class="page">
+  <view class="main">
+    <view class="main_item">
+      <view class="day">
+        <view class="dayBtn">
+          <!-- <view class="item">{{propsTxt}}</view> -->
+          <!-- <view class="item">{{propsDay}}</view> -->
+          <picker mode="date" value="{{date}}" start="{{StartDay}}" end="{{EndDay}}" bindchange="bindDateChange">
+            {{propsTxt}}
+          </picker>
+          <picker mode="date" value="{{date}}" start="{{StartDay}}" end="{{EndDay}}" bindchange="bindDateChange">
+            {{propsDay}}
+          </picker>
+        </view>
+      </view>
+      <view class="path">
+        <!-- <view class="item">{{startingCity}} —— {{endingCity}}</view>
+        <view class="item">{{StartTime}} ~ {{EndTime}}</view> -->
+        <picker  value="{{index}}" range-key="Name" range="{{addArr}}"  bindchange="bindPickerLine">
+          {{startingCity}} —— {{endingCity}}
+          </picker>
+          <picker value="{{index}}"  range="{{TimeList}}"  bindchange="bindPickerTime">
+            {{StartTime}} ~ {{EndTime}}
+          </picker>
+      </view>
+      <view class="money">￥ {{Price}}</view>
+    </view>
+  </view>
+
+</view>

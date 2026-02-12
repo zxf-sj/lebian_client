@@ -1,0 +1,301 @@
+// user_center/pages/baoche/baoche.js
+const BASE_URL = require("../../../utils/BASE_URL");
+var baseUrl = BASE_URL.BASE_URL //配置基础url
+import http from '../../../utils/http.js';
+const app = getApp();
+const throttle = require('../../../utils/throttle.js').throttle;
+Page({
+
+  /**
+   * 页面的初始数据
+   */
+  data: {
+    update:0
+  },
+
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad(options) {
+   
+  },
+
+  /**
+   * 生命周期函数--监听页面初次渲染完成
+   */
+  onReady() {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow() {
+
+  },
+  // 叫车
+  handleCallCar:throttle(function(){
+    const phoneStr = wx.getStorageSync('phoneStr');
+    var openid = wx.getStorageSync('openid');
+    if(!openid){
+      wx.navigateTo({
+        url: '/user_center/pages/login/login',
+      })
+      return false;
+    }
+   
+    var user = wx.getStorageSync('userInfo');//用
+    var startInfo = wx.getStorageSync('starInfo2'); 
+    var endInfo = wx.getStorageSync('endInfo2');
+    var storageSync = wx.getStorageSync('storageSync')
+    var pcTimeSync = wx.getStorageSync('pcTimeSync')
+    var nums = wx.getStorageSync('personNum');
+    var pcTypeId = wx.getStorageSync('pcTypeId');
+    var note = wx.getStorageSync('textareaValue');
+    var startDate = storageSync.startDate;
+    if(!startInfo.startAddress){
+      wx.showToast({
+        title: '请选择出发乘车位置',
+        icon:'none',
+        duration:2000
+      })
+      return false;
+    }
+    if(!endInfo.endAddress){
+      wx.showToast({
+        title: '请选择下车位置',
+        icon:'none',
+        duration:2000
+      })
+      return false;
+    }
+    if(!nums){
+      wx.showToast({
+        title: '请选择乘车人',
+        icon:'none',
+        duration:2000
+      })
+      return false;
+    }
+    let starTime =  pcTimeSync.StartTime.split(':')[0] + ':59:00'  
+    let ArrivalTime =  startDate + ' ' + starTime
+    let reqData = {
+      PassengerLineId:storageSync.lineId,
+      IntoLocation:startInfo.startAddress,
+      IntoLongitude:startInfo.startLont,
+      IntoLatitude:startInfo.startLait,
+      OffLocation:endInfo.endAddress,
+      OffLongitude:endInfo.endLont,
+      OffLatitude:endInfo.endLait,
+      PassengerNumber:nums,
+      Departure:app.globalData.nowOrFutureId==1?"100004-0000980001":"100004-0000980002",
+      ArrivalTime:ArrivalTime,
+      Personal:user.Id,
+      SeatNumber:'', 
+      DispatchListId:"",
+      IsReservation:"100004-0000010002",
+      CouponDetailsId:pcTimeSync.hasChooseId?pcTimeSync.hasChooseId:"",
+      PersonalIds:phoneStr,
+      Note:note,
+      IsExclusive:"100004-0000010001",
+      IsPickGoods:'100004-0000010002',
+      SelectCarType:pcTypeId, 
+      OrderSource:"小程序",
+      priceType:'100004-0001270001'
+    };
+    console.log(reqData)
+    console.log(phoneStr)
+    console.log(startDate)
+    http.getRequest('/Api/DispatchMobile/IsUserHaveDayOrder?phone='+phoneStr+'&timeDay='+startDate,'','', res => {
+      if(res.code==0){
+        if(res.count==0){
+          if(this.data.dispatchListId){
+            wx.showLoading({
+              title: '车辆调度中',
+            })
+          }else{
+            wx.showLoading({
+              title: '加载中...',
+            })
+          }
+          let that = this;
+          wx.request({
+            url: baseUrl + '/Api/DispatchMobile/CreateRideTicketOrder',
+            data:reqData,
+            method:"POST",
+            success(res) {
+              var ress = res.data
+              if (ress.code == '0') {
+                  wx.removeStorageSync('starInfo2'); 
+                  wx.removeStorageSync('endInfo2');
+                  wx.removeStorageSync('storageSync')
+                  wx.removeStorageSync('pcTimeSync')
+                  wx.removeStorageSync('personNum')
+                  wx.removeStorageSync('pcTypeId');
+                  wx.removeStorageSync('SeatNumber')
+                  wx.removeStorageSync('textareaValue');
+                  wx.removeStorageSync('phoneStr')
+                  wx.hideLoading();
+                  that.setSubscribeMessage();
+                  wx.reLaunch({
+                    url: '/user_center/pages/payDetail/payDetail?orderId='+ress.data.Id+"&from=orderList"
+                  })
+              }else{
+                wx.showToast({
+                  title: ress.msg,
+                  icon:'none',
+                  duration:2000
+                })
+              }
+            },
+          })
+        }else{
+          var list = res.data;
+          var str ="";
+          list.forEach(function(item,index){
+            str += item.PassengerLineId_Name+","+"订单号为:"+item.Code+"\n"
+          });
+          wx.showModal({
+            title: '下单记录',
+            content: str,
+            cancelText:"取消下单",
+            confirmText:"继续下单",
+            complete: (res) => {
+              if (res.cancel) {
+                wx.navigateTo({
+                  url: '/pages/index/index',
+                }) 
+              }
+              if (res.confirm) {
+                if(this.data.dispatchListId){
+                  wx.showLoading({
+                    title: '车辆调度中',
+                  })
+                }else{
+                  wx.showLoading({
+                    title: '加载中...',
+                  })
+                }
+                let that = this;
+                wx.request({
+                  url: baseUrl + '/Api/DispatchMobile/CreateRideTicketOrder',
+                  data:reqData,
+                  method:"POST",
+                  success(res) {
+                    var ress = res.data
+                    if (ress.code == '0') {
+                      wx.removeStorageSync('starInfo2'); 
+                      wx.removeStorageSync('endInfo2');
+                      wx.removeStorageSync('storageSync')
+                      wx.removeStorageSync('pcTimeSync')
+                      wx.removeStorageSync('pcTypeId');
+                      wx.removeStorageSync('personNum')
+                      wx.removeStorageSync('SeatNumber')
+                      wx.removeStorageSync('textareaValue');
+                      wx.removeStorageSync('phoneStr')
+                      wx.hideLoading();
+                      that.setSubscribeMessage();
+                      wx.reLaunch({
+                        url: '/user_center/pages/payDetail/payDetail?orderId='+ress.data.Id+"&from=orderList"
+                      })
+                    }else{
+                      wx.showToast({
+                        title: ress.msg,
+                        icon:'none',
+                        duration:2000
+                      })
+                    }
+                  },
+                })
+              }
+            }
+          })
+        }
+      }else{
+        wx.showToast({
+          title: '数据请求失败，请稍后重试111',
+          icon:"error"
+        })
+      }
+    }, err => {
+      console.log(1111,err)
+    })
+  },5000),
+  setSubscribeMessage:function(){
+    wx.requestSubscribeMessage({
+      tmplIds: ['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA'],
+      success(res) {
+        if (res['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA'] === 'accept') {
+          console.log('用户同意接收订阅消息');
+        } else {
+          wx.showModal({
+            title: '订阅消息',
+            content: '您当前拒绝接受消息通知，是否去开启',
+            confirmText: '开启授权',
+            confirmColor: '#345391',
+            cancelText: '仍然拒绝',
+            cancelColor: '#999999',
+            success(res) {
+              if (res.confirm) {
+                console.log('用户点击确定');
+                wx.openSetting({
+                  success(res) {
+                    console.log(res.authSetting);
+                  },
+                  fail(err) {
+                    //失败
+                    console.log(err);
+                  }
+                });
+              } else if (res.cancel) {
+                console.log('用户点击取消');
+              }
+            }
+          });
+        }
+      },
+      fail(err) {
+        console.log('请求订阅消息权限失败：', err);
+      }
+    });
+  },
+  updatedData() {
+    this.setData({
+      update:this.data.update + 1
+    })
+  },
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide() {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload() {
+    
+  },
+
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh() {
+
+  },
+
+  /**
+   * 页面上拉触底事件的处理函数
+   */
+  onReachBottom() {
+
+  },
+
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage() {
+
+  }
+})

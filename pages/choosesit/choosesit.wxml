@@ -1,0 +1,126 @@
+<wxs module="module" src="../../utils/includes.wxs"></wxs>
+<view class="cartype">
+    <view class="choosecar">请选择车型：</view>
+    <view>
+      <view class='grid-item-container'>
+        <block wx:for="{{typeList}}" wx:key="index">
+          <view class="{{index==checkedIndex?'grid-item-child1':'grid-item-child'}}" bindtap="bindChooseState" data-index="{{index}}" data-sitenum="{{item.SeatNum}}" data-price="{{item.PriceRule}}">
+            <view style="text-align: center;">
+              <image src="{{index==checkedIndex?'/assets/images/yescar.png':'/assets/images/nocar.png'}}" style="width: 60rpx;height:60rpx;"></image>
+              <text class='grid-item-label'>{{item.Name}}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+</view>
+<view class="service">
+  <view class='content'>
+    <view class='left'>
+      请选择座位：
+    </view>
+    <view class='right' wx:if="{{siteNum==5}}">
+        <view class="pai1" wx:if="{{index==0}}" wx:for="{{siteList}}" wx:key="index">
+            <view class="yipai">
+              <image class="img1" src="/assets/images/siji.png"></image>
+              <view>司机位置</view>
+            </view>
+            <view class="yipai" bindtap="xuanSite" data-name="{{item.name}}" wx:if="{{isAlone==0}}">
+              <image class="img1" src="{{module.includes(imgHoverIndex,item.name)? '/assets/images/yixuan.png' : '/assets/images/noxuan.png'}}"></image>
+              <view class="sitename">{{item.name}}</view>
+              <view class="siteprice" wx:if="{{item.addprice>=0}}">增加{{item.addprice}}元</view>
+              <view class="siteprice" wx:if="{{item.addprice<0}}">减少{{item.addprice}}元</view>
+            </view>
+            <view class="yipai" wx:if="{{isAlone==1}}">
+              <image class="img1" src="{{module.includes(imgHoverIndex,item.name)? '/assets/images/yixuan.png' : '/assets/images/noxuan.png'}}"></image>
+              <view class="sitename">{{item.name}}</view>
+              <view class="siteprice" wx:if="{{item.addprice>=0}}">增加{{item.addprice}}元</view>
+              <view class="siteprice" wx:if="{{item.addprice<0}}">减少{{item.addprice}}元</view>
+            </view>
+        </view>
+        <view class="pai2">
+          <block wx:if="{{index!=0}}" wx:for="{{siteList}}" wx:key="index">
+            <view class="erpai" bindtap="xuanSite" data-name="{{item.name}}" wx:if="{{isAlone==0}}">
+              <image class="img1" src="{{module.includes(imgHoverIndex,item.name)? '/assets/images/yixuan.png' : '/assets/images/noxuan.png'}}"></image>
+              <view class="sitename">{{item.name}}</view>
+              <view class="siteprice" wx:if="{{item.addprice>=0}}">增加{{item.addprice}}元</view>
+              <view class="siteprice" wx:if="{{item.addprice<0}}">减少{{item.addprice}}元</view>
+            </view>
+            <view class="erpai" wx:if="{{isAlone==1}}">
+              <image class="img1" src="{{module.includes(imgHoverIndex,item.name)? '/assets/images/yixuan.png' : '/assets/images/noxuan.png'}}"></image>
+              <view class="sitename">{{item.name}}</view>
+              <view class="siteprice" wx:if="{{item.addprice>=0}}">增加{{item.addprice}}元</view>
+              <view class="siteprice" wx:if="{{item.addprice<0}}">减少{{item.addprice}}元</view>
+            </view>
+          </block>
+        </view>
+    </view>
+    <view class='right' wx:if="{{siteNum==7}}">
+      <view class="pai1" wx:if="{{index==0}}" wx:for="{{siteList}}" wx:key="index">
+        <view class="yipai">
+          <image class="img1" src="/assets/images/siji.png"></image>
+          <view>司机位置</view>
+        </view>
+        <view class="yipai" bindtap="xuanSite" data-name="{{item.name}}" wx:if="{{isAlone==0}}">
+          <image class="img1" src="{{module.includes(imgHoverIndex,item.name)? '/assets/images/yixuan.png' : '/assets/images/noxuan.png'}}"></image>
+          <view class="sitename">{{item.name}}</view>
+          <view class="siteprice" wx:if="{{item.addprice>=0}}">增加{{item.addprice}}元</view>
+          <view class="siteprice" wx:if="{{item.addprice<0}}">减少{{item.addprice}}元</view>
+        </view>
+        <view class="yipai" wx:if="{{isAlone==1}}">
+          <image class="img1" src="{{module.includes(imgHoverIndex,item.name)? '/assets/images/yixuan.png' : '/assets/images/noxuan.png'}}"></image>
+          <view class="sitename">{{item.name}}</view>
+          <view class="siteprice" wx:if="{{item.addprice>=0}}">增加{{item.addprice}}元</view>
+          <view class="siteprice" wx:if="{{item.addprice<0}}">减少{{item.addprice}}元</view>
+        </view>
+      </view>
+      <view class="pai2">
+          <block wx:if="{{index>0 && index<3}}" wx:for="{{siteList}}" wx:key="index">
+            <view class="erpai" bindtap="xuanSite" data-name="{{item.name}}" wx:if="{{isAlone==0}}">
+              <image class="img1" src="{{module.includes(imgHoverIndex,item.name)? '/assets/images/yixuan.png' : '/assets/images/noxuan.png'}}"></image>
+              <view class="sitename">{{item.name}}</view>
+              <view class="siteprice" wx:if="{{item.addprice>=0}}">增加{{item.addprice}}元</view>
+              <view class="siteprice" wx:if="{{item.addprice<0}}">减少{{item.addprice}}元</view>
+            </view>
+            <view class="erpai" wx:if="{{isAlone==1}}">
+              <image class="img1" src="{{module.includes(imgHoverIndex,item.name)? '/assets/images/yixuan.png' : '/assets/images/noxuan.png'}}"></image>
+              <view class="sitename">{{item.name}}</view>
+              <view class="siteprice" wx:if="{{item.addprice>=0}}">增加{{item.addprice}}元</view>
+              <view class="siteprice" wx:if="{{item.addprice<0}}">减少{{item.addprice}}元</view>
+            </view>
+          </block>  
+      </view>
+      <view class="pai2">
+        <block wx:if="{{index>2}}" wx:for="{{siteList}}" wx:key="index">
+          <view class="erpai" bindtap="xuanSite" data-name="{{item.name}}" wx:if="{{isAlone==0}}">
+            <image class="img1" src="{{module.includes(imgHoverIndex,item.name)? '/assets/images/yixuan.png' : '/assets/images/noxuan.png'}}"></image>
+            <view class="sitename">{{item.name}}</view>
+            <view class="siteprice" wx:if="{{item.addprice>=0}}">增加{{item.addprice}}元</view>
+            <view class="siteprice" wx:if="{{item.addprice<0}}">减少{{item.addprice}}元</view>
+          </view>
+          <view class="erpai" wx:if="{{isAlone==1}}">
+            <image class="img1" src="{{module.includes(imgHoverIndex,item.name)? '/assets/images/yixuan.png' : '/assets/images/noxuan.png'}}"></image>
+            <view class="sitename">{{item.name}}</view>
+            <view class="siteprice" wx:if="{{item.addprice>=0}}">增加{{item.addprice}}元</view>
+            <view class="siteprice" wx:if="{{item.addprice<0}}">减少{{item.addprice}}元</view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+  <view class="sitelist">
+    <view class="sitede">
+      <image class="siteimg" src="/assets/images/noxuan.png"></image>
+      <view class="sitex">未选择</view>
+    </view>
+    <view class="sitede">
+      <image class="siteimg" src="/assets/images/yixuan.png"></image>
+      <view class="sitex">已选择</view>
+    </view>
+  </view>
+  <view class="tips">座位型号说明：五座车：A-D座是从前到后，A座是副驾位置,B C D座是车尾。七座车：A-F座是从前到后，A座是副驾位置,B C座是中间座位,D E F座是车尾。</view>
+</view>
+<view class="emptyview"></view>
+<view class="submitbtn">
+  <button class='btn' bindtap='handleBtn'>确认选择</button>
+</view>

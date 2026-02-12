@@ -1,0 +1,44 @@
+<view class="pay-method-wrap">
+  <view class="u-flex-col u-col-center money-box" >
+    <view class="money">订单号:{{orderDetail.Code}}</view>
+    <view class="money1">订单总额:￥{{total_money}}</view>
+    <view class="money1">优惠券优惠:-￥{{juanMoney}}</view>
+    <view class="money1" wx:if="{{IsBalance=='100004-0000010001' && payType=='yue'}}">余额支付优惠:-￥{{yueYh}}</view>
+    <text class="time">应支付金额:￥{{ygprice}}</text>
+  </view>
+  <!-- 支付方式单选项 -->
+  <radio-group  class="pay-box" bindchange="radioChange">
+    <!-- 微信支付 -->
+    <view class="u-flex u-row-between pay-item" bindtap="checkWay" data-way="wechat">
+      <view class="u-flex">
+        <image class="pay-img" src="/assets/images/wechat.png" mode=""></image>
+        <text>微信支付</text>
+      </view>
+      <radio value="wechat" checked="{{payType=='wechat'?'checked':''}}" class="typeradio"/>
+    </view>
+    <!-- 支付宝支付 -->
+    <!-- <view class="u-flex u-row-between pay-item" bindtap="checkWay" data-way="alipay">
+      <view class="u-flex">
+        <image class="pay-img" src="/assets/images/alipay.png" mode=""></image>
+        <text>支付宝支付</text>
+      </view>
+      <radio value="alipay" class="typeradio" checked="{{payType=='alipay'?'checked':''}}"/>
+    </view> -->
+    <!-- <view class="u-flex u-row-between pay-item" bindtap="checkWay" data-way="cash">
+      <view class="u-flex">
+        <image class="pay-img" src="/assets/images/cash.png" mode=""></image>
+        <text>现金付款</text>
+      </view>
+      <radio value="cash" class="typeradio" checked="{{payType=='cash'?'checked':''}}"/>
+    </view> -->
+    <view class="u-flex u-row-between pay-item" wx:if="{{IsBalance=='100004-0000010001'}}" bindtap="checkWay" data-way="yue">
+      <view class="u-flex">
+        <image class="pay-img" src="/assets/images/yue.png" mode=""></image>
+        <text>余额支付</text>
+      </view>
+      <radio value="yue" class="typeradio" checked="{{payType=='yue'?'checked':''}}"/>
+    </view>
+  </radio-group>
+  <button class="u-reset-button pay-btn" bindtap="confirmPay">确认支付{{ygprice}}元</button>
+</view>
+<daohang></daohang>

@@ -1,0 +1,183 @@
+<!-- 已完成订单 -->
+<block>
+    <map class="map" id="map" style="width:100%;height:600rpx;" latitude="{{latitude}}" longitude="{{longitude}}" polyline="{{polyline}}" markers="{{markers}}" controls="{{controls}}" include-points='{{points}}' show-location="true">
+    </map>
+</block>
+<block wx:if="{{!isClosed}}">
+    <view class="over">
+        <block>
+            <view class="h2">
+                <view class="str">{{detailData.IntoLocation}}</view>
+                <view class="car-img">
+                    <image src="/assets/images/line_mr.png"></image>
+                </view>
+                <view class="end">{{detailData.OffLocation}}</view>
+            </view>
+        </block>
+        <block wx:if="{{detailData.DispatchListId_DriverId_Name}}">
+            <view class="driver-info">
+                <view class="left">
+                    <image class="photo" src="{{detailData.driverCarInfo.driverHeadPicUrl || '/user_center/assets/images/driver.png'}}">
+                    </image>
+                    <view class="name"> {{driver_name}}师傅</view>
+                </view>
+                <view class="right">
+                    <view class="top">
+                        <view class="l">
+                            <view class="company">乐遍出行</view>
+                            <view class="car-num">{{detailData.DispatchListId_CarDirId_Name}}</view>
+                            <button type="primary" size="mini" 	plain="true" bind:tap="handleCallDriver">联系司机</button>
+                        </view>
+                    </view>
+                    <view class="btm">
+                        {{detailData.OnLineCarTypeId_Name?detailData.OnLineCarTypeId_Name:""}} {{detailData.DispatchListId_CarDirId_ExtProp11?detailData.DispatchListId_CarDirId_ExtProp11:""}}
+                    </view>
+                </view>
+                <view wx:if="{{detailData.DispatchListId_CarDirId_CarPicture}}">
+                    <image src="{{httpsUrl}}{{detailData.DispatchListId_CarDirId_CarPicture}}" style="width: 230rpx;height: 164rpx;"></image>
+                </view>
+                <view wx:else>
+                    <image src="https://www.qierchuxing.com/upload/Annex/202409/AX-20240906-513300-223.png" style="width: 230rpx;height: 164rpx;"></image>
+                </view>
+            </view>
+        </block>
+    </view>
+    <view wx:if="{{steps.length > 0}}">
+        <view class="container">
+            <view class="progress-bar">
+                <block wx:for="{{steps}}" wx:key="index">
+                    <view class="step-item">
+                        <!-- 步骤圆点 -->
+                        <view class="step-dot {{item.status === 'done' ? 'dot-done' : item.status === 'current' ? 'dot-current' : 'dot-pending'}}">
+                            <text wx:if="{{item.status === 'done'}}" class="icon">✓</text>
+                        </view>
+                        <!-- 步骤标签 -->
+                        <text class="step-text {{item.status}}">{{item.label}}</text>
+                        <!-- 连接线（除最后一个外） -->
+                        <view wx:if="{{index < steps.length - 1}}" class="connector" style="background-color: {{item.status === 'done' || item.status === 'current' ? '#4CAF50' : '#ddd'}}">
+                        </view>
+                    </view>
+                </block>
+            </view>
+        </view>
+    </view>
+    <view class="orderOk" wx:if="{{detailData.FormState_Name == '未派单'}}">下单成功，发车前1小时显示车辆及司机信息。</view>
+    <view class="container">
+        <view class="shadow-box">
+            <block>
+                <view class="pay-title">
+                    <text class="font-30">订单信息</text>
+                </view>
+                <view class="pay-detail">
+                    <block>
+                        <view class="border-bottom">
+                            <view class="flex-box font-28">
+                                <text class="mini-pay">订单编号</text>
+                                <text class="mini-pay">{{detailData.Code}}</text>
+                            </view>
+                        </view>
+                        <!-- <view class="border-bottom">
+							<view class="flex-box font-28">
+								<text class="mini-pay">车座号</text>
+                <text class="mini-pay">{{detailData.SeatNumber=='无'?'暂无':detailData.SeatNumber}}座</text>
+							</view>
+						</view> -->
+                        <view class="border-bottom">
+                            <view class="flex-box font-28">
+                                <text class="mini-pay">付款方式</text>
+                                <text class="mini-pay">{{detailData.PaymentType_Name}}</text>
+                            </view>
+                        </view>
+                        <view class="border-bottom">
+                            <view class="flex-box font-28">
+                                <text class="mini-pay">订单状态</text>
+                                <text class="mini-pay">{{detailData.FormState_Name =="未派单"?"车辆预约成功":detailData.FormState_Name}}</text>
+                            </view>
+                        </view>
+                        <view class="border-bottom">
+                            <view class="flex-box font-28">
+                                <text class="mini-pay">出发时间</text>
+                                <text class="mini-pay">{{detailData.ArrivalTime}}</text>
+                            </view>
+                        </view>
+                    </block>
+                </view>
+            </block>
+        </view>
+        <view class="shadow-box">
+            <block>
+                <view class="pay-title">
+                    <text class="font-30">乘客信息</text>
+                </view>
+                <view class="pay-detail">
+                    <block>
+                        <view class="border-bottom">
+                            <view class="flex-box font-28">
+                                <text class="mini-pay">乘客人数</text>
+                                <text class="mini-pay">{{detailData.PassengerNumber}}人</text>
+                            </view>
+                        </view>
+                        <view class="border-bottom">
+                            <view class="flex-box font-28">
+                                <text class="mini-pay" style="min-width: 140rpx;">乘客信息</text>
+                                <text class="mini-pay">{{detailData.PersonalIds}}</text>
+                            </view>
+                        </view>
+                    </block>
+                </view>
+            </block>
+        </view>
+        <view class="shadow-box">
+            <block>
+                <view class="pay-title">
+                    <text class="font-30">{{priceTitle}}</text>
+                </view>
+                <view class="pay-detail">
+                    <block>
+                        <view class="border-bottom" wx:for="{{detailData.DetailList}}" wx:key="key">
+                            <view class="flex-box font-28">
+                                <text class="mini-pay">{{item.Name}}</text>
+                                <text class="mini-pay" wx:if="{{item.DiscountMoney >0}}">-{{item.RealMoney}}元</text>
+                                <text class="mini-pay" wx:else>{{item.RealMoney}}元</text>
+                            </view>
+                        </view>
+                    </block>
+                </view>
+            </block>
+            <view class="totalprice">总计:<text class="tpstyle">￥{{count}}</text></view>
+            <!-- <view class="pay-tips">
+                <text>*车费计算四舍五入取小数点后两位</text>
+            </view>
+            <view class="call-service" style="margin-top:40rpx;">
+                <image class="call-icon" bindtap="makePhoneCall" src="../../assets/images/servicer.png"></image>
+                <text class="call-text">联系客服</text>
+            </view> -->
+        </view>
+        <!-- <view class="rule" bindtap="accountRule">
+            <text>计费规则></text>
+        </view> -->
+    </view>
+    <view class="btn-list">
+        <view class="btn-area" wx:if="{{detailData.DispatchListId && detailData.FormState=='100004-0001020002'}}">
+            <button catchtap="xingcheng" class="xingcheng" data-ids="{{detailData.Id}}">查看行程</button>
+        </view>
+        <view class="btn-area" wx:if="{{detailData.FormState=='100004-0001020002' && (detailData.IsPayment=='100004-0000010002' || !detailData.IsPayment)}}">
+            <button type="warn" size="" catchtap="cancel" data-ids="{{detailData.Id}}" style="font-size: 28rpx;">取消</button>
+        </view>
+        <!-- <view class="btn-area" wx:if="{{detailData.FormState != '100004-0001020001' &&(detailData.IsPayment == '100004-0000010002' || !detailData.IsPayment)}}">
+        <button type="primary" size="" catchtap="gotopay" data-ids="{{detailData.Id}}" style="font-size: 28rpx;">支付</button>
+      </view> -->
+        <view class="btn-area" wx:if="{{detailData.IsPayment  == '100004-0000010001' && detailData.FormState!='100004-0001020004' && detailData.FormState!='100004-0001020005' &&detailData.FormState!='100004-0001020003' && detailData.FormState!='100004-0001020006' && detailData.FormState!='100004-0001020007'}}">
+            <button size="" catchtap="tuikuan" data-ids="{{detailData.Code}}" class="tuik">退款</button>
+        </view>
+        <view class="btn-area" wx:if="{{detailData.FormState  == '100004-0001020004'  && detailData.IsEvaluate=='100004-0000010002'}}">
+            <button size="" catchtap="toComment" data-ids="{{detailData.Id}}" class="pingjia">评价</button>
+        </view>
+        <!-- <view class="btn-area" wx:if="{{detailData.FormState  == '100004-0001020002' && (detailData.IsChangeEndLocation  == '100004-0000010002' || detailData.IsChangeEndLocation == null)}}">
+        <button catchtap="toEnd" class="zhongdian" data-ids="{{detailData.Id}}">修改下车点</button>
+      </view>
+      <view class="btn-area" wx:if="{{detailData.IsChangeEndLocation  == '100004-0000010001' && detailData.FormState!='100004-0001020001'}}">
+        <button catchtap="cancelChangeEnd" class="zhongdian" data-ids="{{detailData.Id}}">取消修改下车点</button>
+      </view> -->
+    </view>
+</block>

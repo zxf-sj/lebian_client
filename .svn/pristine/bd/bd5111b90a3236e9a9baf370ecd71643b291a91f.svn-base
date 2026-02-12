@@ -1,0 +1,48 @@
+/* components/distanceNav/distanceNav.wxss */
+.main {
+  padding: 0 20rpx;
+  color: #fff;
+  font-weight: 500;
+  box-sizing: border-box;
+}
+.main .main_item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 30rpx;
+  height: 160rpx;
+  margin-top: 20rpx;
+  background: linear-gradient(180deg, rgba(253,209,0,1) 0%,rgba(240,135,24,1) 100%);
+  border-radius: 10rpx;
+	box-shadow: 0 2px 4px rgb(0, 0, 0,.4), 0 0 6px rgba(0, 0, 0, .04);
+	align-items: center;
+}
+.main .main_item .day {
+	width: 30%;
+	height: 70%;
+  text-align: center;
+}
+.main .main_item .day .dayBtn {
+  width: 100rpx;
+  background: linear-gradient(to bottom, #ffd8a4, #f39302);
+  border: 1px solid #ff9f10;
+  border-radius: 12px; /* 圆角更现代 */
+ 
+  border-radius: 10rpx;
+}
+.main .main_item  .day .dayBtn .item {
+  width: 100%;
+  text-align: center;
+}
+.main .main_item .path {
+	flex: 1;
+	height: 70%;
+  text-align: center;
+  background: linear-gradient(to bottom, #ffd8a4, #f39302);
+}
+.main .main_item .money {
+	width: 20%;
+	height: 70%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}

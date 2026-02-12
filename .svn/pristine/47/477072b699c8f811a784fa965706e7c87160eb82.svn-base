@@ -1,0 +1,40 @@
+<loading hidden="{{hiddenLoading}}">加载中...</loading>
+<block wx:if="{{!phoneLogin}}">
+	<view class="banner">
+		<image src="https://www.qierchuxing.com/upload/Annex/202405/AX-20240506-330177-626.png"></image>
+	</view>
+  <view class="logo">
+    <image src="https://www.qierchuxing.com/upload/Images/202504/299ae16dd2344d3da86374f2ecfbf464.png" class="logoimg"></image>
+  </view>
+	<view class="authBox">
+		<!-- <button class="loginBtn" open-type="getUserInfo" bindgetuserinfo="getUserInfo" wx:if="{{agree}}">
+			<image src="../../assets/images/wx.png"></image>
+			<text>微信用户一键登录</text>
+		</button> -->
+        <button class="loginBtn" open-type="getPhoneNumber" bindgetphonenumber="getphonenumber" wx:if="{{agree}}">
+            <image src="../../assets/images/wx.png"></image>
+			<text>微信用户一键登录</text>
+        </button>
+         <button class="loginBtn"  bindgetphonenumber="getphonenumber" wx:else>
+            <image src="../../assets/images/wx.png"></image>
+			<text>微信用户一键登录</text>
+        </button>
+    <!-- <button class="loginBtn" bindtap="getUserInfo" wx:else>
+			<image src="../../assets/images/wx.png"></image>
+			<text>微信用户一键登录</text>
+		</button> -->
+    <button class="loginBtn1" bindtap="quxiao">
+			<text>取消登陆</text>
+		</button>
+	</view>
+  <view class="signUp-tip">
+    <checkbox-group bindchange="checkboxChange" style="float: left;">
+      <checkbox value="agree"/>
+    </checkbox-group>
+    <view class="signUp-tip-txt">我已阅读并同意
+      <text class="signUp-tip-txt-protocol" bindtap="gotoxieyi">《用户协议》</text>
+      和
+      <text class="signUp-tip-txt-protocol" bindtap="goyinsi">《隐私政策》</text>
+    </view>
+  </view>
+</block>

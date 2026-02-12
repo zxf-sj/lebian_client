@@ -1,0 +1,104 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/priceRules/priceRules",
+    "pages/notice/notice",
+    "pages/starting/starting",
+    "pages/starting2/starting2",
+    "pages/destination/destination",
+    "components/slideCoupon/slideCoupon",
+    "components/passenger/passenger",
+    "components/remarks/remarks",
+    "components/orderBottom/orderBottom",
+    "components/travel/travel",
+    "components/information/information",
+    "components/distanceNav/distanceNav",
+    "components/modelComponent/modelComponent",
+    "pages/ending/ending",
+    "pages/addUser/addUser",
+    "pages/addUser2/addUser2",
+    "pages/pingche/pingche",
+    "pages/pingche2/pingche2",
+    "pages/duxiang/duxiang",
+    "pages/zuche/zuche",
+    "pages/huodong/huodong",
+    "pages/choosePerson/choosePerson",
+    "pages/zuDetail/zuDetail",
+    "pages/bar/bar",
+    "pages/routeDetail/routeDetail",
+    "pages/chengji/chengji"
+  ],
+  "subpackages": [
+    {
+      "root": "user_center",
+      "name": "user_center",
+      "pages": [
+        "pages/personalCenter/personalCenter",
+        "pages/coupon/coupon",
+        "pages/setting/setting",
+        "pages/travelList/travelList",
+        "pages/payDetail/payDetail",
+        "pages/budgetPrice/budgetPrice",
+        "pages/login/login",
+        "pages/agreement/agreement",
+        "pages/integral/integral",
+        "pages/integralGoodsDetail/integralGoodsDetail",
+        "pages/integralOrderList/integralOrderList",
+        "pages/integralDetail/integralDetail",
+        "pages/yinsi/yinsi",
+        "pages/renzheng/renzheng",
+        "pages/editInfo/editInfo",
+        "pages/plist/plist",
+        "pages/orderCancel/orderCancel",
+        "pages/userList/userList",
+        "pages/yue/yue",
+        "pages/chargeMoney/chargeMoney",
+        "pages/couponList/couponList",
+        "pages/changeEnd/changeEnd",
+        "pages/chooseCity/chooseCity",
+        "pages/baoche/baoche",
+        "pages/shaohuo/shaohuo",
+        "pages/reserve/reserve",
+        "pages/intercity/intercity",
+        "pages/bus/bus"
+      ],
+      "independent": false
+    },
+    {
+      "root": "driving_status",
+      "name": "driving_status",
+      "pages": [
+        "pages/orderService/orderService",
+        "pages/taxiDriving/taxiDriving",
+        "pages/travalEnd/travalEnd",
+        "pages/gotopay/gotopay",
+        "pages/comment/comment",
+        "pages/kaipiao/kaipiao",
+        "pages/zhongdian/zhongdian",
+        "pages/beforeOrder/beforeOrder",
+        "pages/peizhen/peizhen",
+        "pages/lvyou/lvyou",
+        "pages/lvyouList/lvyouList",
+        "pages/peizhenList/peizhenList"
+      ],
+      "independent": false
+    }
+  ],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "需要获取你的位置信息"
+    }
+  },
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "乐遍出行",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json",
+  "plugins": {},
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
+  "lazyCodeLoading": "requiredComponents"
+}

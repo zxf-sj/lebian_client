@@ -1,0 +1,274 @@
+// components/slideCoupon/slideCoupon.js
+import http from '../../utils/http.js';
+const BASE_URL = require("../../utils/BASE_URL");
+var baseUrl = BASE_URL.BASE_URL //配置基础url
+let clickTimer = null;
+Component({
+  /**
+   * 组件的属性列表
+   */
+  properties: {
+    typeon: {
+        type: String,
+        value: "pc",
+      },
+  },
+  lifetimes: {
+    created: function() {
+    },
+    attached: function() {
+      if(this.data.typeon == 'pc') {
+      this.couponEvent()
+      }
+      let pcTimeSync = wx.getStorageSync('pcTimeSync');
+      this.setData({
+        initialPrice:pcTimeSync.Price,
+        price:pcTimeSync.Price,
+        price_raw:pcTimeSync.Price,
+      })
+      //选择车型价格变化传值
+      getApp().eventCenter.on('dataChange', (data) => {
+        let pcTimeSync = wx.getStorageSync('pcTimeSync');
+        this.setData({
+          initialPrice:pcTimeSync.Price,
+          price: data.value,
+          price_raw: data.value,
+        })
+        //只有拼车才有优惠卷
+        if(this.data.typeon == 'pc') {
+          this.couponEvent()
+        }
+        this.handleDetail()
+      })
+      getApp().eventCenter.on('Version', (data) => {
+        this.setData({ Version: data})
+      })
+      getApp().eventCenter.on('rangfenceMapList', (data) => {
+        this.setData({ rangfenceMapList: data})
+      })
+      getApp().eventCenter.on('changeLine3',(data) => {
+        this.setData({
+          price:'',
+          rangfenceMapList:[],
+          isChildren:0,
+          isAdult:0,
+          curCouponData:null,
+        })
+        this.couponEvent()
+      })
+      getApp().eventCenter.on('changeLine4',(data) => {
+        this.setData({
+          price:'',
+          isChildren:0,
+          isAdult:0,
+          curCouponData:null,
+        })
+        this.couponEvent()
+      })
+      this.getNews()
+    },
+    ready: function() {
+    },
+    moved: function() {
+    },
+    detached: function() {
+    }
+  },
+  options: {
+    // 其他选项：'shared'（共享样式）、'apply-shared'（父组件影响子组件） 'isolated' // 默认值，隔离样式
+    styleIsolation: 'apply-shared'
+    
+  },
+  /**
+   * 组件的初始数据
+   */
+  data: {
+    showCoupon:false,
+    isFromIcon: true,
+    isshow:false,
+    agree:false,
+    hasChooseId: null,
+    totalPrice:null,
+    couponList:[],//优惠卷列表
+    curCouponData:null,//被选的优惠卷
+    price:'',//最终价格
+    price_raw:null,//原始价格
+    Version:'',//摆渡价
+    orderDetail:false,
+    passengerList:[],
+    CouponMoney:'',
+    isChildren:0,
+    isAdult:0,
+    rangfenceMapList:[],
+    sessionCard:[]//次卡数组
+  },
+  methods: {
+    //叫车
+    callCar() {
+      this.triggerEvent("handleCallCar");
+    },
+    getNews(){
+      let that = this;
+      http.postRequest("/Api/DispatchMobile/NewGetXcx?ShortCode=Car", "", wx.getStorageSync('header'), res => {
+        if (res.code == 0) {
+          var content = res.data.Content;
+          const WxParses = require('../../pages/wxParse/wxParse.js');
+          WxParses.setImageDomain(BASE_URL);
+          WxParses.wxParse('content','html', content, that, 5);
+        }
+      }, err => {
+        console.log(err)
+      })
+    },
+    //点击使用优惠卷传过来的值
+    onExchangeItem(item){
+      let that = this;
+      if(item.detail[0].CouponType == "100004-0001030002") {
+        let newPrice = that.data.price_raw - item.detail[0].CouponMoney
+        let couponList = that.data.couponList.filter(res => res.Id !== item.detail[0].Id)
+      this.setData({
+        curCouponData:item.detail[0],
+        price:newPrice,
+        CouponMoney:item.detail[0].CouponMoney,
+        couponList:couponList
+      })
+      let storedData = wx.getStorageSync('pcTimeSync') || {};
+      let updatedData = { ...storedData, hasChooseId: item.detail[0].Id};
+      wx.setStorageSync('pcTimeSync', updatedData);
+      } else if(item.detail[0].CouponType == '100004-0001030028') {
+        // 先提取 arr2 中所有 Id，存入 Set（查找更快）
+        const idsInArr2 = new Set(item.detail.map(item => item.Id));
+        const result = that.data.couponList.filter(item => !idsInArr2.has(item.Id));
+        that.setData({
+          sessionCard:item.detail,
+          couponList:result
+        })
+        let pcTimeSync = wx.getStorageSync('pcTimeSync') || {};
+        let rangfenceMapList = that.data.rangfenceMapList
+        if(rangfenceMapList.length > 0) {
+          const total = rangfenceMapList.reduce((sum, item) => sum + (item.Price || 0), 0);
+          let newPrice = that.data.price_raw - ((pcTimeSync.Price + total) * item.detail.length)
+          const ids = item.detail.map(item => item.Id).join(',');
+          this.setData({
+            curCouponData:item.detail,
+            price:newPrice,
+            CouponMoney:((pcTimeSync.Price + total) * item.detail.length)
+          })
+          let updatedData = { ...pcTimeSync, hasChooseId: ids};
+          wx.setStorageSync('pcTimeSync', updatedData);
+        } else {
+          let newPrice = that.data.price_raw - (pcTimeSync.Price * item.detail.length)
+          const ids = item.detail.map(item => item.Id).join(',');
+          this.setData({
+            curCouponData:item.detail,
+            price:newPrice,
+            CouponMoney:pcTimeSync.Price * item.detail.length
+          })
+          let updatedData = { ...pcTimeSync, hasChooseId: ids};
+          wx.setStorageSync('pcTimeSync', updatedData);
+        }
+      }
+    },
+    //优惠卷个数
+    couponEvent(){
+      var userinfo = wx.getStorageSync('userInfo');
+      let lineId = wx.getStorageSync('lineId') || {};
+      if(!lineId) {
+        wx.showToast({
+          title: '请先选择线路',
+          icon:'none',
+        })
+      } else {
+        let data = {
+          MemberId:userinfo.Id,
+          Money:2,
+          LinkId:lineId
+        }
+        http.postRequest("/Api/DispatchMobile/UseCanCoupon", data, wx.getStorageSync('header'), res => {
+          if (res.code==0) {
+            this.setData({
+              couponList:res.data
+            })
+          } 
+        }, err => {
+          console.log(err)
+        })
+      }
+    },
+    showCoupon(){
+      let passengerList = wx.getStorageSync('passengerList') || ''
+      if(!passengerList) {
+    
+        wx.showToast({
+          title: '请选择乘车人',
+          icon:'none',
+        })
+      } else {
+        this.setData({
+          showCoupon: true,
+          isFromIcon: true,
+          slideCouponParams:{
+            money:0
+          }
+        })
+      }
+      
+    },
+    onHasChooseCouponData(e) {
+      this.setData({
+        curCouponData: e.detail.data,
+        totalPrice: e.detail.data.singlePrice,
+      })
+    },
+    showView(){
+      let that = this;
+      that.setData({
+        isshow:true
+      })
+    },
+    tongyi(){
+      let that = this;
+      that.setData({
+        agree:true,
+        isshow:false
+      })
+    },
+
+    guanbi(){
+      let that = this;
+      that.setData({
+        isshow:false,
+        agree:false
+      })
+    },
+    handleDetail () {
+        let _this = this;
+        let passengerList = wx.getStorageSync('passengerList')
+        _this.setData({
+          passengerList
+        })
+        if(passengerList.length > 0) {
+            let isChildren = 0;
+            let isAdult = 0;
+            for(let i = 0; i < _this.data.passengerList.length;i++) {
+                if(_this.data.passengerList[i].isChildren == '100004-0000010001') {
+                    isChildren += 1
+                } else {
+                   isAdult += 1
+                }
+            }
+            _this.setData({
+                isChildren:isChildren,
+                isAdult:isAdult,
+                orderDetail:true,
+            })
+        } 
+        
+    },
+    handleClose() {
+        this.setData({
+            orderDetail:false,
+        })
+    },
+  }
+})

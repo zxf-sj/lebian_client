@@ -1,0 +1,90 @@
+<view class="over">
+  <block >
+    <view class="h2">
+      <view class="">订单号：{{detailData.Code}}</view>
+    </view>
+  </block>
+</view>
+<view class="over">
+  <block >
+    <view class="h2">
+      <view class="str">{{detailData.IntoLocation}}</view>
+      <view class="car-img">
+        <image src="/assets/images/line_mr.png"></image>
+      </view>
+      <view class="end">{{detailData.OffLocation}}</view>
+    </view>
+  </block>
+</view>
+<view class="container" >
+  <view class="shadow-box">
+    <block>
+      <view class="pay-title" bindtap="showHidden">
+        <text class="font-30">{{priceTitle}}</text>
+      </view>
+      <view class="pay-detail"  hidden="{{showHid}}">
+        <block>
+          <view class="border-bottom" wx:for="{{detailData.DetailList}}" wx:key="key">
+            <view class="flex-box font-28">
+              <text class="mini-pay">{{item.Name}}</text>
+              <text class="mini-pay">{{item.RealMoney}}元</text>
+            </view>
+          </view>
+          <view class="border-bottom" wx:for="{{detailData.DetailList}}" wx:key="key">
+            <!-- <view class=" font-28">
+             取消订单所使用优惠卷、次卡不返还
+            </view> -->
+          </view>
+        </block>
+      </view>
+    </block>
+    <view class="call-service" style="margin-top:40rpx;"  hidden="{{showHid}}">
+      <image class="call-icon" bindtap="makePhoneCall" src="../../assets/images/servicer.png"></image>
+      <text class="call-text">联系客服</text>
+    </view>
+  </view>
+</view>
+<view class="over">
+    <view class="h2">订单取消的原因：</view>
+</view> 
+<view class="gender-box">
+  <radio-group class="radio-group">
+  <view class="gender-con gender-con-border">
+    <view class="gender-con-cell">
+      <radio bindtap='Checked' data-type='1' checked="{{gender==1?true:false}}" color="#F80000"/>
+      <view class="gender-text">等待时间太久</view>
+    </view>
+  </view>
+  <view class="gender-con gender-con-border">
+    <view class="gender-con-cell">
+      <radio bindtap='Checked' data-type='2' checked="{{gender==2?true:false}}" color="#F80000"/>
+      <view class="gender-text">临时有事取消</view>
+    </view>
+  </view>
+  <view class="gender-con gender-con-border">
+    <view class="gender-con-cell">
+      <radio bindtap='Checked' data-type='3' checked="{{gender==3?true:false}}" color="#F80000"/>
+      <view class="gender-text">司机服务不到位</view>
+    </view>
+  </view>
+  <!-- <view class="gender-con gender-con-border">
+    <view class="gender-con-cell">
+      <radio bindtap='Checked' data-type='4' checked="{{gender==4?true:false}}" color="#F80000"/>
+      <view class="gender-text">车费太贵</view>
+    </view>
+  </view> -->
+  <view class="gender-con gender-con-border">
+    <view class="gender-con-cell">
+      <radio bindtap='Checked' data-type='5' checked="{{gender==5?true:false}}" color="#F80000"/>
+      <view class="gender-text">其他</view>
+    </view>
+  </view>
+</radio-group>
+</view>
+<view class="reason">
+  <textarea bindinput="bindArea" placeholder="如有其他原因，请填写" placeholder-style="color:#999;font-size:28rpx;" name="reasons" disabled="{{isshow}}" class="reasontxt" auto-height="true"/>
+</view>
+<view class="emptyview"></view>
+<view class="btns {{gender?'':'disableBtn'}}">
+  <view class="btn" bindtap="orderCancel" >确认取消</view>
+</view>

@@ -1,0 +1,249 @@
+ import http from '../../../utils/http';
+Page({
+  /**
+   * 页面的初始数据
+   */
+  data: {
+    payType: 'wechat', //支付方式
+    orderDetail: {},
+    total_money:0,
+    IsBalance:"",
+    ygprice:0.00,
+    infos:{},
+    yueYh:0,
+    juanMoney:0
+  },
+
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad(options) {
+    var orderId = options.orderId;
+    var detailClass = 300216;
+    var JoinCode = 'RideTicketId';
+    this.getOrderDetatil(detailClass,JoinCode,orderId);
+    var IsBalance = wx.getStorageSync('IsBalance');
+    this.setData({
+      IsBalance:IsBalance
+    })
+  },
+  checkWay(e){
+    var type = e.currentTarget.dataset.way;
+    if(type=="yue"){
+      this.setData({
+        ygprice:this.data.infos.CalcAfter,
+        yueYh:this.data.infos.CalcBalance
+      })
+    }else{
+      this.setData({
+        ygprice:Number(this.data.infos.CalcAfter)+Number(this.data.infos.CalcBalance)
+      })
+    }
+    this.setData({
+      payType:type
+    })
+  },
+  radioChange(e) {
+    if(e.detail.value=="yue"){
+      this.setData({
+        ygprice:this.data.infos.CalcAfter
+      })
+    }else{
+      this.setData({
+        ygprice:Number(this.data.infos.CalcAfter)+Number(this.data.infos.CalcBalance)
+      })
+    }
+    this.setData({
+      payType:e.detail.value
+    })
+  },
+  getFormField(orderId){
+    var FormTypeId = wx.getStorageSync('FormTypeId');
+    var detailClass = "";
+    var JoinCode = "";
+    http.getRequest('/Api/Mobile/GetFormFieldAdd?FormTypeId='+FormTypeId,"", wx.getStorageSync('header'), (res) => {
+      if (res.code == 0) {
+        detailClass = 300216;
+        JoinCode = 'RideTicketId';
+        this.getOrderDetatil(detailClass,JoinCode,orderId);
+      }
+    }, (err) => {
+      console.log(err)
+    })
+  },
+  getOrderDetatil(detailClass,JoinCode,orderId){
+    let that = this;
+    http.getRequest('/Api/DispatchMobile/GetInfo?id='+orderId+'&detailClass='+detailClass+'&JoinCode='+JoinCode,"", wx.getStorageSync('header'), (res) => {
+      if (res.code == 0) {
+        let reqData = {
+          PassengerLineId:res.data.PassengerLineId,
+          IntoLocation:res.data.IntoLatitude,
+          IntoLongitude:res.data.IntoLongitude,
+          IntoLatitude:res.data.IntoLatitude,
+          OffLocation:res.data.OffLocation,
+          OffLongitude:res.data.OffLongitude,
+          OffLatitude:res.data.OffLatitude,
+          PassengerNumber:res.data.PassengerNumber,
+          Departure:res.data.Departure,
+          ArrivalTime:res.data.ArrivalTime,
+          Personal:res.data.Personal,
+          SeatNumber:res.data.SeatNumber,
+          DispatchListId:res.data.DispatchListId,
+          IsReservation:res.data.IsReservation,
+          CouponDetailsId:res.data.CouponDetailsId,
+          OnLineCarTypeId:res.data.OnLineCarTypeId,
+          PersonalIds:res.data.PersonalIds,
+          Note:res.data.Note,
+          IsExclusive:res.data.IsExclusive,
+          IsPickGoods:res.data.IsPickGoods
+        }
+        that.getPrice(reqData);
+        that.setData({
+          orderDetail:res.data
+        })
+      }
+    }, (err) => {
+      console.log(err)
+    })
+  },
+  confirmPay(){
+    let that = this;
+    var type = that.data.payType;
+    if(type == 'wechat'){
+      that.wechatPay();
+    }else if(type == 'alipay'){
+      that.alipay();
+    }else if(type=='yue'){
+      that.yuePay();
+    }else{
+      that.cashPay();
+    }
+  },
+  wechatPay(){
+    let that = this;
+    var userinfo = wx.getStorageSync('userInfo');
+    http.getRequest('/Api/DispatchMobile/GoPay?LayerOrder=1&Id='+that.data.orderDetail.Id+'&MemberInfoId='+userinfo.Id,"", wx.getStorageSync('header'), (res) => {
+      if (res.code == 0) {
+        var data = JSON.parse(res.data);
+        wx.requestPayment({
+          timeStamp: data.timeStamp,
+          nonceStr: data.nonceStr,
+          package: data.package,
+          signType: 'MD5',
+          paySign: data.paySign,
+          success (res) { 
+              wx.showToast({
+                title: '支付成功',
+                icon:'success',
+                duration:2000,
+                success:function(){
+                  if(that.data.orderDetail.IsPickGoods=='100004-0000010002'){
+                    setTimeout(function(){
+                      wx.redirectTo({
+                        url: '/user_center/pages/payDetail/payDetail?orderId='+that.data.orderDetail.Id,
+                      })  
+                    },3000)
+                  }else{
+                    setTimeout(function(){
+                      wx.redirectTo({
+                        url: '/user_center/pages/travelList/travelList?menuTapCurrent=1',
+                      })  
+                    },3000)
+                  }
+                }
+              })
+          },
+          fail (res) {
+
+          }
+        })
+      }
+    }, (err) => {
+      console.log(err)
+    })
+  },
+  alipay(){
+    let that = this;
+    var userinfo = wx.getStorageSync('userInfo');
+    http.getRequest('/Api/DispatchMobile/GoAlipay?LayerOrder=1&Id='+that.data.orderDetail.Id+'&MemberInfoId='+userinfo.Id,"", wx.getStorageSync('header'), (res) => {
+      if (res.code == 0) {
+      }
+    }, (err) => {
+      console.log(err)
+    })
+  },
+  cashPay(){
+    let that = this;
+    var userinfo = wx.getStorageSync('userInfo');
+    http.getRequest('/Api/DispatchMobile/CashPay?Id='+that.data.orderDetail.Id,"", wx.getStorageSync('header'), (res) => {
+      if (res.code == 0) {
+        wx.showToast({
+          title: '现金付款成功',
+          icon:'success',
+        })
+        if(that.data.orderDetail.IsPickGoods=='100004-0000010002'){
+          setTimeout(function(){
+            wx.redirectTo({
+              url: '/user_center/pages/payDetail/payDetail?orderId='+that.data.orderDetail.Id,
+            })  
+          },3000)
+        }else{
+          setTimeout(function(){
+            wx.redirectTo({
+              url: '/user_center/pages/travelList/travelList?menuTapCurrent=1',
+            })  
+          },3000)
+        }
+      }
+    }, (err) => {
+      console.log(err)
+    })
+  },
+  yuePay(){
+    let that = this;
+    var userinfo = wx.getStorageSync('userInfo');
+    http.getRequest('/Api/DispatchMobile/BalancePay?Id='+that.data.orderDetail.Id+'&MemberInfoId='+userinfo.Id,"", wx.getStorageSync('header'), (res) => {
+      if (res.code == 0) {
+        wx.showToast({
+          title: '余额付款成功',
+          icon:'success',
+        })
+        if(that.data.orderDetail.IsPickGoods=='100004-0000010002'){
+          setTimeout(function(){
+            wx.redirectTo({
+              url: '/user_center/pages/payDetail/payDetail?orderId='+that.data.orderDetail.Id,
+            })  
+          },3000)
+        }else{
+          setTimeout(function(){
+            wx.redirectTo({
+              url: '/user_center/pages/travelList/travelList?menuTapCurrent=1',
+            })  
+          },3000)
+        }
+      }else{
+        wx.showToast({
+          title: res.msg,
+          icon:'error',
+          duration:2000
+        })
+      }
+    }, (err) => {
+      console.log(err)
+    })
+  },
+  getPrice(data){
+    http.postRequest('/Api/DispatchMobile/RideTicketMoney', data, wx.getStorageSync('header'), (res) => {
+      if (res.code == '0') {
+        this.setData({
+          ygprice:res.data.CalcAfter+res.data.CalcBalance,
+          infos:res.data,
+          total_money:res.data.CalcMoney,
+          juanMoney:res.data.CalcCoupon,
+        })
+      }
+    }, (err) => {
+      console.log(err)
+    })
+  },
+})

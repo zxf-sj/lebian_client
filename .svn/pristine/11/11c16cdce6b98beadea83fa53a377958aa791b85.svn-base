@@ -1,0 +1,310 @@
+// user_center/pages/invoice/invoice.js
+// pages/form/form.js
+import http from '../../../utils/http';
+Page({
+    data: {
+        // 表单数据绑定
+        Title: '',
+        TaxID: '',
+        Bank: '',
+        BankAccount: '',
+        Address: '',
+        Telephone: '',
+        PassengerName: '',
+        IDNumber: '',
+        travelDate: '',
+        departure: '',
+        destination: '',
+        orderAmount: '',
+        Email: '',
+        Note: '',
+        orderNumber: '',
+        pop_show: false,
+        dataList: '',
+        isShow: undefined
+    },
+    onLoad: function (options) {
+        this.setData({
+            orderNumber: options.ids,
+            orderAmount: options.totalAmount
+        })
+        console.log(this.data.totalAmount)
+    },
+    onShow() {
+        console.log('onShow')
+        this.getList()
+        this.setdefaultData()
+    },
+    setdefaultData() {
+        let _this = this;
+        var openid = wx.getStorageSync('openid');
+        if (!openid) {
+            that.setData({
+                listData: false,
+                noOrder: true
+            })
+        } else {
+            wx.showLoading({
+                title: '',
+            })
+            var usreinfo = wx.getStorageSync('userInfo');
+            let Id = usreinfo.Id
+            http.getRequest("/api/DispatchMobile/GetLastMemberCompanyInfo?MemberId=" + Id, '', '', res => {
+                console.log(res)
+                wx.hideLoading()
+                _this.setData({
+                    Title: res.data.Title,
+                    TaxID: res.data.TaxID,
+                    Bank: res.data.Bank,
+                    BankAccount: res.data.BankAccount,
+                    Address: res.data.Address,
+                    Telephone: res.data.Telephone,
+                    dataList: res.data.dataList,
+                    IDNumber:res.data.IDNumber,
+                    PassengerName:res.data.PassengerName,
+                    Email:res.data.Email
+                })
+            }, err => {
+                wx.hideLoading()
+                return false;
+            })
+        }
+    },
+    handleClick(e) {
+        console.log(e)
+        let _this = this;
+        _this.setData({
+            isShow: e.currentTarget.dataset.index
+        })
+        var openid = wx.getStorageSync('openid');
+        if (!openid) {
+            that.setData({
+                listData: false,
+                noOrder: true
+            })
+        } else {
+            wx.showLoading({
+                title: '',
+            })
+            let Id = e.currentTarget.dataset.id
+            http.getRequest("/api/DispatchMobile/GetMemberCompanyInfo?Id=" + Id, '', '', res => {
+                wx.hideLoading()
+                _this.setData({
+                    Title: res.data.Name,
+                    TaxID: res.data.TaxID,
+                    Bank: res.data.Bank,
+                    BankAccount: res.data.BankAccount,
+                    Address: res.data.Address,
+                    Telephone: res.data.Telephone,
+                    dataList: res.data.dataList
+                })
+            }, err => {
+                wx.hideLoading()
+                return false;
+            })
+        }
+    },
+    // 日期选择器事件
+    onDateChange(e) {
+        this.setData({
+            travelDate: e.detail.value
+        });
+    },
+    handeleAdd() {
+        wx.navigateTo({
+          url: '/user_center/pages/invoiceTemplate/invoiceTemplate',
+        })
+    },
+    getList() {
+        
+        let _this = this;
+        var openid = wx.getStorageSync('openid');
+        if (!openid) {
+            that.setData({
+                listData: false,
+                noOrder: true
+            })
+        } else {
+            wx.showLoading({
+                title: '',
+            })
+            var usreinfo = wx.getStorageSync('userInfo');
+            // MemberId
+            http.getRequest("/api/DispatchMobile/GetMemberCompanyList?MemberId=" + usreinfo.Id, '', '', res => {
+                wx.hideLoading()
+                console.log(res)
+                _this.setData({
+                    dataList: res.data
+                })
+            }, err => {
+                wx.hideLoading()
+                return false;
+            })
+        }
+    },
+    // 提交表单
+    onSubmit(e) {
+        let _this = this;
+        var openid = wx.getStorageSync('openid');
+        if (!openid) {
+            that.setData({
+                listData: false,
+                noOrder: true
+            })
+        } else {
+            const formData = e.detail.value;
+            var usreinfo = wx.getStorageSync('userInfo');
+            // 必填字段校验
+            if (!formData.Title.trim()) {
+                wx.showToast({
+                    title: '请填写发票抬头',
+                    icon: 'none'
+                });
+                return;
+            }
+            if (!formData.TaxID.trim()) {
+                wx.showToast({
+                    title: '请填写单位税号',
+                    icon: 'none'
+                });
+                return;
+            }
+            if (!formData.PassengerName.trim()) {
+                wx.showToast({
+                    title: '请填写出行人姓名',
+                    icon: 'none'
+                });
+                return;
+            }
+            if (!formData.IDNumber.trim() || !this.isValidIdCard(formData.IDNumber)) {
+                wx.showToast({
+                    title: '请填写正确的身份证号码',
+                    icon: 'none'
+                });
+                return;
+            }
+            // if (!formData.travelDate) {
+            //   wx.showToast({ title: '请选择出行日期', icon: 'none' });
+            //   return;
+            // }
+            // if (!formData.departure.trim()) {
+            //   wx.showToast({ title: '请输入出发地', icon: 'none' });
+            //   return;
+            // }
+            // if (!formData.destination.trim()) {
+            //   wx.showToast({ title: '请输入目的地', icon: 'none' });
+            //   return;
+            // }
+            // if (!formData.orderAmount || !this.isValidPhone(formData.orderAmount)) {
+            //   wx.showToast({ title: '请填写正确的手机号', icon: 'none' });
+            //   return;
+            // }
+            if (formData.Email && !this.isValidEmail(formData.Email)) {
+                wx.showToast({
+                    title: '邮箱格式不正确',
+                    icon: 'none'
+                });
+                return;
+            }
+            let params = {
+                MemberId: usreinfo.Id,
+                orderNumber: _this.data.orderNumber,
+                // orderAmount:parseInt(_this.data.orderAmount),
+                Title: formData.Title,
+                TaxID: formData.TaxID,
+                Bank: formData.Bank,
+                BankAccount: formData.BankAccount,
+                Address: formData.Address,
+                Telephone: formData.Telephone,
+                PassengerName: formData.PassengerName,
+                IDNumber: formData.IDNumber,
+                Email: formData.Email,
+                Note: formData.Note,
+            }
+            // 所有校验通过，可以提交数据
+            console.log('表单数据：', formData);
+            wx.showLoading({
+                title: '',
+            })
+            http.postRequest("/api/DispatchMobile/SaveMemberInvoice", params, wx.getStorageSync('header'), res => {
+                console.log(res)
+                wx.hideLoading()
+                if (res.code == 0) {
+                    wx.showToast({
+                        title: '提交成功',
+                        icon: 'success'
+                    });
+                    setTimeout(function () {
+                        wx.navigateTo({
+                            url: '/pages/index/index'
+                        })
+                    }, 2000);
+
+                } else if (res.code == 400) {
+                    wx.showToast({
+                        title: res.msg,
+                        icon: 'success'
+                    });
+                }
+            }, err => {
+                wx.hideLoading()
+                return false;
+            })
+
+
+            // 这里可以调用后端 API 提交数据
+            // wx.request({...})
+        }
+
+    },
+    handleModel() {
+        console.log('修改')
+        this.setData({
+            pop_show: true,
+        })
+    },
+    pop_close() {
+        this.setData({
+            pop_show: false,
+        })
+    },
+    // 重置表单
+    onReset() {
+        this.setData({
+            MemberId: '',
+            Title: '',
+            TaxID: '',
+            Bank: '',
+            BankAccount: '',
+            Address: '',
+            Telephone: '',
+            PassengerName: '',
+            IDNumber: '',
+            travelDate: '',
+            departure: '',
+            destination: '',
+            orderAmount: '',
+            Email: '',
+            Note: ''
+        });
+        wx.showToast({
+            title: '已重置',
+            icon: 'none'
+        });
+    },
+
+    // 验证手机号
+    // isValidPhone(orderAmount) {
+    //   return /^1[3-9]\d{9}$/.test(orderAmount);
+    // },
+
+    // 验证身份证
+    isValidIdCard(IDNumber) {
+        return /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(IDNumber);
+    },
+
+    // 验证邮箱
+    isValidEmail(Email) {
+        return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(Email);
+    }
+});

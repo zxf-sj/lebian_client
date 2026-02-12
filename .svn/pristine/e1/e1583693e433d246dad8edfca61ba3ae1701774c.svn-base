@@ -1,0 +1,7 @@
+/* pages/reserve/reserve.wxss */
+@import '../../app.wxss';
+
+.page {
+  width: 100%;
+  box-sizing: border-box;
+}

@@ -1,0 +1,121 @@
+/* pages/starting2/starting2.wxss */
+.map{
+  width: 100vw;
+  height: 60vh;
+}
+.current-mylocation-box {
+  position: absolute;
+  width: 100rpx;
+  height: 100rpx;
+  left: 20rpx;
+  bottom: 12rpx;
+  z-index: 99;
+}
+.current-mylocation {
+  width: 100rpx;
+  height: 100rpx;
+}
+.current-site-icon{
+  width: 60rpx;
+  height: 60rpx;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  margin-top: -30rpx;
+}
+.submit {
+  width: 133rpx;
+  height: 70rpx;
+  position: absolute;
+  top: 10rpx;
+  right: 10rpx;
+  background-color: #07c160;
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+}
+.searchAddress {
+  width: 100%;
+  height: 40vh;
+  background-color: #fff;
+  overflow: hidden;
+}
+.serchBox {
+  position: relative;
+}
+.serchBox image {
+  position: absolute;
+  left: 30rpx;
+  top: 18rpx;
+  width: 40rpx;
+  height: 40rpx;
+}
+.location-input {
+  background-color:#ededed;
+  text-align: center;
+  height: 70rpx;
+  margin: 20rpx;
+  border-radius: 10rpx;
+  padding-left: 32px; /* 预留图标空间 */
+  font-size: 16px;
+  font-size: 14px;
+  color: #555555;
+}
+.destination {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 20rpx;
+  background-color: #fff;
+}
+
+.destination-content {
+ flex: 1;
+  height: 140rpx;
+  border-bottom: 1px solid #eeeeee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.yess {
+  color: #07c160;
+  width: 50rpx;
+  font-size: 16px;
+}
+.content {
+  width: 240px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.content-name {
+  display: block;
+  color: #181818;
+  font-size: 28rpx;
+}
+
+.content-detail {
+  display: block;
+  color: #b3b3b3;
+  font-size: 24rpx;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 16rpx;
+}
+.btn {
+  position: absolute;
+  bottom: 30rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  background-color: #007aff;
+  color: white;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  padding: 0 40rpx;
+}

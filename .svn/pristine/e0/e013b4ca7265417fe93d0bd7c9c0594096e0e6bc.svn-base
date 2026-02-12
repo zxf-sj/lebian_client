@@ -1,0 +1,54 @@
+<!--user_center/pages/invoiceImg/invoiceImg.wxml-->
+<view class="container">
+  <view class="list-container">
+    <block wx:for="{{items}}" wx:key="id">
+      <view class="item-card">
+        <view class="item-header">
+          <text class="item-title">{{item.title}}</text>
+        </view>
+        
+        <!-- 图片展示区域 -->
+        <view class="image-section" wx:if="{{item.imageUrl}}">
+          <image 
+            src="{{item.imageUrl}}" 
+            mode="aspectFit"
+            class="preview-image"
+            bindtap="previewImage"
+            data-url="{{item.imageUrl}}"
+          ></image>
+          
+          
+        </view>
+        
+        <!-- PDF展示区域 -->
+        <view class="pdf-section" wx:if="{{item.pdfUrl}}">
+          <view class="pdf-info">
+            <icon type="document" size="20" color="#07c160" />
+            <text class="pdf-filename">{{item.pdfFilename || '文档.pdf'}}</text>
+          </view>
+          <view class="pdf-actions">
+            <button 
+              class="action-btn view"
+              bindtap="openPDF"
+              data-url="{{item.pdfUrl}}"
+              data-filename="{{item.pdfFilename || '文档.pdf'}}"
+            >
+              查看PDF
+            </button>
+            <button 
+              class="action-btn download"
+              bindtap="downloadPDF"
+              data-url="{{item.pdfUrl}}"
+              data-filename="{{item.pdfFilename || '文档.pdf'}}"
+            >
+              下载PDF
+            </button>
+          </view>
+        </view>
+        
+        <!-- 如果既没有图片也没有PDF的提示 -->
+      
+      </view>
+    </block>
+  </view>
+</view>

@@ -1,0 +1,82 @@
+<view class="map_container">
+  <view class="lunbo">
+    <swiper indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" class="swipers">
+      <block wx:for="{{lunBoImg}}" wx:key="index">
+        <swiper-item>
+          <image src="{{imgUrl+item.ShowPicUrl}}" mode="widthFix" class="lunimg" />
+        </swiper-item>
+      </block>
+    </swiper>
+  </view>
+  <view class="warn">
+    <image src="/assets/images/laba2.png" style="width:40rpx;height:40rpx"></image>
+    <view class='marquee' style='width:{{marqueeWidth}}rpx;'>
+      <view class='marqueeTitle' style="width:{{length}}rpx;margin-left:{{marqueeMargin}}px;transform:translateX( {{marqueeDistance}}rpx);font-size: {{size}}rpx;">{{title}}</view>
+    </view>
+  </view>
+  <!-- 这是九宫格 -->
+  <view class="titleView">
+    <image mode="aspectFit" src="/assets/images/letonglogo.png" />
+  </view>
+  <view class="yuding">
+    <view class="gneng">
+      <view class="chengji  {{car_type == 0 ? 'zhong' : ''}}" bindtap="car_type" data-item="0">城际拼车</view>
+      <view class="chengji {{car_type == 1 ? 'zhong' : ''}}" bindtap="car_type" data-item="1">城际包车</view>
+      <view class="chengji  {{car_type == 3 ? 'zhong' : ''}}" bindtap="car_type" data-item="3">
+        <view class="sh jiaobiao"></view>
+      城际巴士
+      </view>
+      <view class="chengji  {{car_type == 2 ? 'zhong' : ''}}" bindtap="car_type" data-item="2">
+      <view class="sh jiaobiao"></view>
+      小件捎货
+      </view>
+    </view>
+    <view class="xuandi">
+      <view class="addr" style="{{startingCity?'color: #181818;':'color: #bbbbbb;'}}">
+        <view class="lint" bindtap="handleGo" wx:if="{{car_type == 0 || car_type == 1 || car_type == 3}}">{{startingCity?startingCity:'出发城市'}}</view>
+        <view class="lint" bindtap="handleGo" wx:if="{{car_type == 2}}">{{startingCity?startingCity:'寄件城市'}}</view>
+        <!-- <view class="lint">
+          <image src="/assets/images/togo.png" class="lineimg"></image>
+        </view> -->
+        <view class="lint flip-box" bindtap="handleFlip">
+          <view class="flip-item {{isFlipped ? 'flipped' : ''}}">
+            <image class="lineimg front" src="/assets/images/togo.png" mode="aspectFill"></image>
+            <image class="lineimg back" src="/assets/images/togo.png" mode="aspectFill"></image>
+          </view>
+        </view>
+        <view class="lint" bindtap="handleDestination" wx:if="{{car_type == 0 || car_type == 1 || car_type == 3}}">{{endingCity?endingCity:'到达城市'}}</view>
+        <view class="lint" bindtap="handleDestination" wx:if="{{car_type == 2}}">{{endingCity?endingCity:'收件城市'}}</view>
+      </view>
+      <!-- <view class="times" wx:if="{{car_type == 0}}">
+        <picker start="{{startTime}}" end="{{endTime}}" mode="date" value="{{date}}"  bindchange="bindDateChange">
+          <view class="times_txt" >
+            {{startDate?startDate:"出行日期"}}
+          </view>
+          <view  class="times_txt">
+          </view>
+        </picker>
+      </view> -->
+      <!-- wx:else -->
+      <view class="times" ></view>
+      <view class="bbt">
+        <view class="buts">
+          <button class="butt" bindtap="reserve">查 询 预 定</button>
+        </view>
+        <view class="tip">
+          <text class="tips" wx:if="{{car_type == 1}}">温馨提示：非固定营运路线价格基于总里程数定价</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="orderWarning" wx:if="{{orderWarning}}">
+    {{orderWarning}}
+    <view class="goOrdei" bind:tap="goOrder">点击前往</view>
+  </view>
+  <view class="hot_route_title">热门线路</view>
+  <view class="hot_route_main">
+    <view class="hot_route_item" wx:for="addArr" wx:key="index" data-index="{{index}}" bind:tap="bindHotRoute">
+      <view>{{addArr[index].StatingLocation_Name}}-->{{addArr[index].EndLocation_Name}}</view>
+    </view>
+
+  </view>
+</view>

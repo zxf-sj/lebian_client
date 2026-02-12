@@ -1,0 +1,25 @@
+<view class="menu-box" catchtouchmove="bottonMove" bindtouchstart="buttonStart" bindtouchend="buttonEnd" style="top:{{buttonTop}}px;left:{{buttonLeft}}px;z-index:999;">
+    <view class="navbar {{ play?'active':'' }}">
+      <view class="btn" bindtap="changePlay">
+        <view class="line" animation="{{ !play?line1CloseAn:line1OpenAn }}"></view>
+        <view class="line" animation="{{ !play?line2CloseAn:line2OpenAn }}"></view>
+        <view class="title" animation="{{ !play?titleCloseAn:titleOpenAn }}">
+          导航
+        </view>
+      </view>
+    </view>
+    <view class="menu">
+      <view animation="{{ !play?btn4Close:btn4Open }}" bindtap="goIndex" class="viewText">
+        <text class="textTitle">首页</text>
+      </view>
+      <view animation="{{ !play?btn3Close:btn3Open }}" bindtap="goKeFu" class="viewText">
+        <text class="textTitle">客服</text>
+      </view>
+      <view animation="{{ !play?btn2Close:btn2Open }}" bindtap="goNotice" class="viewText">
+        <text class="textTitle">通知</text>
+      </view>
+      <view animation="{{ !play?btn1Close:btn1Open }}" bindtap="goMy" class="viewText">
+        <text class="textTitle">我的</text>
+      </view>
+    </view>
+  </view>

@@ -1,0 +1,35 @@
+<import src="../wxParse/wxParse.wxml"/>
+<view class="page">
+  <view class="block_2">
+    <scroll-view scroll-y="true" style="height:800rpx;">
+      <view class="box_3">
+        <template is="wxParse" data="{{wxParseData:content.nodes}}"/>
+      </view>
+    </scroll-view>
+    <view class="box_5">
+      <text lines="1" class="text_6">预约信息</text>
+      <text lines="1" class="text_7">姓名</text>
+      <view class="box_6">
+        <input type="text" class="section_2" placeholder="请输入您的姓名" bindinput="bindName"/>
+      </view>
+      <text lines="1" class="text_9">手机号码</text>
+      <view class="box_7">
+        <input type="number" class="section_2" placeholder="请输入您的手机号码" bindinput="bindPhone"/>
+      </view>
+      <text lines="1" class="text_11">租车时间</text>
+      <view class="text-wrapper_1">
+          <picker mode="date" bindchange="bindDate">
+            <view class="dateView">{{date?date:"请选择时间"}}</view>
+          </picker>
+      </view>
+      <view class="text-wrapper_2" bindtap="tijiao">
+        <text lines="1" class="text_13">立即预约</text>
+      </view>
+    </view>
+    <view class="box_8">
+      <view class="text-wrapper_3" bindtap="kefu">
+        <text lines="1" class="text_14">联系客服</text>
+      </view>
+    </view>
+  </view>
+</view>

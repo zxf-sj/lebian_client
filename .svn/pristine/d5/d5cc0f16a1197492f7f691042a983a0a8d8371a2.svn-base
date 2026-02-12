@@ -1,0 +1,24 @@
+@import '/miniprogram_npm/weui-miniprogram/weui-wxss/dist/style/weui.wxss';
+@import 'weui.wxss';
+
+.font-24{
+  font-size: 24rpx;
+}
+
+.font-28{
+  font-size: 28rpx;
+}
+
+.font-30{
+  font-size: 28rpx;
+}
+
+.color-red{
+  color: #FF6600;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  color: transparent;
+}

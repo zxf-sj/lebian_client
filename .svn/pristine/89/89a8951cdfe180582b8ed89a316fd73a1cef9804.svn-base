@@ -1,0 +1,32 @@
+<view id="slide-coupon" class="slide-coupon" wx:if="{{showCoupon}}">
+  <view class="inner">
+      <view class="title">
+        <text>选择优惠券</text>
+        <view class="del" bindtap="close">
+          <image class="del-img" src="/assets/images/close.png"></image>
+        </view>
+      </view>
+      <scroll-view wx:if="{{hasCoupon}}" class="scroll-box" scroll-y="true" bindscrolltolower="scrollToLower">
+        <view class="item" wx:for="{{listData}}" wx:key="index">
+          <view class="top">
+            <block wx:if="{{fromIcon}}">
+              <view class="l">
+                <image src="/assets/images/canUseCa.png" style="width:80rpx;height:80rpx;"></image>
+                <view class="item-name">
+                  <view>{{item.CouponType_Name}}</view>
+                  <view class="item-num">抵扣：{{item.CouponMoney}}元</view>
+                </view>
+              </view>
+              <view class="r" bindtap="exchange" data-item="{{item}}">使用</view>
+            </block>
+          </view>
+          <view class="btm" wx:if="{{item.IsForever=='100004-0000010001'}}">长期有效</view>
+          <view class="btm" wx:if="{{item.IsForever=='100004-0000010002'}}">有效时间：{{item.EndTime}}</view>
+        </view>
+      </scroll-view>
+      <view class="no-coupon" wx:elif="{{!hasCoupon && !fromIcon}}">
+        <image src="/assets/images/no-coupon.png" style="width:296rpx;height:200rpx;margin-bottom:20rpx;"></image>
+        <view>暂时没有优惠券</view>
+      </view>
+  </view>
+</view>

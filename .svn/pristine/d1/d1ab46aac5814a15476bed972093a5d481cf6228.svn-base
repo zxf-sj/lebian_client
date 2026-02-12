@@ -1,0 +1,120 @@
+<!--components/orderBottom/orderBottom.wxml-->
+<view class="page">
+  <view class="location">
+    <!-- wx:if="{{typeon == 'pc'}}" -->
+    <view class="destination go" bindtap="showCoupon" wx:if="{{typeon == 'pc'}}">
+      <view class="juan_l">
+        <view class="box">次卡</view>
+      </view>
+      <view class="juan_r" >
+        {{couponList2?couponList2:0}}张可用 <text class="txt">></text>
+      </view>
+    </view>
+    <view class="destination" wx:if="{{typeon == 'pc'}}">
+      <view class="money_l">订单总金额</view>
+      <view class="money_r">￥ {{price?price:0}}
+        <view wx:if="{{Version && typeon == 'bc'}}" style="margin-left: 10rpx;font-size: 12px;">(含超范围：+ {{Version}})
+        </view>
+      </view>
+    </view>
+    <view class="zhe" wx:if="{{typeon == 'pc' && PromotionDiscountType == 0}}">活动期间享75折优惠</view>
+    <view class="details" wx:if="{{typeon == 'pc'}}">
+      <view class="detailList" wx:if="{{isAdult > 0}}" >
+        <view class="detailList_l">基本票价（成人）</view>
+        <view class="detailList_r" wx:if="{{PromotionDiscountType == 9}}">
+          {{initialPrice}} X {{isAdult}}
+        </view>
+        <view class="detailList_r" wx:if="{{PromotionDiscountType == 0}}">
+          {{initialPrice}} X {{PromotionDiscount}} X {{isAdult}}
+        </view>
+        <view class="detailList_r" wx:if="{{PromotionDiscountType == 1}}">
+          {{initialPrice}} - {{PromotionDiscount}} X {{isAdult}}
+        </view>
+      </view>
+      <view class="detailList" wx:if="{{isChildren > 0}}">
+        <view class="detailList_l">基本票价（儿童半价票） </view>
+        <view class="detailList_r">
+          {{initialPrice / 2}} X {{isChildren}}
+        </view>
+      </view>
+      <view class="detailList" wx:if="{{rangfenceMapList.length > 0}}" wx:for="{{rangfenceMapList}}" wx:key="index">
+        <view class="detailList_l">{{item.Name}}超范围 </view>
+        <view class="detailList_r" >
+          {{item.Price}} X {{passengerList.length}}
+        </view>
+        <!-- <view class="detailList_r" >
+          {{item.Price}} X {{passengerList.length }}
+        </view> -->
+      </view>
+      <view class="detailList" wx:if="{{curCouponData != null}}">
+        <view class="detailList_l" wx:if="{{sessionCard.length == 0}}">优惠卷</view>
+        <view class="detailList_l" wx:else>次卡</view>
+        <view class="detailList_r">
+          <view class="additional">- {{CouponList}} 张</view>
+        </view>
+      </view>
+      <view class="detailList">
+        <view class="detailList_l">合计</view>
+        <view class="detailList_r">
+          {{price}}
+        </view>
+      </view>
+    </view>
+    <view class="details" wx:if="{{typeon == 'sh'}}">
+      <view class="detailList" wx:if="{{rangfenceMapList.length > 0}}" wx:for="{{rangfenceMapList}}" wx:key="index">
+        <view class="detailList_l">{{item.Name}}超范围 </view>
+        <view class="detailList_r" >
+          {{item.Price}} X {{passengerList.length}}
+        </view>
+        <!-- <view class="detailList_r" >
+          {{item.Price}} X {{passengerList.length }}
+        </view> -->
+      </view>
+      <!-- <view class="detailList" wx:if="{{curCouponData != null}}">
+        <view class="detailList_l" wx:if="{{sessionCard.length == 0}}">优惠卷</view>
+        <view class="detailList_l" wx:else>次卡</view>
+        <view class="detailList_r">
+          <view class="additional">- {{CouponList}} 张</view>
+        </view>
+      </view> -->
+      <view class="detailList">
+        <view class="detailList_l">合计</view>
+        <view class="detailList_r">
+          {{price}}
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="signUp-tip-txt-protocol" style="text-align: center;margin-top: 20rpx;" bindtap="gotoxieyi2">《禁止寄递物品目录》</view>
+  <view class="signUp-tip" bind:tap="showView">
+    <checkbox-group style=" height: 40rpx;" >
+      <checkbox value="agree" checked="{{agree}}" size="mini" />
+    </checkbox-group>
+    <view class="signUp-tip-txt">
+    下单即同意本服务条款
+      <text class="signUp-tip-txt-protocol" bindtap="gotoxieyi">《用户须知》</text>
+      
+    </view>
+  </view>
+  <import src="/components/wxParse/wxParse" />
+  
+  <view class="mask" catchtouchmove="true" wx:if="{{isshow}}">
+    <view class="box_3">
+      <scroll-view scroll-y="true" style="height:70vh;">
+        <template is="wxParse" data="{{wxParseData:content.nodes}}" />
+      </scroll-view>
+    </view>
+    <view class="buttonsView">
+      <button class="buttons1" bind:tap="tongyi">同意</button>
+      <button class="buttons2" bind:tap="guanbi">取消</button>
+    </view>
+  </view>
+  <view class="subMit">
+    <!-- 确认支付并下单 -->
+    <view class="btn" bind:tap="callCar" style="{{agree==true?'color:#fff;':'background:#eee;'}}">确认下单</view>
+  </view>
+  <!-- 显示优惠卷 -->
+  <slideCoupon wx:if="{{showCoupon}}" class="slide-comp" fromIcon="{{isFromIcon}}" params="{{slideCouponParams}}"
+    hasChooseId="{{hasChooseId}}" showCoupon="{{showCoupon}}" bindCouponState="couponStateHandle"
+    bindHasChooseCouponData="onHasChooseCouponData" bindExchangeItem="onExchangeItem"></slideCoupon>
+</view>

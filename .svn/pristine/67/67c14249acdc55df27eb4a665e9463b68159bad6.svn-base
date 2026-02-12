@@ -1,0 +1,126 @@
+// components/slideCoupon/slideCoupon.js
+import http from '../../utils/http.js';
+let clickTimer = null;
+Component({
+  /**
+   * 组件的属性列表
+   */
+  pageLifetimes: {
+    show: function() {
+      // 页面被展示
+      this.getUserList()
+    },
+    hide: function() {
+      // 页面被隐藏
+    },
+    resize: function(size) {
+      // 页面尺寸变化
+    }
+  },
+  properties: {
+    passenger: {
+      type: Boolean,
+      value: true
+    },
+    typeon:{
+      type: String,
+      value: ''
+    },
+  },
+  lifetimes: {
+    attached: function() {
+      // 在组件实例进入页面节点树时执行
+      this.getUserList()
+    },
+    detached: function() {
+      // 在组件实例被从页面节点树移除时执行
+    },
+    
+  },
+  /**
+   * 组件的初始数据
+   */
+  data: {
+    hasCoupon:[],
+    listData:[
+    ]
+  },
+
+
+  methods: {
+    //获取乘车人列表
+    getUserList() {
+      let that = this;
+      var usreinfo = wx.getStorageSync('userInfo');
+      http.getRequest("/Api/Mobile/AddressList?MemberId="+usreinfo.Id, '', wx.getStorageSync('header'), res => {
+        if (res.code == 0) {
+          res.data.forEach(function(obj) {
+            obj.selected = false; // 添加新的键值对
+          });
+          that.setData({
+            listData:res.data
+          })
+        }
+      }, err => {
+        
+        return false;
+      })
+    },
+    //到达底部
+    scrollToLower: function (e) {
+      
+    },
+    change: function (e) {
+      var that = this;
+      const index = e.currentTarget.dataset.index; // 获取data- 传进来的index
+      var goods = that.data.listData; // 获取购物车列表
+      const selected = goods[index].selected; // 获取当前商品的选中状态
+      goods[index].selected = !selected; // 改变状态
+      that.setData({
+        listData: goods,
+      });
+    },
+    close() {
+      let that = this;
+      let personArr = that.data.listData.filter(item => item.selected)
+      getApp().eventVersion.emit('passengerList', personArr)
+      if(that.data.typeon == 'pc') {
+        that.triggerEvent('customEvent', personArr); // 触发事件，并传递数据
+        that.setData({
+          passenger: false
+        })
+      } else if(that.data.typeon == 'bc') {
+        let SeatNumber = wx.getStorageSync('SeatNumber')
+        if(personArr.length > SeatNumber) {
+          wx.showToast({
+            title: '乘车人数不能超过'+SeatNumber+'人',
+            icon:'none',
+          })
+        } else {
+          that.triggerEvent('customEvent', personArr); // 触发事件，并传递数据
+          that.setData({
+            passenger: false
+          })
+        }
+      }
+      
+      
+      // wx.setStorageSync('personArr',personArr);
+     
+    },
+    //修改信息
+    revise(e) {
+      
+      let item = e.currentTarget.dataset.item
+      wx.navigateTo({
+        url: '/pages/addUser2/addUser2?item='+JSON.stringify(item),
+      })
+    },
+    //添加乘车人
+    add() {
+      wx.navigateTo({
+        url: '/pages/addUser2/addUser2',
+      })
+    }
+  }
+})

@@ -1,0 +1,100 @@
+.container{
+  width: 100%;
+  height: 100vh;
+  box-sizing: border-box;
+  background-color: #F2F2F2;
+}
+
+.no_msg{
+  width: 300rpx;
+  position: absolute;
+  top: 200rpx;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.no_msg>image{
+  width: 300rpx;
+  height: 300rpx;
+  margin-bottom: 20rpx;
+}
+
+.no_txt{
+  font-size: 28rpx;
+  color: #FF8008;
+  text-align: center;
+}
+
+.has-read{
+  text-align: center;
+  font-size: 32rpx;
+  padding: 20rpx;
+  color: #333;
+  background-color: #fff;
+  margin-bottom: 20rpx;
+}
+
+.sys_notice,.act_notice{
+  position: relative;
+  height: 175rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40rpx 30rpx;
+  border-bottom: 1rpx solid #f2f2f2;
+  background-color: #fff;
+  box-sizing: border-box;
+}
+
+image{
+  width: 44rpx;
+  height: 44rpx;
+}
+
+.cont{
+  width: 590rpx;
+}
+
+.top{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tit{
+  font-size: 32rpx;
+  font-weight: bold;
+  padding-bottom: 20rpx;
+  color: #333;
+}
+
+.time{
+  color: #999;
+  font-size: 28rpx;
+}
+
+.btm{
+  color: #333;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  word-break: break-all;
+  font-size: 28rpx;
+}
+
+.dot{
+  position: absolute;
+  left: 75rpx;
+  top: 30rpx;
+  width: 40rpx;
+  height: 40rpx;
+  text-align: center;
+  line-height: 40rpx;
+  background-color: #F11818;
+  color: #fff;
+  border-radius: 50%;
+}
+
+.read-done{
+  color: #aaa;
+}

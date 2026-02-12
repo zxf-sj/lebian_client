@@ -1,0 +1,20 @@
+<view class="container">
+  <!-- 车辆租赁选项1 -->
+  <scroll-view scroll-y="true" style="height:97vh;" bindscrolltolower="scrollToLower">
+    <view class="car-card" wx:for="{{list}}" wx:key="key">
+      <image class="car-image" src="{{item.Type?imgUrl+item.Type:'https://www.qierchuxing.com/upload/Annex/202405/AX-20240521-644317-541.png'}}" mode="aspectFit"/>
+      <view class="info-box">
+        <text class="car-type">{{item.Name}}</text>
+        <text class="price" wx:if="{{item.ExtProp1!=null}}">{{item.ExtProp1}}</text>
+        <text class="price1" wx:if="{{item.ExtProp1==null}}">{{item.CreateDate}}</text>
+      </view>
+      <button class="book-btn" type="primary"  bindtap="handleBook" data-item="{{item}}">
+        查看详情
+      </button>
+    </view>
+  </scroll-view>
+  <!-- <view class="bg" wx:if="{{noOrder}}">
+    <image class="bg-img" src="/assets/images/no_list.png"></image>
+    <view class="bg-cont">近期没有订单记录~</view>
+  </view> -->
+</view>

@@ -1,0 +1,10 @@
+<!--user_center/pages/baoche/baoche.wxml-->
+<view class="page">
+	<information typeon="bc" bind:updatedData="updatedData" />
+	<travel  typeon='bc' />
+	<view class="xing_txt">
+		行程内容确认：
+	</view>
+	<distanceNav distanceNav_Data="{{distanceNav_Data}}" typeon='bc' />
+	<orderBottom bind:handleCallCar="handleCallCar" typeon='bc' />
+</view>

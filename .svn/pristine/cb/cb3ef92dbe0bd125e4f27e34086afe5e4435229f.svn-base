@@ -1,0 +1,34 @@
+<view class="font-text">请您本人进行认证，认证之后不可修改</view>
+<form bindsubmit="formSubmit">
+<view class='bg-w' style='padding:0 30rpx'>
+  <view class='info_li2'>
+    <view class='info_prefix_text info_left'>真实姓名</view>
+    <view class='info_right'>
+      <input name="realName" class='text-right' placeholder="请填写真实姓名(必填)" value='{{realName}}' bindinput="bindname"></input>
+    </view>
+  </view>
+  <view class='info_li2'>
+    <view class='info_prefix_text info_left'>证件类型</view>
+    <view class='info_right'>
+      <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
+        <view class="picker">{{array[index]}}</view>
+      </picker>
+    </view>
+  </view>
+  <view class='info_li2'>
+    <view class='info_prefix_text info_left'>证件号码</view>
+    <view class='info_right'>
+      <input name="card" type="idcard" class='text-right' maxlength="18" placeholder="请填写证件号码" value='{{card}}' bindinput="bindcard"></input>
+    </view>
+  </view>
+  <view class='info_li2'>
+    <view class='info_prefix_text info_left'>手机号</view>
+    <view class='info_right'>
+      <input name="card" type="number" class='text-right' maxlength="11" placeholder="请填写手机号" value='{{phone}}' bindinput="bindPhone"></input>
+    </view>
+  </view>
+</view>
+<view class='submit_button' wx:if="{{isshow}}">
+  <button class='btns' form-type='submit'>提交验证</button>
+</view>
+</form>

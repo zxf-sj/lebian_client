@@ -1,0 +1,26 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.logo {
+  width: 100vw;
+  height: 100vh;
+}
+
+.openPage-header {
+  position: absolute; 
+  left:18rpx;
+  top:14rpx;
+}
+
+.openPage-btn {
+  font-size: 20px;/* 调大点提高用户舒适度，你也不想有被开屏广告支配的感觉吧 */
+  color: #333;
+  border: 1px solid #333;
+  padding: 2px 5px;
+  border-radius: 12px;
+}

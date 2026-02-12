@@ -1,0 +1,47 @@
+<!--user_center/pages/chooseCity/chooseCity.wxml-->
+<view class="page">
+	<view class="nav">
+	<view class="nav_box">
+	  <image src="/assets/images/search.png" mode=""/>
+		<input 	confirm-type="search" class="weui-input" bindinput="searchInputend"  auto-focus placeholder="搜索" />
+	</view>
+	</view>
+	<view class="main" >
+		<view class="title"  wx:if="{{typeon == 'bc'}}">已开通路线城市</view>
+	<view>
+	
+		<view wx:for="{{cityList}}" wx:key="index">
+				<view class="city">{{item}}</view>
+			<view class="cityItem"  >
+				<view class="items" wx:for="{{countyList}}" wx:for-index="countyListIndex"  wx:if="{{cityList[index] == item.City}}" bind:tap="handleCounty" data-item="{{item}}">{{item.Name}}</view>
+			</view>
+		</view>
+		
+	</view>
+	<view class="title" wx:if="{{typeon == 'bc'}}">其他城市请联系客服</view>
+    <button type="primary" size="mini" wx:if="{{typeon == 'bc'}}" 	plain="true" bind:tap="handleCallCustomerService">联系客服</button>
+	<!-- <view wx:if="{{typeon == 'bc'}}">
+		<view class="hotCity">热门城市</view>
+		<view class="cityItem">
+			<view class="items">北京市</view>
+			<view class="items">天津市</view>
+		</view>
+		<view class="city">全国</view>
+	</view> -->
+	</view>
+	<view class="addressList" wx:if="{{address}}">
+		<scroll-view scroll-y='true' style="height:83vh">
+			<view class="destination" wx:for="{{address}}" bindtap="clickAddress" wx:key="index" data-item="{{item}}">
+				<view class="destination-content">
+					<view class="content-image">
+						<image src="/assets/images/weizhi.png"></image>
+					</view>
+					<view class="content">
+						<text class="content-name">{{item.City}}</text>
+						<text class="content-detail">{{item.Name}}</text>
+					</view>
+				</view>
+			</view>
+		</scroll-view>
+	</view>
+</view>

@@ -1,0 +1,86 @@
+<!--user_center/pages/shaohuo/shaohuo.wxml-->
+<view class="page">
+  <!-- <distanceNav distanceNav_Data="{{distanceNav_Data}}" typeon='sh' price="{{price}}" /> -->
+  <information bind:sendMsg="sendMsg" typeon="sh" bind:sendToParent="handleFromA" bind:goods="goods" bind:updatedData="updatedData" bind:shippingCost="shippingCost" bind:sendToParent2="sendToParent2" />
+  <view class="main">
+    <view class="belongings ">
+      <view class="item_l">
+        货物名称
+      </view>
+      <view class="item_r">
+        <input type="text" placeholder="请描述具体物品" value="{{belongings}}" bindblur="belongingsInput" class="phcolor" placeholder-class='placeholder' style="{{belongings?'color:#101010;':''}}"></input>
+      </view>
+    </view>
+    <view class="pic">
+      <!-- <view>物品照片</view>
+      -->
+      <view class="page__bd">
+        <view class="uploader">
+          <button style="margin-top: 10rpx;" size="mini" type="primary" plain='true' bindtap="chooseAndUpload">选择并上传图片</button>
+          <!-- 已上传图片预览 -->
+          <view class="preview">
+            <block wx:for="{{uploadedUrls}}" wx:key="index">
+              <image style="width: 200rpx;height: 200rpx;" bindtap="previewImage"  src="{{item}}" data-index="{{index}}" mode="aspectFill" />
+            </block>
+          </view>
+          <view wx:if="{{showPreview}}" class="preview-mask" bindtap="closePreview">
+            <view class="preview-container" catchtap>
+              <image src="{{currentImage}}" mode="aspectFit" class="preview-img" bindtap="closePreview" />
+              <button class="delete-btn" bindtap="deleteImage">删除</button>
+            </view>
+          </view>
+        </view>
+      </view>
+     
+    </view>
+    <view class="boxs">
+      <!-- <view class="sendMail">
+        <view class="items_l">寄件人姓名</view>
+        <view class="items_r">
+          <input type="text" placeholder-class='placeholder' style="{{sendMailName?'color:#101010;':''}}" placeholder="请填写寄件人姓名" value="{{sendMailName}}" maxlength="11" bindblur="sendMailName" class="phcolor"></input>
+        </view>
+      </view> -->
+      <view class="sendMail" style="border-bottom: 1px solid #ccc;">
+        <view class="items_l">寄件联系方式</view>
+        <view class="items_r">
+          <input type="text" placeholder-class='placeholder' style="{{sendMailPhone?'color:#101010;':''}}" placeholder="请填写寄件方联系方式" value="{{sendMailPhone}}" maxlength="11" bindinput="sendMailInput" class="phcolor"></input>
+        </view>
+      </view>
+      <!-- <view class="sendMail">
+        <view class="items_l">收件人姓名</view>
+        <view class="items_r">
+          <input type="text" placeholder-class='placeholder' style="{{pickUpName?'color:#101010;':''}}" placeholder="请填写收件人姓名" value="{{pickUpName}}" maxlength="11" bindblur="pickUpName" class="phcolor"></input>
+        </view>
+      </view> -->
+      <view class="pickUp">
+        <view class="items_l">收件联系方式</view>
+        <view class="items_r">
+          <input type="text" placeholder-class='placeholder' style="{{pickUpPhone?'color:#101010;':''}}" placeholder="请填写收件方联系方式" value="{{pickUpPhone}}" maxlength="11" bindinput="pickUpInput" class="phcolor"></input>
+        </view>
+      </view>
+    </view>
+    <view class="method">
+      <view class="method_l">寄件备注</view>
+      <view class="method_r" style="{{textareaValue?'color:#101010':'color:#bbbbbb'}}">
+     
+        <radio-group bindchange="onRadioChange" style="display: flex;flex-wrap: wrap;">
+        
+            <label wx:for="{{sharedData}}" wx:key="value">
+              <radio value="{{item.Id}}" checked="{{item.checked}}" style="margin-bottom:10rpx" />
+              {{item.Name}}
+            </label>
+          </radio-group>
+      </view>
+    </view>
+    <!-- <view class="remarks">
+      <view class="item_l">寄件备注</view>
+      <view class="item_r" bind:tap="handlejijian" style="{{textareaValue?'color:#101010':'color:#bbbbbb'}}">{{textareaValue?textareaValue:'请填写寄件备注'}}</view>
+    </view> -->
+  </view>
+  <view class="xing_txt">
+    订单确认：
+  </view>
+  <orderBottom jisuan="{{jisuan}}" mrPrice="{{mrPrice}}" typeon='sh' bind:handleCallCar="handleCallCar"  message="{{rangfenceMapList}}"  PayAmount="{{PayAmount}}" />
+  <!-- 显示备注信息 -->
+  <remarks bind:textareaValue="handleTextareaValue" wx:if="{{remark}}" remark="{{remark}}" />
+</view>

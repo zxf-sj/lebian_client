@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "收件地址",
+  "usingComponents": {
+    "daohang":"/components/daohang/daohang"
+  }
+}

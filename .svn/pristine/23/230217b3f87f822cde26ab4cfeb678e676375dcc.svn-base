@@ -1,0 +1,143 @@
+
+const app = getApp();
+import http from '../../../utils/http';
+Page({
+  data: {
+    userIdsArr:[],
+    phoneArr:[],
+    type:"",
+    ren:""
+  },
+  onLoad(opt){
+    var type = opt.type;
+    this.setData({
+      type:type
+    })
+    this.getUserList();
+  },
+  onShow(){
+    var type = this.data.type;
+    var ren = "";
+    if(type == "send"){
+      ren = "寄件人信息";
+    }else if(type == "shou"){
+      ren = "收件人信息";
+    }
+    this.setData({
+      userIdsArr:[],
+      ren:ren
+    })
+    this.getUserList();
+  },
+  handleBtn(){
+    let that = this;
+    var arr = that.data.userIdsArr;
+    var totalnum = arr.length;
+    var personStr = "";
+    personStr = arr.join(",");
+    var remarkArr = that.data.remark;
+    var note =  remarkArr.join(",");
+    var inputvalue = that.data.remarkInput;
+    var brr = that.data.phoneArr;
+    var phoneStr = "";
+    phoneStr = brr.join(",");
+    if(inputvalue){
+      note = note+","+inputvalue;
+    }
+    if(totalnum > that.data.pnums){
+      wx.showToast({
+        title: '乘车人数不能超过'+that.data.pnums+'人',
+        icon:'none',
+      })
+    }else if(totalnum ==0){
+      wx.showToast({
+        title: '请选择乘车人',
+        icon:'none',
+      })
+    }else{
+      wx.setStorageSync('phoneStr',phoneStr);
+      wx.setStorageSync('totalNum', totalnum);
+      wx.setStorageSync('personStr',personStr);
+      wx.setStorageSync('note',note);
+      wx.navigateBack({
+        delta:1
+      })
+    }
+  },
+  change: function (e) {
+    var that = this;
+    const index = e.currentTarget.dataset.index; // 获取data- 传进来的index
+    var goods = that.data.goods; // 获取购物车列表
+    const selected = goods[index].selected; // 获取当前商品的选中状态
+    let arr = that.data.userIdsArr;
+    let brr = that.data.phoneArr;
+    if(selected){
+      var key = goods[index]['Phone']+"|"+goods[index]['RealName'];
+      let index1 = arr.indexOf(key);
+      if (index1 > -1) {
+        arr.splice(index1, 1);
+      }
+      var key1 = goods[index]['Phone'];
+      let index2 = brr.indexOf(key1);
+      if (index2 > -1) {
+        brr.splice(index2, 1);
+      }
+    }else{
+      arr.push(goods[index].Phone+"|"+goods[index].RealName);
+      brr.push(goods[index].Phone);
+    }
+    console.log(arr);
+    console.log(brr);
+    goods[index].selected = !selected; // 改变状态
+    goods[index]['selected'] = !selected;
+    that.setData({
+      goods: goods,
+      userIdsArr:arr,
+      phoneArr:brr
+    });
+  },
+  addUser(){
+    wx.navigateTo({
+      url: '/pages/addUser/addUser',
+    })
+  },
+  getUserList() {
+    let that = this;
+    var usreinfo = wx.getStorageSync('userInfo');
+    http.getRequest("/Api/Mobile/AddressList?MemberId="+usreinfo.Id, '', wx.getStorageSync('header'), res => {
+      that.setData({
+        loading: false
+      })
+      if (res.code == 0) {
+        var listDdata = res.data;
+        var personstr = wx.getStorageSync('personStr');
+        if(personstr){
+          var personArr = personstr.split(",");
+          personArr.forEach(function(item) {
+            for(var i=0;i<listDdata.length;i++){
+              if(listDdata[i].Id==item){
+                listDdata[i].selected =true
+              }
+            }
+          });
+          that.setData({
+            userIdsArr:personArr
+          })
+        }
+        that.setData({
+          goods:listDdata
+        })
+      }else{
+        that.setData({
+          listData:[],
+          noMore:true
+        })
+      }
+    }, err => {
+      this.setData({
+        loadingFailed: true
+      })
+      return false;
+    })
+  },
+})

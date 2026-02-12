@@ -1,0 +1,33 @@
+<!--pages/starting2/starting2.wxml-->
+<view class="page">
+    <view class="map_container">
+        <map class='map' id="indexMap" longitude='{{longitude}}' latitude='{{latitude}}' scale='{{scale}}' markers='{{markers}}' bindregionchange="bindregionchange" show-location="true" circles="{{circles}}" polygons="{{polygons}}" enableZoom="true" enableScroll="true" enableRotate="false">
+            <view class="current-mylocation-box">
+                <image bindtap="getMyLocation" class="current-mylocation" src="/assets/images/location.png">
+                </image>
+            </view>
+            <image src="/assets/images/weizhi.png" class="current-site-icon"></image>
+            <view class="submit" bind:tap="submit">确定</view>
+            <!-- <button bindtap="checkInFence" class="btn">检查是否在围栏内</button> -->
+        </map>
+    </view>
+    <view class="searchAddress">
+        <view class="serchBox">
+            <image src="/assets/images/search.png" mode="" />
+            <input type="text" class="location-input" value="{{value}}" bindinput="searchInputend" placeholder="搜索地点" placeholder-style="color:#555555;" />
+        </view>
+        <scroll-view scroll-y='true' style="{{scrollStyle}}">
+            <view class="destination" wx:for="{{address}}" bindtap="clickAddress" wx:key="index" data-index="{{index}}" data-item="{{item}}">
+                <view class="destination-content">
+                    <view class="content">
+                        <text class="content-name">{{item.name}} </text>
+                        <text class="content-detail">{{item.address }}</text>
+                    </view>
+                    <view class="yess" style="{{item.chectout?'display:block':'display:none'}}">
+                        √
+                    </view>
+                </view>
+            </view>
+        </scroll-view>
+    </view>
+</view>

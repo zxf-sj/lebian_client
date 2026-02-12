@@ -1,0 +1,102 @@
+/* user_center/pages/baoche/baoche.wxss */
+page {
+	width: 100%;
+	border-top: 1px solid #bbbbbb;
+}
+.journey {
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
+	border: 1px solid #bbbbbb;
+	border-radius: 20rpx;
+	margin: 20rpx;
+}
+.journey .item {
+	height: 120rpx;
+	border-bottom: 1px solid #bbbbbb;
+}
+.location {
+}
+.location .destination {
+	display: flex;
+	height: 100%;
+}
+.location .destination .left {
+	width: 10%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.location .destination .left .circle{
+	width: 20rpx;
+	height: 20rpx;
+	background-color: #54bcbd;
+	border-radius: 50%;
+}
+.location .destination .left .circle2 {
+	width: 20rpx;
+	height: 20rpx;
+	background-color: #c03c2f;
+	border-radius: 50%;
+}
+.location .destination .center {
+	width: 14%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #101010;
+}
+.location .destination .right {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #BBBBBB;
+}
+
+
+/* ====== */
+.locations .destination {
+	display: flex;
+	height: 100%;
+}
+
+.locations .destination .center {
+	width: 24%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #101010;
+}
+.locations .destination .right {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #BBBBBB;
+}
+.borders {
+	border: none !important;
+}
+.information {
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
+	border: 1px solid #bbbbbb;
+	border-radius: 20rpx;
+	margin: 20rpx;
+}
+.journey .remarks {
+	font-size: 10px;
+	height: 150rpx;
+	line-height: 40rpx;
+	padding: 20rpx;
+	color: #F08718;
+}
+.xing_txt {
+	height: 80rpx;
+	line-height: 80rpx;
+	color: #F08718;
+	padding-left: 20rpx;
+	font-weight: 700;
+}
+.phcolor {
+	color: #BBBBBB;
+	text-align: center;
+}

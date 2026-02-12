@@ -1,0 +1,926 @@
+import qqmapsdk from '../../../libs/qqMap';
+import http from '../../../utils/http';
+const BASE_URL = require('../../../utils/BASE_URL').BASE_URL;
+// import {
+//   Base64
+// } from 'js-base64';
+
+const app = getApp();
+let linePayTimer = null; // 防抖
+// let mqtt1005timer = null; // 防抖
+// let mqtt1010timer = null; // 防抖
+// let mqtt1011timer = null; // 防抖
+// let mqtt1008timer = null; // 防抖
+let exceedGlb = null; // 超时
+let curPageOnShow = false;
+Page({
+  data: {
+    isload:true,
+    fromCall: false,
+    hasMqttMsg: false,
+    mapShowLocation: false,
+    latitude: 0,
+    longitude: 0,
+    controls: [],
+    markers: [],
+    points: [],
+    driver: {},
+    startAddress: '',
+    // modalHidden: true,
+    countTimer: null,
+    isWaiting: true,
+    count: 0,
+    time: '00:00',
+    title_tips: '30秒无应答优先为您派单',
+    distance: 0,
+    pathTime: 0,
+    cancleCont: '亲，司机快到了，要不要再等等呢?',
+    hideWalkTips: true,
+    responseEndLat: 0,
+    responseEndLng: 0,
+    totPrice: 0,
+    descPrice: 0,
+    pathTips: false,
+    hasSit: false,
+    driverImg: '/assets/images/driver.png',
+    startDate: '',
+    firBtnWidth: '50%',
+    secBtnWidth: '100%',
+    fixedLine: false, // 远程
+    lineTips: '',
+    linePayText: '付款',
+    desName: '', // 远程终点名称
+    fromLineScan: false,
+    showCancleBtn: true,
+    msgExceedTimeInfo: null,
+    msg1012: null,
+    exclusiveCar: false, // 包车
+    EXC_dateNum: null, // 包车剩余天数
+    EXC_orderInfo: null, // 包车信息
+    EXC_showDistance: false, // 包车行程中显示时长/里程
+    EXC_drivingWaiting: false, // 包车行程等待中
+    exceedWaitingTime: false, // 包车行程等待中超时
+    exceedWaitingTimeNum: '', // 包车行程等待中超时时间
+    taxi: false,
+    isFriend: false,
+    fromFriendUseCart: false,
+    taxi1004counter : 0, // 出租车1004
+    taxi1006counter : 0, // 出租车1006
+    showIntegral:false,
+    order_id:"",
+    detail:{},
+    orderId:"",
+    moneylist:[],
+    Interval:null,
+    ygprice:0.00,
+    yhprice:0.00,
+    yueprice:0,
+  },
+  getPrice(data){
+    http.postRequest('/Api/DispatchMobile/RideTicketMoney', data, wx.getStorageSync('header'), (res) => {
+      if (res.code == '0') {
+        this.setData({
+          ygprice:Number(res.data.CalcAfter) + Number(res.data.CalcBalance),
+          yhprice:res.data.CalcCoupon,
+          yueprice:res.data.CalcBalance
+        })
+      }
+    }, (err) => {
+      console.log(err)
+    })
+  },
+  async onLoad(opt) {
+    this.mapCtx = wx.createMapContext("map");
+    let _this = this;
+    var order_id = opt.order_id;
+    _this.setData({
+      orderId : order_id
+    })
+    http.getRequest('/Api/DispatchMobile/getRideTicketOrderrDetail?orderId='+order_id,"", wx.getStorageSync('header'), (res) => {
+      if (res.code == 0) {
+        var info = {};
+        info = res.data;
+        let reqData = {
+          PassengerLineId:res.data.PassengerLineId,
+          IntoLocation:res.data.IntoLatitude,
+          IntoLongitude:res.data.IntoLongitude,
+          IntoLatitude:res.data.IntoLatitude,
+          OffLocation:res.data.OffLocation,
+          OffLongitude:res.data.OffLongitude,
+          OffLatitude:res.data.OffLatitude,
+          PassengerNumber:res.data.PassengerNumber,
+          Departure:res.data.Departure,
+          ArrivalTime:res.data.ArrivalTime,
+          Personal:res.data.Personal,
+          SeatNumber:res.data.SeatNumber,
+          DispatchListId:res.data.DispatchListId,
+          IsReservation:res.data.IsReservation,
+          CouponDetailsId:res.data.CouponDetailsId,
+          OnLineCarTypeId:res.data.OnLineCarTypeId,
+          PersonalIds:res.data.PersonalIds,
+          Note:res.data.Note,
+          IsExclusive:res.data.IsExclusive,
+          IsPickGoods:'100004-0000010002'
+        }
+        _this.getPrice(reqData);
+        _this.setData({
+          detail:info,
+          moneylist:info.detailList
+        })
+        if (opt.from === 'call') {
+          var callDriverInfo = _this.data.detail;
+          this.setData({
+            fromCall: true,
+            driver: callDriverInfo,
+            latitude: callDriverInfo.IntoLatitude,
+            longitude: callDriverInfo.IntoLongitude,
+          })
+          this.driving(callDriverInfo.IntoLatitude, callDriverInfo.IntoLongitude, callDriverInfo.OffLatitude, callDriverInfo.OffLongitude, 'TRIP,REAL_TRAFFIC')
+        }
+      }
+    }, (err) => {
+      console.log(err)
+    })
+    _this.setData({
+      latOri: app.globalData.originLatitude,
+      lngOri: app.globalData.originLongitude,
+      latStr: app.globalData.strLatitude,
+      lngStr: app.globalData.strLongitude,
+      latEnd: app.globalData.endLatitude,
+      lngEnd: app.globalData.endLongitude,
+      opt,
+    })
+    if (opt.from === 'scan') { // 扫码进入时
+      let driver = JSON.parse(opt.scanDriverInfo);
+      this.setData({
+        driver,
+        fromCall: false,
+        isWaiting: false,
+        hideWalkTips: true,
+        pathTips: true,
+        opt,
+        totPrice: driver.actualAmount,
+        descPrice: driver.discountsAmount,
+      })
+      wx.setNavigationBarTitle({
+        title: '待出发',
+      })
+      this.driving(driver.srcLat.toString(), driver.srcLng.toString(), driver.desLat.toString(), driver.desLng.toString(), 'TRIP,REAL_TRAFFIC', driver.bear);
+    } else if (opt.from === 'scanLine') { // 远程扫码进入
+      this.setData({
+        fixedLine: true,
+        fromLineScan: true,
+        orderListOrder: opt.orderNo,
+        businessType: 6,
+        showCancleBtn: false,
+        firBtnWidth: '100%'
+      })
+      wx.setStorageSync('lineOrderNo', opt.orderNo)
+    } else if (opt.from === 'orderList' && !this.data.hasMqttMsg) { // 从订单列表来的
+      let driver = JSON.parse(opt.driver);
+      this.setData({
+        fromCall: false,
+        orderListOrder: driver.orderNo,
+        businessType: driver.businessType,
+        lineOrderInfo: driver,
+        EXC_orderInfo: driver,
+      })
+      if (driver.businessType == 6 || driver.businessType == 7) {
+        this.setData({
+          fixedLine: true
+        })
+      } else if (driver.businessType == 9) {
+        this.setData({
+          exclusiveCar: true
+        })
+      } else if (driver.businessType == 10) {
+        this.setData({
+          taxi: true
+        })
+      } else if (driver.businessType == 5) {
+        wx.setNavigationBarTitle({
+          title: '等待接单',
+        })
+        if (driver.driverType == 6) {
+          this.setData({
+            taxi: true
+          })
+        }
+        let driverInfoDetail = await this.orderCheck(driver.orderNo, driver.businessType);
+        console.log('driverInfoDetail:', driverInfoDetail);
+        let friendDriver = {
+          name: driverInfoDetail.driverCarInfo.driverName,
+          cart_no: driverInfoDetail.driverCarInfo.driverNo,
+        }
+        this.setData({
+          fromFriendUseCart: true,
+          hideWalkTips: true,
+          isWaiting: true,
+          friendDriver,
+        })
+      }
+    } else if (opt.from === 'hasNoOrder' && !this.data.hasMqttMsg) { // 判断有未完成订单时
+      console.log('hasNoOrder')
+      this.setData({
+        fromCall: false,
+        fromHasNoOrder: true
+      })
+    } else if (opt.from === 'fixedLine') { // 远程下单
+      wx.showModal({
+        content: `亲！订单已收到，客服马上联系您。请您接听${wx.getStorageSync('servicePhone')}的来电。`,
+        showCancel: false,
+        success() {
+           //_this.mqttClient();
+        }
+      })
+      let orderInfo = JSON.parse(opt.orderInfo);
+      let date = new Date(parseInt(orderInfo.reservationTime));
+      let prev = date.getTime();
+      let now = new Date().getTime();
+      console.log(date, now)
+      let M = date.getMonth() + 1;
+      let D = date.getDate();
+      let h = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+      let m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+      let resDate = M + '月' + D + '日' + ' ' + h + ' : ' + m;
+      this.setData({
+        fixedLine: true,
+        lineOrderInfo: orderInfo,
+        lineTotPrice: orderInfo.actualAmount,
+        startDate: resDate,
+        desName: orderInfo.endAddress,
+        latitude: orderInfo.srcLat,
+        longitude: orderInfo.srcLng,
+      })
+      this.driving(orderInfo.srcLat.toString(), orderInfo.srcLng.toString(), app.globalData.lineEndLat.toString(), app.globalData.lineEndLng.toString(), 'TRIP,REAL_TRAFFIC', 0, false, orderInfo.endAddress)
+    } else if (opt.from === 'exclusiveCar') { // 包车下单
+      wx.showModal({
+        content: `亲！订单已收到，客服马上联系您。请您接听${wx.getStorageSync('servicePhone')}的来电。`,
+        showCancel: false,
+        success() {
+           _this.mqttClient();
+        }
+      })
+      let orderInfo = JSON.parse(opt.orderInfo);
+      let date = new Date(parseInt(orderInfo.reservationTime));
+      let M = date.getMonth() + 1;
+      let D = date.getDate();
+      let h = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+      let m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+      let resDate = M + '月' + D + '日' + ' ' + h + ' : ' + m;
+      this.setData({
+        exclusiveCar: true,
+        EXC_orderInfo: orderInfo,
+        lineTotPrice: orderInfo.actualAmount,
+        startDate: resDate,
+        mapShowLocation: true
+      })
+      if (orderInfo.isCancel == 0) { // 不能取消订单
+        this.setData({
+          showCancleBtn: false
+        })
+      } else if (orderInfo.isCancel == 1) { // 可以取消订单
+        this.setData({
+          showCancleBtn: true
+        })
+      }
+    }
+
+    let _points;
+    if (this.data.exclusiveCar || this.data.businessType == 9) {
+      await this.getCurrentLocation();
+      _points = [{
+          latitude: this.data.latitude,
+          longitude: this.data.longitude
+        },
+        {
+          latitude: this.data.EXC_orderInfo.srcLat,
+          longitude: this.data.EXC_orderInfo.srcLng
+        },
+      ]
+    } else {
+      _points = [{
+          latitude: this.data.latStr,
+          longitude: this.data.lngStr
+        },
+        {
+          latitude: this.data.latEnd,
+          longitude: this.data.lngEnd
+        },
+      ]
+
+      this.mapCtx.includePoints({
+        padding: [200],
+        points: _points,
+      })
+    }
+    this.setData({
+        isload:false
+    })
+    let aas = wx.getWindowInfo();
+    this.setData({
+      controls: [{
+        id: 1,
+        iconPath: '/assets/images/location.png',
+        position: {
+          left: aas.windowWidth - 60, // 单位px
+          top: aas.windowHeight - 380,
+          width: 50, // 控件宽度/px
+          height: 50,
+        },
+        clickable: true
+      }, ],
+    })
+  },
+
+  onShow() {
+    let that = this;
+    var order_id = that.data.orderId;  
+    that.getSiJiJieDan(order_id);
+  },
+  getSiJiJieDan(order_id){
+    let that = this;
+    that.data.Interval = setInterval(() => {
+      http.getRequest('/Api/DispatchMobile/getRideTicketOrderrDetail?orderId='+order_id,"", wx.getStorageSync('header'), (res) => {
+        if (res.code == 0) {
+          if((res.data.FormState=='100004-0001020002' || res.data.FormState=="100004-0001020006") && res.data.DispatchListId !=null){
+            wx.showToast({
+              title:'司机已经接单',
+              icon: 'loading',
+              duration: 2000,
+              success:function(){
+                setTimeout(function () {
+                  wx.reLaunch({
+                    url: '/driving_status/pages/taxiDriving/taxiDriving?orderId='+order_id,
+                  })
+                }, 2000)
+              }
+            })
+          }
+        }
+      }, (err) => {
+        console.log(err)
+      })
+    }, 3000);
+  },
+  onReady() {
+    if (this.data.opt.from === 'call') {
+      clearInterval(this.data.countTimer);
+      this.countInterval();
+    }
+  },
+
+  onHide() {
+    let that = this;
+    clearInterval(that.data.Interval);
+  },
+
+  onUnload() {
+    let that = this
+    clearInterval(that.data.Interval);
+    curPageOnShow = false;
+    wx.removeStorageSync('driverInfoMqtt')
+    // app.globalData.mqtt1001 = 0;
+    // app.globalData.mqtt1002 = 0;
+    // app.globalData.mqtt1008 = 0;
+    // app.globalData.mqtt1011 = 0;
+    app.globalData.lineStartAddress = '';
+    app.globalData.lineStartLat = '';
+    app.globalData.lineStartLng = '';
+    app.globalData.lineEndAddress = '';
+    app.globalData.lineEndLat = '';
+    app.globalData.lineEndLng = '';
+    //if (exceedGlb) clearInterval(exceedGlb);
+    //app.globalData.clientDriving._events.message=app.globalData.clientDriving._events.message['0']
+  },
+
+
+  // 等待应答计时器
+  countInterval() {
+    let curr = this.data.count >= 2 ? this.data.count : 0;
+    let hasInterval = new Date(new Date(0, 0).getTime() + (this.data.count * 1000));
+    let timer = this.data.count >= 2 ? hasInterval : new Date(0, 0);
+    this.setData({
+      count: curr
+    })
+    this.data.countTimer = setInterval(() => {
+      this.setData({
+        time: this.parseTime(timer.getMinutes()) + ":" + this.parseTime(timer.getSeconds()),
+      });
+      timer.setMinutes(curr / 60);
+      timer.setSeconds(curr % 60);
+      curr++;
+      this.data.count++;
+      if (this.data.count >= 32) {
+        this.setData({
+          title_tips: '正在优先为您派单',
+        })
+      }
+    }, 1000)
+  },
+  // 驾车路线规划
+  driving(str1, str2, end1, end2, policy, rotate, car, desName, strOrEnd) {
+    var _this = this;
+    var data = {
+      "origin":str1+","+str2,
+      "destination":end1+","+end2
+    }
+    http.postRequest('/Api/MapWebApi/GetBaiduDrivingTotalLine?origin='+data.origin+"&destination="+data.destination,"","", res => {
+      if(res.code==0){
+        var datas = res.data.result.routes[0];
+        var arr = datas.steps;
+        var pl = [];
+        for (var i = 0; i < arr.length; i++) {
+          pl.push({
+            latitude: arr[i].start_location.lat,
+            longitude: arr[i].start_location.lng
+          })
+        }
+        let _points = [{
+            latitude: parseFloat(str1),
+            longitude: parseFloat(str2)
+          }, {
+            latitude: parseFloat(end1),
+            longitude: parseFloat(end2)
+          }];
+          _this.setData({
+            polyline: [{
+              points: pl,
+              color: '#4dd08b',
+              width: 4,
+              arrowLine: true
+            }],
+            yjTimes:(datas.duration/60).toFixed(2),
+            countLen:(datas.distance/1000).toFixed(2)
+          })
+  
+          _this.mapCtx.includePoints({
+            padding: [120],
+            points: _points,
+          })
+      }
+    }, err => {
+      console.log(1111,err)
+    })
+    // qqmapsdk.direction({
+    //   mode: 'driving',
+    //   from: {
+    //     'latitude': str1,
+    //     'longitude': str2
+    //   },
+    //   to: {
+    //     'latitude': end1,
+    //     'longitude': end2
+    //   },
+    //   policy,
+    //   success: function (res) {
+    //     var ret = res;
+    //     var coors = ret.result.routes[0].polyline,
+    //       pl = [];
+    //     var kr = 1000000;
+    //     for (var i = 2; i < coors.length; i++) {
+    //       coors[i] = Number(coors[i - 2]) + Number(coors[i]) / kr;
+    //     }
+    //     for (var i = 0; i < coors.length; i += 2) {
+    //       pl.push({
+    //         latitude: coors[i],
+    //         longitude: coors[i + 1]
+    //       })
+    //     }
+    //     let distance = (res.result.routes[0].distance / 1000).toFixed(1);
+    //     let time = res.result.routes[0].duration;
+    //     let hours = Math.floor(time / 60);
+    //     let minutes = time % 60;
+    //     if (time < 60) {
+    //       time = time + '分钟';
+    //     } else {
+    //       time =
+    //         hours + "小时" + (minutes.length < 2 ? "0" + minutes : minutes) + '分钟';
+    //     }
+    //     let _points = [{
+    //       latitude: parseFloat(str1),
+    //       longitude: parseFloat(str2)
+    //     }, {
+    //       latitude: parseFloat(end1),
+    //       longitude: parseFloat(end2)
+    //     }]
+    //     let endImg = strOrEnd == 1 ? "/assets/images/mapicon_navi_s.png" : "/assets/images/mapicon_navi_e.png";
+    //     _this.setData({
+    //       markers: []
+    //     })
+    //     _this.setData({
+    //       polyline: [{
+    //         points: pl,
+    //         color: '#3091e0DD',
+    //         width: 4,
+    //         arrowLine: true
+    //       }],
+    //       distance,
+    //       pathTime: time,
+    //       markers: [{
+    //         iconPath: car ? "/assets/images/mapCart.png" : "/assets/images/mapicon_navi_s.png",
+    //         id: 0,
+    //         latitude: str1,
+    //         longitude: str2,
+    //         width: 30,
+    //         height: 30,
+    //         rotate,
+    //       }, {
+    //         iconPath: endImg,
+    //         id: 1,
+    //         latitude: end1,
+    //         longitude: end2,
+    //         width: 30,
+    //         height: 30,
+    //         callout: {
+    //           content: _this.data.fixedLine ? (desName || app.globalData.lineEndAddress) : '',
+    //           borderRadius: 5,
+    //           padding: 3
+    //         }
+    //       }],
+    //     })
+    //     _this.mapCtx.includePoints({
+    //       padding: [200],
+    //       points: _points,
+    //     })
+    //   },
+    //   fail: function (error) {
+    //     console.error(error);
+    //   }
+    // });
+  },
+
+  bindcontroltap(e) {
+    this.movetoPosition();
+  },
+
+  movetoPosition() {
+    this.mapCtx.moveToLocation({
+      success(res) {
+        console.log(res);
+      },
+      fail(error) {
+        console.log(error);
+      }
+    });
+  },
+  toCancel() {
+    var order_id = this.data.orderId;
+    wx.navigateTo({
+      url: "/user_center/pages/orderCancel/orderCancel?orderId="+order_id
+    })
+  },
+  //取消叫车
+  modalCancel() {
+    let order = this.data.opt.orderNo || this.data.driver.orderNo; //  || wx.getStorageSync('orderNo')
+    if (this.data.fixedLine) {
+      order = this.data.opt.orderNo || this.data.driver.orderNo || wx.getStorageSync('lineOrderNo');
+    } else if (this.data.exclusiveCar) {
+      order = this.data.EXC_orderInfo.orderNo || this.data.orderListOrder;
+    }
+    wx.showModal({
+      content: '您确定取消吗？',
+      confirmText: "取消叫车",
+      confirmColor: "#999",
+      cancelText: "等待司机",
+      cancelColor: "#FF8008",
+      success(res) {
+        if (res.confirm) {
+          http.postRequest('/v1/carOrder/passenger/disposeOrder?orderNo=' + order, {}, wx.getStorageSync('header'), res => {
+            if (res.code === '1') {
+              clearInterval(_this.data.countTimer);
+              wx.removeStorageSync('lineOrderNo');
+              wx.navigateTo({
+                url: "/pages/index/index",
+              })
+              wx.showToast({
+                title: '订单已取消'
+              })
+            }
+          }, err => {
+            console.log(err)
+          })
+        }
+      },
+      fail(err) {
+        console.log(err)
+      }
+    })
+
+
+  },
+
+  // 格式化时间
+  parseTime(time) {
+    var time = time.toString();
+    return time[1] ? time : '0' + time;
+  },
+
+  // 拨打司机电话
+  callDriver(e) {
+    console.log('电话号码：', e.currentTarget.dataset)
+    wx.makePhoneCall({
+      phoneNumber: e.currentTarget.dataset.phone,
+      success() {
+        console.log('拨打成功')
+      }
+    })
+  },
+
+  //取消行程
+  cancleWait() {
+    let that = this;
+    var orderinfo = that.data.detail;
+    var userinfo = wx.getStorageSync('userInfo');
+    wx.showModal({
+      title: '提示',
+      content: '确定取消订单，并退款吗?',
+      success: function (res) {
+        if (res.confirm) {//这里是点击了确定以后
+          http.getRequest("/Api/DispatchMobile/AllRefund?LayerOrder="+wx.getStorageSync('LayerOrder')+"&out_trade_no="+orderinfo.Code+"&MemberId="+userinfo.Id, '', wx.getStorageSync('header'), res => {
+            if (res.code == 0) {
+              wx.showToast({
+                title: res.msg,
+                icon: 'loading',
+                duration: 1000
+              });
+              setTimeout(function(){
+                wx.redirectTo({
+                  url: '/pages/index/index',
+                })
+              },1000)
+            }else{
+              wx.showToast({
+                title: '取消失败',
+                icon:'error'
+              })
+            }
+          }, err => {
+            console.log(err)
+          })
+        } else {//这里是点击了取消以后
+        }
+      }
+    })
+  },
+
+  // 呼叫客服电话
+  toService() {
+    let servicePhone = wx.getStorageSync('servicePhone')
+    wx.makePhoneCall({
+      phoneNumber: servicePhone,
+      success: function () {
+        console.log('拨打成功')
+      },
+      fail: function () {
+        console.log('拨打失败')
+      }
+    })
+  },
+
+  // 重新呼叫
+  recallLine() {
+    let order = this.data.opt.orderNo || this.data.driver.orderNo || wx.getStorageSync('lineOrderNo');
+    wx.showModal({
+      content: '您确定重新呼叫吗？',
+      confirmText: '等待司机',
+      confirmColor: '#FF8008',
+      cancelText: '重新呼叫',
+      cancelColor: '#999999',
+      success(res) {
+        if (res.cancel) {
+          http.postRequest("/v2/passenger/remote/anewCallOut?orderNo=" + order, '', wx.getStorageSync('header'), res1 => {
+            wx.navigateTo({
+              url: '/driving_status/pages/orderService/orderService?from=fixedLine&orderInfo=' + JSON.stringify(res1.content),
+            })
+          }, err => {
+            console.log(err)
+          })
+        }
+      }
+    })
+  },
+
+  // 远程支付
+  linePay() {
+    let _this = this;
+    let order;
+    if (this.data.fixedLine) {
+      order = this.data.lineOrderInfo.orderNo || wx.getStorageSync('lineOrderNo')
+    } else {
+      order = this.data.driver.orderNo
+    }
+    if (this.data.linePayText === '付款') {
+      if (linePayTimer) clearTimeout(linePayTimer);
+      linePayTimer = setTimeout(() => {
+        http.postRequest('/v1/wx/applet/order/pay?orderNo=' + order, '', wx.getStorageSync('header'), res => {
+          if (res.code === '1') {
+            wx.requestPayment({
+              nonceStr: res.content.nonceStr,
+              package: res.content.package,
+              paySign: res.content.paySign,
+              timeStamp: res.content.timeStamp,
+              signType: res.content.signType,
+              success(res) {
+                console.log('调用支付成功：', res)
+                wx.showToast({
+                  title: '支付成功',
+                  duration: 2000,
+                  success() {
+                    _this.setData({
+                      lineTicketPrice: _this.data.lineTotPrice,
+                      linePayText: `已付款${_this.data.lineTotPrice}元`,
+                      lineTips: ''
+                    })
+                  }
+                })
+              },
+              fail(err) {
+                console.log(err)
+              }
+            })
+          }
+        }, err => {
+          console.log(err)
+        })
+      }, 500);
+
+    }
+  },
+  // 订单查询
+  orderCheck(order, businessType) {
+    if (order && businessType) {
+      return new Promise((resolve, reject) => {
+        http.getRequest("/v1/passenger/center/orderDetail?orderNo=" + order + "&businessType=" + businessType, '', wx.getStorageSync('header'), res => {
+          if (res.content) {
+            resolve(res.content)
+          } else {
+            reject(res.code)
+          }
+        }, err => {
+          console.log(err);
+          reject(err)
+        })
+      })
+    }
+  },
+
+  // 订单恢复
+  orderRecover(order) {
+    if (order) {
+      http.postRequest("/v1/carOrder/passenger/recoverOrder?orderNo=" + order, '', wx.getStorageSync('header'), res => {
+        if (res.success) {
+          console.log('recoverOrder');
+        }
+      }, err => {
+        console.log(err)
+      })
+    } else {
+      http.postRequest("/v1/carOrder/passenger/recoverOrder", '', wx.getStorageSync('header'), res => {
+        if (res.success) {
+          console.log('recoverOrder');
+        }
+      }, err => {
+        console.log(err)
+      })
+    }
+  },
+  // 包车打开本地地图
+  EXC_toLocalMap() {
+    let _this = this;
+    console.log(_this.data);
+    qqmapsdk.reverseGeocoder({
+      location: {
+        latitude: this.data.latitude,
+        longitude: this.data.longitude,
+      },
+      success(res) {
+        console.log('司机位置信息：', res)
+        wx.openLocation({
+          latitude: _this.data.latitude,
+          longitude: _this.data.longitude,
+          name: res.result.address,
+          address: res.result.address,
+          success(r) {
+            console.log('打开内置地图：', r)
+          }
+        })
+      }
+    })
+  },
+
+  formatTime(time) {
+    if (time >= 10) {
+      return time;
+    } else {
+      return `0${time}`
+    }
+  },
+
+  EXC_timeHandle(timeStamp, endTime) {
+    let exceed, resTime, resSec;
+    let nowTime = new Date().getTime();
+    if (timeStamp < 0 || parseInt((endTime - nowTime) / 1000) < 0) {
+      exceed = true;
+      resSec = parseInt((nowTime - endTime) / 1000);
+    } else {
+      resSec = parseInt((endTime - nowTime) / 1000)
+    }
+    let d = parseInt(resSec / (24 * 60 * 60));
+    let h = this.formatTime(parseInt(resSec / (60 * 60) % 24));
+    let m = this.formatTime(parseInt(resSec / 60 % 60));
+    let s = this.formatTime(parseInt(resSec % 60));
+
+    if (d > 0) {
+      if (parseInt(d) == 0) {
+        resTime = d + '天';
+      } else {
+        if (parseInt(h) == 0) {
+          resTime = d + '天';
+        } else {
+          resTime = d + '天' + h + '小时';
+        }
+      }
+    } else if (d <= 0 && h > 0) {
+      if (parseInt(h) == 0) {
+        resTime = m + '分钟';
+      } else {
+        if (parseInt(m) == 0) {
+          resTime = h + '小时';
+        } else {
+          resTime = h + '小时' + m + '分钟';
+        }
+      }
+
+    } else {
+      if (parseInt(m) == 0) {
+        resTime = s + '秒';
+      } else {
+        if (parseInt(s) == 0) {
+          resTime = m + '分钟';
+        } else {
+          resTime = m + '分钟' + s + '秒';
+        }
+      }
+    }
+    return {
+      exceed,
+      resTime
+    }
+  },
+
+  // 超时 行程等待中
+  exceedTimeHandle(timeStamp) {
+    let endTime = new Date().getTime() + timeStamp;
+    let res = this.EXC_timeHandle(timeStamp, endTime);
+    this.setData({
+      exceedWaitingTimeNum: res.resTime
+    })
+    if (exceedGlb) clearInterval(exceedGlb);
+    exceedGlb = setInterval(() => {
+      res = this.EXC_timeHandle(timeStamp, endTime);
+      this.setData({
+        exceedWaitingTimeNum: res.resTime
+      })
+      if (res.exceed) {
+        this.setData({
+          exceedWaitingTime: res.exceed
+        })
+      }
+    }, 1000);
+  },
+
+  // 获取当前位置
+  getCurrentLocation() {
+    let _this = this;
+    return new Promise((resolve, reject) => {
+      wx.getLocation({
+        type: 'gcj02',
+        success(res) {
+          console.log(res)
+          let _latitude = res.latitude
+          let _longitude = res.longitude
+
+          _this.setData({
+            latitude: _latitude,
+            longitude: _longitude,
+          })
+          resolve();
+        }
+      })
+
+    })
+  },
+
+  toMyIntegral(){
+    wx.navigateTo({
+      url: '/user_center/pages/integral/integral',
+    })
+  },
+  gotopay(){
+    let that = this;
+    wx.navigateTo({
+      url: '/driving_status/pages/gotopay/gotopay?orderId='+that.data.orderId,
+    })
+  },
+})

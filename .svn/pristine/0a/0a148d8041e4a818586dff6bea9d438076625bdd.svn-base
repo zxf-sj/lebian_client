@@ -1,0 +1,21 @@
+<view class="container">
+  <view class="cur-city">当前城市：太原</view>
+  <view class="list">
+    <view class="title">吕梁</view>
+    <view class="sub-list">
+      <view class="sub-title" bindtap="chooseStation">太原==>离石</view>
+      <view class="sub-title" bindtap="chooseStation">太原==>孝义</view>
+      <view class="sub-title" bindtap="chooseStation">太原==>交城</view>
+    </view>
+    <view class="title">忻州</view>
+    <view class="sub-list">
+      <view class="sub-title" bindtap="chooseStation">太原==>忻州市区</view>
+      <view class="sub-title" bindtap="chooseStation">太原==>忻府区</view>
+    </view>
+    <view class="title">忻州</view>
+    <view class="sub-list">
+      <view class="sub-title" bindtap="chooseStation">太原==>忻州市区</view>
+      <view class="sub-title" bindtap="chooseStation">太原==>忻府区</view>
+    </view>
+  </view>
+</view>

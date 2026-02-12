@@ -1,0 +1,13 @@
+<view class="container">
+	<!-- <scroll-view scroll-y lower-threshold="100" bindscrolltolower="scrollToLower" style="height: 100vh;"> -->
+		<view class="item">
+			<view class="tit">{{list.title}}</view>
+			<view class="cont">{{list.messageInfo}}</view>
+			<view class="time">{{list.timeDescribe}}</view>
+			<view class="tag-new" wx:if="{{list.readState == 0}}">
+				<image src="/assets/images/xing.png"></image>
+				<text>新</text>
+			</view>
+		</view>
+	<!-- </scroll-view> -->
+</view>

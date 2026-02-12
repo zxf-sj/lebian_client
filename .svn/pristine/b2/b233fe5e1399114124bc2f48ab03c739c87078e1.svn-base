@@ -1,0 +1,82 @@
+<!--user_center/pages/invoice/invoice.wxml-->
+<view class="container">
+  <form bindsubmit="onSubmit" bindreset="onReset">
+    
+    <!-- 发票信息 -->
+    <view class="section">
+      <text class="title">发票信息</text>
+      <view class="input-item">
+        <view class="label"><text class="xingxing">*</text> 发票抬头</view>
+        <input name="Title" value="{{Title}}" placeholder="请输入发票抬头" required />
+      </view>
+      <view class="input-item">
+        <view class="label"><text class="xingxing">*</text> 单位税号</view>
+        <input name="TaxID" value="{{TaxID}}" placeholder="请输入单位税号" required />
+      </view>
+      <view class="input-item">
+        <text class="label">开户银行</text>
+        <input name="Bank" value="{{Bank}}" placeholder="请输入开户银行" />
+      </view>
+      <view class="input-item">
+        <text class="label">银行账号</text>
+        <input name="BankAccount" value="{{BankAccount}}" placeholder="请输入银行账号" type="number" />
+      </view>
+      <view class="input-item">
+        <text class="label">单位地址</text>
+        <input name="Address" value="{{Address}}" placeholder="请输入单位地址" />
+      </view>
+      <view class="input-item">
+        <text class="label">单位电话</text>
+        <input name="Telephone" value="{{Telephone}}" placeholder="请输入单位电话" type="number" />
+      </view>
+    </view>
+
+    <!-- 出行人信息 -->
+    <view class="section">
+      <text class="title">出行人信息</text>
+      <view class="input-item">
+        <view class="label"><text class="xingxing">*</text> 出行人姓名</view>
+        <input name="PassengerName" value="{{PassengerName}}" placeholder="请输入出行人姓名" required />
+      </view>
+      <view class="input-item">
+        <view class="label"><text class="xingxing">*</text> 身份证件</view>
+        <input name="IDNumber" value="{{IDNumber}}" placeholder="请输入身份证号码" required />
+      </view>
+      <!-- <view class="input-item">
+        <text class="label">出行日期 *</text>
+        <picker mode="date" name="travelDate" value="{{travelDate}}" start="2023-01-01" end="2030-12-31" bindchange="onDateChange">
+          <view class="picker-view">{{travelDate || '请选择出行日期'}}</view>
+        </picker>
+      </view>
+      <view class="input-item">
+        <text class="label">出发地 *</text>
+        <input name="departure" value="{{departure}}" placeholder="请输入出发地" required />
+      </view>
+      <view class="input-item">
+        <text class="label">目的地 *</text>
+        <input name="destination" value="{{destination}}" placeholder="请输入目的地" required />
+      </view> -->
+    </view>
+
+    <!-- 联系方式 -->
+    <view class="section">
+      <text class="title">联系方式</text>
+      <!-- <view class="input-item">
+        <text class="label">订单手机号 *</text>
+        <input name="orderAmount" value="{{orderAmount}}" placeholder="请输入手机号" type="number" required />
+      </view> -->
+      <view class="input-item">
+        <view class="label"><text class="xingxing">*</text> 电子邮箱</view>
+        <input name="Email" value="{{Email}}" placeholder="请输入电子邮箱" type="text" required />
+      </view>
+      <view class="input-item textarea-item">
+        <text class="label">备注</text>
+        <textarea name="Note" value="{{Note}}" placeholder="请输入备注信息" />
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <button form-type="submit" class="submit-btn">提交订单</button>
+    <button form-type="reset" class="reset-btn">重置</button>
+  </form>
+</view>

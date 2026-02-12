@@ -1,0 +1,103 @@
+/* components/travel/travel.wxss */
+.information {
+	box-shadow: 0 2px 4px rgb(0, 0, 0,.4), 0 0 6px rgba(0, 0, 0, .04);
+	margin: 30rpx 20rpx 0;
+	border-radius: 10px;
+}
+.information .destination {
+	display: flex;
+	min-height: 100rpx;
+	border-bottom: 1px solid #ccc;
+}
+.information .destination1 {
+	border-bottom: 1px solid #ccc;
+}
+.information .destination1 .perpo_num {
+	width: 100%;
+	display: flex;
+	height: 100rpx;
+}
+
+.information .destination1 .perpo_list {
+	width: 100%;
+}
+.information .destination1 .perpo_list .item {
+	width: 100%;
+	height: 100rpx;
+	display: flex;
+}
+.information .destination1 .perpo_list .item .btn {
+	width: 40rpx;
+	height: 100%;
+}
+.information .destination1 .perpo_list .item .btn {
+	width: 10%;
+	height: 100%;
+}
+.information .destination1 .perpo_list .item .right {
+	flex: 1;
+	height: 100%;
+	display: block;
+}
+.information .destination1 .perpo_list .item .right .name {
+	height: 50%;
+	color: #010101;
+	margin-right: 20rpx;
+	line-height: 70rpx;
+	font-size: 14px;
+}
+.information .destination1 .perpo_list .item .right .phoen {
+	height: 50%;
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	color: #bbbbbb;
+	font-size: 12px;
+}
+.information .destination .left {
+	width: 30%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #101010;
+}
+.information .destination .right {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #BBBBBB;
+	font-size: 14px;
+}
+.information .destination1 .perpo_num .left {
+	width: 20%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #101010;
+}
+.information .destination1 .perpo_num .right {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	color: #BBBBBB;
+	margin-right: 10rpx;
+}
+.information .remarks {
+	font-size: 12px;
+	height: 150rpx;
+	line-height: 40rpx;
+	padding: 20rpx;
+	color: #F08718;
+}
+.btnAdd {
+	width: 150rpx;
+	height: 50rpx;
+	border: 1px solid #F08718;
+	border-radius: 10rpx;
+	color: #F08718;
+	text-align: center;
+	font-size: 14px;
+	line-height: 50rpx;
+}

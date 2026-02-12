@@ -1,0 +1,83 @@
+<view class="top">
+  <map class="map" id="map" style="width:100%;height:660rpx;"
+   latitude="{{latitude}}"
+    longitude="{{longitude}}" 
+    polyline="{{polyline}}" 
+    markers="{{markers}}" 
+    controls="{{controls}}"
+		include-points='{{points}}' show-location="true">
+	</map>
+</view>
+<view class="container">
+	<view class="md">
+		<view class="total_driver">
+			<view class="driver_info">
+				<view class="driver_detailed">
+					<view class="d_top1">
+						<view class="company">订单号：{{driverInfo.Code}}</view>
+					</view>
+          <view class="d_top1">
+						<view class="company">起点：{{driverInfo.IntoLocation}}</view>
+					</view>
+          <view class="d_top1">
+						<view class="company">终点：{{driverInfo.OffLocation}}</view>
+					</view>
+          <view class="d_top1">
+						<view class="company">乘车人：{{driverInfo.Personal_Name}} {{driverInfo.Personal_Phone}}</view>
+					</view>
+          <view class="d_top1">
+						<view class="company">预计到达上车点时间:{{yujitime}}分钟</view>
+					</view>
+          <view class="d_top1">
+						<view class="company">座位:{{driverInfo.SeatNumber}}座</view>
+					</view>
+					<view class="detailed_cart"></view>
+				</view>
+			</view>
+		</view>
+	</view>
+	<view class="md">
+		<view class="total_driver">
+			<view class="driver_info">
+				<view class="driver_img">
+					<image class="driverImg" src="{{driverImg}}"/>
+					<view class="name">{{driverInfo.DispatchListId_DriverId_Name}}</view>
+				</view>
+        <view class="car_img">
+          <image class="carimage" 
+          src="{{driverInfo.DispatchListId_CarDirId_CarPicture?httpsUrl+driverInfo.DispatchListId_CarDirId_CarPicture:'https://www.qierchuxing.com/upload/Annex/202409/AX-20240906-513300-223.png'}}"/>
+				</view>
+			</view>
+      <view class="driver_info">
+        <view class="driver_detailed" style="display: flex;">
+					<view class="d_md">
+						<view class="detailed_Cartnumber">{{driverInfo.DispatchListId_CarDirId_Name}}</view>
+					</view>
+          <view class="d_md">
+						<view class="detailed_Cartnumber">{{driverInfo.OnLineCarTypeId_Name?driverInfo.OnLineCarTypeId_Name:""}}  {{driverInfo.DispatchListId_CarDirId_ExtProp11?driverInfo.DispatchListId_CarDirId_ExtProp11:''}}</view>
+					</view>
+					<view class="detailed_cart"></view>
+			  </view>
+      </view>
+			<view class="driver_icon" bindtap="callDriver" data-phone="{{driverInfo.DispatchListId_DriverId_Phone}}">
+					<image src="https://www.qierchuxing.com/upload/Annex/202405/AX-20240506-737060-123.png" />
+			</view>
+      <view class="calldriver">联系司机</view>
+		</view>
+		<view class="call-service" bindtap="toService">
+			<image class="call-icon" src="/assets/images/kefu.png"></image>
+			<text class="call-text">联系客服</text>
+		</view>
+	</view>
+  <view class="btn-area" wx:if="{{driverInfo.FormState != '100004-0001020001' &&(driverInfo.IsPayment == '100004-0000010002' || !driverInfo.IsPayment)}}">
+    <button type="primary" size="" catchtap="gotopay" data-ids="{{driverInfo.Id}}">支付</button>
+  </view>
+  <view class="btn-area" wx:if="{{driverInfo.FormState  == '100004-0001020002' && (driverInfo.IsChangeEndLocation  == '100004-0000010002' || driverInfo.IsChangeEndLocation == null)}}">
+    <button catchtap="toEnd" class="zhongdian" data-ids="{{driverInfo.Id}}">修改下车地点</button>
+  </view>
+  <view class="btn-area" wx:if="{{driverInfo.IsChangeEndLocation  == '100004-0000010001' && detailData.FormState!='100004-0001020001'}}">
+    <button catchtap="cancelChangeEnd" class="zhongdian" data-ids="{{driverInfo.Id}}">取消修改下车点</button>
+  </view>
+  <view class="tips">注意乘车安全，请确认车主信息</view>
+
+</view>

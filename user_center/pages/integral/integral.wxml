@@ -1,0 +1,47 @@
+<view class="container">
+  <view class="banner">
+    <view class="inner-top">
+      <view class="num">{{number}}</view>
+      <view class="num-desc">
+        <image src="../../assets/images/five-star.png" style="width:32rpx;height:32rpx;margin-right:10rpx;"></image>
+        <text>当前可用积分</text>
+      </view>
+    </view>
+    <view class="tab">
+      <view class="detail" bindtap="toIntegralDetail" data-score="{{number}}">
+        <image src="../../assets/images/integral-detail.png" style="width:90rpx;height:90rpx;"></image>
+        <view class="tab-name">积分明细</view>
+      </view>
+      <view class="order" bindtap="toMyOrder">
+        <image src="../../assets/images/order.png" style="width:90rpx;height:90rpx;"></image>
+        <view class="tab-name">我的订单</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="list-wrapper">
+    <!-- <view class="list-title">积分兑换</view> -->
+    <!-- <scroll-view class="scroll-box" scroll-y="true" bindscrolltolower="scrollToLower" wx:if="{{hasOrder}}">
+      <view class="item" wx:for="{{listData}}" wx:key="index" bindtap="toGoodsDetail" data-item="{{item}}">
+        <view class="top">
+          <view class="l">
+            <image src="http://scapp.xysc16.com/upload/wmp/imgs/coupon.png" style="width:80rpx;height:80rpx;"></image>
+            <view class="l-r">
+              <view class="item-name">{{item.couponName}}</view>
+              <view class="item-num">{{item.integralNumber}}积分</view>
+            </view>
+          </view>
+          <view class="r {{item.isExchange == 0 ? 'cur-r' : ''}}" catchtap="exchange" data-item="{{item}}">
+            {{item.isExchange == 0 ? '积分不足' : '立即兑换'}}</view>
+        </view>
+        <view class="btm">有效时间：{{item.timeDescribe}}</view>
+      </view>
+    </scroll-view>
+
+    <view class="no-activity" wx:else>
+      <image src="../../assets/images/no-activity.png" style="width:300rpx;height:300rpx;"></image>
+      <view class="no-txt">暂无兑换活动</view>
+    </view> -->
+  </view>
+</view>
+<daohang></daohang>

@@ -1,0 +1,9 @@
+{
+  "backgroundTextStyle": "dark",
+  "navigationBarBackgroundColor": "#fff",
+  "navigationBarTitleText": "我的次卡",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "daohang":"/components/daohang/daohang"
+  }
+}

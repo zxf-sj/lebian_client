@@ -1,0 +1,32 @@
+<!--user_center/pages/invoiceTemplate/invoiceTemplate.wxml-->
+<view class="container">
+    <form bindsubmit="onSubmit" bindreset="onReset">
+        <view class="section">
+            <view class="input-item">
+                <view class="label"><text class="xingxing">*</text> 发票抬头</view>
+                <input name="Title" value="{{Title}}" placeholder="请输入发票抬头" required />
+            </view>
+            <view class="input-item">
+                <view class="label"><text class="xingxing">*</text> 单位税号</view>
+                <input name="TaxID" value="{{TaxID}}" placeholder="请输入单位税号" required />
+            </view>
+            <view class="input-item">
+                <text class="label">开户银行</text>
+                <input name="Bank" value="{{Bank}}" placeholder="请输入开户银行" />
+            </view>
+            <view class="input-item">
+                <text class="label">银行账号</text>
+                <input name="BankAccount" value="{{BankAccount}}" placeholder="请输入银行账号" type="number" />
+            </view>
+            <view class="input-item">
+                <text class="label">单位地址</text>
+                <input name="Address" value="{{Address}}" placeholder="请输入单位地址" />
+            </view>
+            <view class="input-item">
+                <text class="label">单位电话</text>
+                <input name="Telephone" value="{{Telephone}}" placeholder="请输入单位电话" type="number" />
+            </view>
+        </view>
+        <button form-type="submit" class="submit-btn">{{btn}}</button>
+    </form>
+</view>

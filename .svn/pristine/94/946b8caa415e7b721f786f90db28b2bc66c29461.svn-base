@@ -1,0 +1,35 @@
+<view class="page">
+  <view class="aa">
+    <view class="aa2">请选择{{ren}}</view>
+  </view>
+  <view class='carts'> 
+    <view class='goods' wx:for="{{goods}}" wx:key="goods">
+      <view class='goods-check'>
+        <icon wx:if="{{item.selected}}" type="success" color="red" bindtap="change" data-index="{{index}}" />
+        <icon wx:else type="circle" bindtap="change" data-index="{{index}}" />
+      </view>
+      <view class='goods-details'>
+        <view class='goods-img'>
+          <image src='/assets/images/chengke.png'></image>
+        </view>
+        <view class='goods-title'>
+          <view class='goods-name'>姓   名：{{item.RealName}}
+            <view class='goods-apply' wx:if="{{item.isChildren=='100004-0000010001'}}">儿童</view>
+          </view>
+          <!-- <view class="idcard">证件号：{{item.IdCard}}</view> -->
+          <view class='goods-bot'>
+            <text class='goods-pri'>电 话：{{item.Phone}}</text>
+          </view>
+
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="emptyview"></view>
+  <view class="btnv">
+    <button class='btn' bindtap='handleBtn'>确定</button>
+  </view>
+  <view class="addUser" bindtap="addUser">
+      <image src="/assets/images/add-friend.png" style="width:80rpx;height:80rpx;"></image>
+  </view>
+</view>

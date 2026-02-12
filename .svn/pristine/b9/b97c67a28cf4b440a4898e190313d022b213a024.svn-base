@@ -1,0 +1,129 @@
+.container{
+  width: 100%;
+  height: 100vh;
+  background-color: #f2f2f2;
+  padding-top: 40rpx;
+}
+
+.header{
+  display: flex;
+  align-items: center;
+  padding: 10rpx 0;
+  background-color: #fff;
+  font-size: 34rpx;
+}
+
+.header>image{
+  width: 40rpx;
+  height: 40rpx;
+  margin: 0 20rpx;
+}
+
+.list{
+  padding: 40rpx;
+}
+
+.item{
+  position: relative;
+  height: 200rpx;
+  display: flex;
+  margin-bottom: 40rpx;
+  background-color: #fff;
+}
+
+.left{
+  width: 200rpx;
+  height: 200rpx;
+  color: #fff;
+}
+
+.left>image{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200rpx;
+  height: 200rpx;
+}
+
+.left>.text{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200rpx;
+  height: 200rpx;
+}
+
+.price{
+  font-size: 32rpx;
+}
+
+.price>text{
+  font-size: 80rpx;
+}
+
+.right{
+  flex: 1;
+  padding: 20rpx;
+}
+
+.top{
+  font-size: 34rpx;
+  padding-bottom: 10rpx;
+  margin-bottom: 10rpx;
+  border-bottom: 1rpx dotted #bbb;
+}
+
+.top>view{
+  color: #333;
+  line-height: 56rpx;
+  font-size: 28rpx;
+}
+
+.top>.name{
+  color: #f00;
+  font-size: 34rpx;
+  font-weight: bold;
+}
+
+.btm{
+  color: #999;
+  font-size: 20rpx;
+  display: flex;
+  align-items: center;
+}
+
+.tag{
+  width: 120rpx;
+  height: 120rpx;
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: #f00;
+}
+
+.tag image{
+  width: 120rpx;
+  height: 120rpx;
+}
+
+.num{
+  font-size: 24rpx;
+  position: absolute;
+  right: 25rpx;
+  top: 25rpx;
+  transform: rotate(45deg);
+}
+.lingqu{
+  width: 100%;
+  height: 40rpx;
+  background: #fff;
+  line-height: 40rpx;
+  font-size: 28rpx;
+  padding-left: 80rpx;
+  color: #fb0101;
+  padding-bottom: 10rpx;
+}

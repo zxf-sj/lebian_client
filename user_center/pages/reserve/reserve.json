@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "distanceNav":"/components/distanceNav/distanceNav"
+  },
+  "navigationBarTitleText": "乐遍拼车"
+}

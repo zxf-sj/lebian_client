@@ -1,0 +1,53 @@
+import http from '../../../utils/http'
+const app = getApp();
+Page({
+  data: {
+    listData: null,
+    loading:false,
+    noMore:false,
+    pageNo:1,
+  },
+  onLoad: function (options) {
+    var userinfo = wx.getStorageSync('userInfo');
+    if(!userinfo){
+      wx.navigateTo({
+        url: '/user_center/pages/login/login',
+      })
+    }
+    this.getlist();
+  },
+  getlist(){
+    let that = this;
+    var userinfo = wx.getStorageSync('userInfo');
+    http.getRequest("/Api/NewMobile/MyCoupon?MemberInfoId="+userinfo.Id+"&IsUse=100004-0000010002&page="+that.data.pageNo+"&limit=10",'',wx.getStorageSync('header'),res=>{
+      if(res.code === 0){
+        if(that.data.pageNo==1){
+          let data = res.data;
+          this.setData({
+            listData:data  
+          })
+        }else{
+          var listData = res.data
+          that.setData({
+            listData: this.data.listData.concat(listData)
+          })
+        }
+      }
+    },err=>{
+      console.log(err)
+    })
+  },
+  scrollToLower: function (e) {
+    console.log(11111)
+    this.setData({
+      loading: true,
+      pageNo: this.data.pageNo + 1
+    });
+    this.getlist();
+},
+  lingQu(e){
+    wx.reLaunch({
+      url: '/pages/index/index',
+    })
+  },
+})

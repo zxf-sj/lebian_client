@@ -1,0 +1,404 @@
+//import qqmapsdk from '../../libs/qqMap';
+const BASE_URL = require("../../utils/BASE_URL");
+var baseUrl = BASE_URL.BASE_URL //配置基础url
+var bmap = require('../../libs/bmap-wx.min');
+const debounce = require('../../utils/debounce');
+const app = getApp();
+Page({
+  data: {
+    endCity: '',
+    value: '',
+    destination:'',
+    latitude:'',
+    longitude:'',
+    address:[],
+    type:"",//pc 拼车 dx独享,
+    isyun:""//是否运营车辆
+  },
+  onReady: function () {
+    this.mapCtx = wx.createMapContext("indexMap"); // 地图组件的id
+  },
+  onLoad(opt) {
+    this.searchNearby();
+   
+    console.log("传值",opt)
+    this.setData({
+      type:opt.type,
+      isyun:opt.isyun
+    })
+  },
+  onShow() {
+
+  },
+  searchNearby() {
+    let _this = this;
+    var item = wx.getStorageSync('lineItme');
+    if(item){
+      _this.setData({
+        latitude: item.EndLocation_Latitude,
+        longitude:item.EndLocation_Longitude,
+        endCity:item.EndLocation_Name,
+        scale:18,
+      })
+      var starInfo = {};
+      starInfo.endCity = item.EndLocation_Name;
+      starInfo.endAddress = item.StatingLocation_DetailAddress;
+      starInfo.endLait = item.EndLocation_Latitude;
+      starInfo.endLont = item.EndLocation_Longitude;
+      wx.setStorageSync('endInfo',starInfo);
+    }else{
+      _this.getUserLocation();
+    }
+  },
+    //定位当前位置
+    getMyLocation() {
+      var _self = this;
+      var BMap = new bmap.BMapWX({
+        ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+      });
+      BMap.regeocoding({  
+        success:function(res){
+          var data = res.wxMarkerData[0];
+          _self.setData({
+            latitude: data.latitude,
+            longitude: data.longitude
+          })
+        } 
+      });  
+      // wx.getLocation({
+      //   type: "gcj02",
+      //   success(res) {
+      //     _self.setData({
+      //       latitude: res.latitude,
+      //       longitude: res.longitude
+      //     })
+      //   },
+      //   fail(err) {
+      //     console.log(err);
+      //   }
+      // })
+    },
+  getUserLocation(){
+    var _self = this;
+    var BMap = new bmap.BMapWX({
+      ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+    });
+    wx.getLocation({
+      type: "BD09",
+      success(res) {
+        BMap.regeocoding({
+          location: res.latitude + ',' + res.longitude,
+          success: function (res1) {
+            let adRes = res1.originalData.result;
+            _self.setData({
+              latitude: adRes.location.latitude,
+              longitude: adRes.location.longitude,
+              endCity:adRes.addressComponent.city,
+              scale:15
+            })
+          }
+        })
+        // qqmapsdk.reverseGeocoder({
+        //     location: {
+        //       latitude: res.latitude,
+        //       longitude: res.longitude,
+        //     },
+        //     success: function (res1) {
+        //       let adRes = res1.result;
+        //       _self.setData({
+        //         latitude: res.latitude,
+        //         longitude: res.longitude,
+        //         endCity:adRes.address_component.city,
+        //         scale:15
+        //       })
+        //     },
+        //   });
+      },
+      fail(err) {
+        console.log(err);
+      }
+    })
+  },
+  bindregionchange: function (e) {
+    
+    var BMap = new bmap.BMapWX({
+      ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+    });
+    if (e.type == 'end' && (e.causedBy == 'scale' || e.causedBy == 'drag')) {
+      let that = this;
+      var endCity = that.data.endCity;
+      that.mapCtx.getCenterLocation({
+        success: function (res) {
+          BMap.regeocoding({
+            location: res.latitude + ',' + res.longitude,
+            success: function (res1) {
+              let adRes = res1.originalData.result;
+              if(that.data.isyun==1){
+                if(startCity!= adRes.addressComponent.city){
+                  if(startCity!= adRes.addressComponent.district){
+                    wx.showToast({
+                      title: '该线路没开通',
+                      icon:'none'
+                    })
+                  }else{
+                    var endInfo ={};
+                    endInfo.endCity = endCity;
+                    endInfo.endLait = adRes.location.lat;
+                    endInfo.endLont = adRes.location.lng;
+                    endInfo.endAddress = adRes.formatted_address;
+                    wx.setStorageSync('endInfo',endInfo);
+                    that.setData({
+                      value:adRes.formatted_address
+                    })
+                  }
+                }else{
+                  var endInfo ={};
+                  endInfo.endCity = endCity;
+                  endInfo.endLait = adRes.location.lat;
+                  endInfo.endLont = adRes.location.lng;
+                  endInfo.endAddress = adRes.formatted_address;
+                  wx.setStorageSync('endInfo',endInfo);
+                  that.setData({
+                    value:adRes.formatted_address
+                  })
+                }
+              }else{
+                var endInfo ={};
+                endInfo.endCity = endCity;
+                endInfo.endLait = adRes.location.lat;
+                endInfo.endLont = adRes.location.lng;
+                endInfo.endAddress = adRes.formatted_address;
+                wx.setStorageSync('endInfo',endInfo);
+                that.setData({
+                  value:adRes.formatted_address
+                })
+              }
+            },
+            fail: function () {
+                wx.showToast({
+                    title: '请检查位置服务是否开启',
+                })
+            },
+          });
+          // qqmapsdk.reverseGeocoder({
+          //   location: {
+          //     latitude: res.latitude,
+          //     longitude: res.longitude,
+          //   },
+          //   success: function (res) {
+          //     if(that.data.isyun==1){
+          //       let adRes = res.result;
+          //       if(endCity!= adRes.address_component.city){
+          //         if(endCity!= adRes.address_component.district){
+          //           wx.showToast({
+          //             title: '该线路没开通',
+          //             icon:'none'
+          //           })
+          //         }else{
+          //           var endInfo ={};
+          //           endInfo.endCity = endCity;
+          //           endInfo.endLati = adRes.location.lat;
+          //           endInfo.endLong = adRes.location.lng;
+          //           endInfo.endAddress = adRes.formatted_addresses.recommend;
+          //           that.setData({
+          //             value:adRes.formatted_addresses.recommend
+          //           })
+          //           wx.setStorageSync('endInfo', endInfo);
+          //         }
+          //       }else{
+          //         var endInfo ={};
+          //         endInfo.endCity = endCity;
+          //         endInfo.endLati = adRes.location.lat;
+          //         endInfo.endLong = adRes.location.lng;
+          //         endInfo.endAddress = adRes.formatted_addresses.recommend;
+          //         that.setData({
+          //           value:adRes.formatted_addresses.recommend
+          //         })
+          //         wx.setStorageSync('endInfo', endInfo);
+          //       }
+          //     }else{
+          //       let adRes = res.result;
+          //       var endInfo ={};
+          //       endInfo.endCity = endCity;
+          //       endInfo.endLati = adRes.location.lat;
+          //       endInfo.endLong = adRes.location.lng;
+          //       endInfo.endAddress = adRes.formatted_addresses.recommend;
+          //       that.setData({
+          //         value:adRes.formatted_addresses.recommend
+          //       })
+          //       wx.setStorageSync('endInfo', endInfo);
+          //     }
+          //   },
+          // });
+        }
+      })
+    }
+  },
+  searchInputend: debounce(function(e) {
+    var _this = this;
+    var value = e.detail.value;
+    if (value) {
+      var BMap = new bmap.BMapWX({
+        ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+        // ak:'RlQQ4K0R29zc4SDtMUOtps9XfTrCzZ1X'
+      });
+      BMap.suggestion({
+        "query":value,
+        region: _this.data.endCity,
+        city_limit: false,
+        ret_coordtype:'BD09ll',
+        success:function(res){
+          let data = res.result
+          _this.setData({
+            address: data,
+            value
+          })
+        }
+      });
+      // qqmapsdk.getSuggestion({
+      //   keyword: value,
+      //   region: _this.data.isyun==1?_this.data.endCity:'',
+      //   region_fix:_this.data.isyun==1?1:0,
+      //   policy:1,
+      //   success: function (res) {
+      //     let data = res.data
+      //     _this.setData({
+      //       address: data,
+      //       value
+      //     })
+      //   }
+      // })
+    } else {
+      this.setData({
+        address:[],
+        value: '',
+      })
+    }
+  },500),
+  //切换城市
+  chooseCity() {
+    if(this.data.fixedLine){
+      wx.navigateTo({
+        url: "/pages/searchCity/searchCity?urlFrom=1&type=fixedLine",
+      })
+    }else{
+      wx.navigateTo({
+        url: "/pages/searchCity/searchCity?urlFrom=1",
+      })
+    }
+  },
+  bindArea(e){
+    var area = e.currentTarget.dataset.area;
+    let that = this;
+    that.setData({
+      value:area
+    })
+    that.searchInputend1(area);
+  },
+  searchInputend1(area) {
+    var _this = this;
+    if (area) {
+      // qqmapsdk.getSuggestion({
+      //   keyword: area,
+      //   region: _this.data.isyun==1?_this.data.endCity:'',
+      //   region_fix:_this.data.isyun==1?1:0,
+      //   policy:1,
+      //   success: function (res) {
+      //     let data = res.data
+      //     _this.setData({
+      //       address: data,
+      //     })
+      //   }
+      // })
+      var BMap = new bmap.BMapWX({
+        ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+      });
+      BMap.suggestion({
+        "query":area,
+        region: _this.data.endCity,
+        city_limit: true,
+        location:true,
+        page_size: 10,
+        scope: 1, 
+        success:function(res){
+          let data = res.result
+          _this.setData({
+            address: data,
+          })
+        }
+      });
+    } else {
+      this.setData({
+        address:[],
+        value: '',
+      })
+    }
+  },
+  searchCancel(){
+    this.setData({
+      value:'',
+      address:[]
+    })
+  },
+  clickAddress(e) {
+    let that = this;
+    let item = e.currentTarget.dataset.item
+    var endInfo ={};
+    var end = wx.getStorageSync('endInfo');
+    endInfo.endCity = end.endCity;
+    endInfo.endAddress = item.address;
+    endInfo.endLait = item.location.lat;
+    endInfo.endLont = item.location.lng;
+    that.setData({
+      value:item.name,
+      address:[],
+      latitude:item.location.lat,
+      longitude:item.location.lng,
+      scale:18
+    })
+    wx.setStorageSync('endInfo', endInfo);
+  },
+  checkOk(){
+    var type = this.data.type;
+    var endInfo = wx.getStorageSync('endInfo');
+    if(endInfo.endAddress==""){
+      wx.showToast({
+        title: '请选择下车地点',
+        icon:'none'
+      })
+      return false;
+    }
+    console.log('endInfo',endInfo)
+    let requests = endInfo.endLont + "," + endInfo.endLait;
+    console.log('转前的坐标',requests)
+    wx.request({
+      url:baseUrl + '/api/MapWebApi/GeoConv',
+      data:{
+        LatLngs:requests,
+        Model:1,
+      },
+      method:"POST",
+      success:(res)=>{
+        console.log(res)
+        let endInfos = {}
+        endInfos.endAddress = endInfo.endAddress
+        endInfos.endCity = endInfo.endCity
+        endInfos.endLait = res.data.data[0].Item1
+        endInfos.endLont = res.data.data[0].Item2
+        console.log('转后的坐标',endInfos)
+        wx.setStorageSync('endInfo',endInfos);
+       
+        if(type=='pc'){
+          wx.reLaunch({
+            url: '/pages/pingche/pingche',
+          })
+        }else{
+          wx.reLaunch({
+            url: '/pages/duxiang/duxiang',
+          })
+        }
+      }
+    })
+   
+  }
+})

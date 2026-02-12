@@ -1,0 +1,10 @@
+{
+  "backgroundTextStyle": "dark",
+  "navigationBarBackgroundColor": "#fff",
+  "navigationBarTitleText": "行程订单",
+  "navigationBarTextStyle": "black",
+  "enablePullDownRefresh":true,
+  "usingComponents": {
+    "daohang":"/components/daohang/daohang"
+  }
+}

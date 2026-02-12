@@ -1,0 +1,140 @@
+/* driving_status/pages/payCard/payCard.wxss */
+@import "../../../miniprogram_npm//weui-miniprogram//weui-wxss/dist/style/weui.wxss";
+.page {
+  width: 100%;
+  height: 100vh;
+  background-color: #f6f6f6;
+}
+
+.box {
+  width: 100%;
+}
+
+.nav {
+  width: 100%;
+  padding: 20rpx;
+  box-sizing: border-box;
+  height: 100rpx;
+  display: flex;
+  margin-top: 10rpx;
+  background-color: #fff;
+}
+.nav text {
+  width: 200rpx;
+}
+.list {
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+ 
+}
+
+.list image {
+  width: 100%;
+  height: 200rpx;
+}
+
+.item {
+  width: 98%;
+  height: 200rpx;
+  position: absolute;
+  left: 4rpx;
+  top: 0;
+  display: flex;
+  box-sizing: border-box;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+.item image {
+  width: 28%;
+}
+.item_l {
+  width: 28%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  position: absolute;
+}
+.kong {
+  height: 60rpx;
+  line-height: 60rpx;
+  font-size: 24rpx;
+  color: #fff;
+  font-weight: 100;
+  text-align: center;
+}
+.five {
+  height: 90rpx;
+  color: #fff;
+  font-size: 60rpx;
+  text-align: center;
+  line-height: 90rpx; 
+  font-weight: 900;
+  box-sizing: border-box;
+}
+.remaining {
+  height: 50rpx;
+  box-sizing: border-box;
+  line-height: 50rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #fff;
+  font-weight: 100;
+}
+
+.item_l text {
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: 100;
+}
+
+.item_r {
+  width: 72%;
+  display: flex;
+  flex-direction: column;
+}
+
+.item_r_t {
+  flex: 1;
+  box-sizing: border-box;
+  line-height: 100rpx;
+  padding-left: 60rpx;
+  /* color: #fff; */
+}
+
+.item_r_b {
+  flex: 1;
+  box-sizing: border-box;
+  line-height: 100rpx;
+  padding-left: 60rpx;
+}
+.item_main {
+  width: 120rpx;
+  text-align: center;
+  border-radius: 10rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  /* color: #fff; */
+}
+.pay {
+  position: absolute;
+  bottom: 30rpx;
+  right: 30rpx;
+  background-color: #fff5f3;
+  border-radius: 10rpx;
+  width: 180rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  text-align: center;
+}
+
+.main {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 20rpx;
+  font-size: 26rpx;
+  color: #010101;
+}
+.txt {
+  color: #f23d3d;
+}

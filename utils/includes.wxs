@@ -1,0 +1,16 @@
+
+var includes = function (arrays, searchElement) {
+  var isok = false
+  if (arrays.length) {
+    arrays.forEach(function (item) {
+      if (item == searchElement) {
+        isok = true
+      }
+    })
+    return isok;
+  }
+  return isok;
+}
+module.exports = {
+  includes: includes
+}

@@ -1,0 +1,8 @@
+<!--pages/pingche2/pingche2.wxml-->
+<view class="page">
+	<distanceNav />
+	<information />
+	<travel />
+	<view class="prompt">* 儿童是指身高在1.2米以下或者4岁以下的小朋友。</view>
+	<orderBottom bind:handleCallCar="handleCallCar" />
+</view>

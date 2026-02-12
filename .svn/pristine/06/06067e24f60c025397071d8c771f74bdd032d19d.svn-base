@@ -1,0 +1,21 @@
+<view class="container">
+  <view class="item coupon-name">{{item.couponName}}</view>
+  <view class="item integral">
+    <text>积分</text>
+    <lable>
+      <checkbox checked="true" color="#FF8008" disabled="true"></checkbox>
+      <text>{{item.integralNumber}}积分</text>
+    </lable>
+  </view>
+  <view class="desc">
+    <view class="desc-item">
+      <text class="desc-name">适用业务：</text>
+      <text>{{item.businessDescribe}}</text>
+    </view>
+    <view class="desc-item">
+      <text class="desc-name">使用时间：</text>
+      <text>{{item.timeDescribe}}</text>
+    </view>
+  </view>
+  <button class="btn" style="background:{{item.isExchange == 0 ? '#ccc' : ''}}" bindtap="exchange">{{btnText}}</button>
+</view>

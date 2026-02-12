@@ -1,0 +1,81 @@
+<!--components/information/information.wxml-->
+<view class="page">
+	<view class="journey">
+		<view class="item locationt">
+			<view class="destination go">
+				<view class="left">
+					<view class="circle"></view>
+				</view>
+				<view class="center">{{startingCity}}</view>
+		
+				<view class="right" bindtap="toStarting" wx:if="{{typeon != 'sh'}}" style="{{startingAddress?	'color: #010101;':'color: #BBBBBB;'}}">
+					{{startingAddress?startingAddress:'请选择上车地点'}}
+				</view>
+				<view class="right" bindtap="toStarting" wx:else style="{{startingAddress?	'color: #010101;':'color: #BBBBBB;'}}">
+					{{startingAddress?startingAddress:'请选择寄件地点'}}
+				</view>
+			</view>
+		</view>
+		<view class="item locationt" style="{{typeon == 'pc'?'border:none;':''}}">
+			<view class="destination">
+				<view class="left">
+					<view class="circle2"></view>
+				</view>
+				<view class="center">{{endingCity}}</view>
+				<view class="right" bindtap="toEnding"  wx:if="{{typeon != 'sh'}}" style="{{endingAddress?	'color: #010101;':'color: #BBBBBB;'}}">
+					{{endingAddress?endingAddress:'请选择下车地点'}}
+				</view>
+				<view class="right" bindtap="toEnding" wx:else style="{{endingAddress?	'color: #010101;':'color: #BBBBBB;'}}">
+					{{endingAddress?endingAddress:'请选择收件地点'}}
+				</view>
+			</view>
+		</view>
+		<view class="item locations" wx:if="{{typeon == 'bc'}}">
+			<view class="destination go">
+				<view class="center">出行日期</view>
+				<view class="right">
+					<picker mode="date" value="{{startDate}}" start="{{startTime}}" end="{{endTime}}" bindchange="bindDateChange" >
+              <view style="{{startDate?'color:#101010':'color:#bbbbbb'}}">
+                {{startDate?startDate:"请选择出行日期"}}
+              </view>
+            </picker>
+				</view>
+			</view>
+		</view>
+		<view class="item locations " wx:if="{{typeon == 'sh'}}">
+			<view class="destination go">
+				<view class="center">寄件日期</view>
+				<view class="right" >
+					<picker mode="date" value="{{startDate}}" start="{{startTime}}" end="{{endTime}}"  bindchange="bindDateChange">
+              <view style="{{startDate?'color:#101010':'color:#bbbbbb'}}">
+                {{startDate?startDate:"请选择寄件日期"}}
+              </view>
+            </picker>
+				</view>
+			</view>
+		</view>
+		<view class="item locations" wx:if="{{typeon !== 'pc'}}">
+			<view class="destination go">
+				<view class="center">{{typeon == 'bc'?'出行时间':'寄件时间'}}</view>
+				<view class="right">
+				<!-- {{timeArr}} -->
+					<picker catchtap="handleTap"  disabled="{{timeArr == ''}}"  range="{{timeArr}}" range-key="{{'RunTimeShow'}}" bindchange="bindTimeChange" data-item="{{timeArr[timeIndex]}}">
+              <view wx:if="{{typeon != 'sh'}}" style="{{timeIndex?'color:#101010':'color:#bbbbbb'}}">{{timeIndex?timeArr[timeIndex].RunTimeShow:'请选择时间'}}</view>
+							<view wx:else style="{{timeIndex?'color:#101010':'color:#bbbbbb'}}">{{timeIndex?timeArr[timeIndex].RunTimeShow:'请选择寄件时间'}}</view>
+            </picker>
+				</view>
+			</view>
+		</view>
+		<view class="item locations " wx:if="{{typeon == 'bc'}}">
+			<view class="destination go">
+				<view class="center">车型选择</view>
+				<view class="right" bind:tap="handleModel" style="{{selectedCar?'color:#101010':'color:#bbbbbb'}}">
+					{{selectedCar?selectedCar:'请选择出行车型'}}
+					
+				</view>
+			</view>
+		</view>
+		
+	</view>
+	<modelComponent bind:handleCar="handleCarEvent" bind:updatedData="updatedPrice" wx:if="modelComponent" modelComponent='{{modelComponent}}' lineId='{{lineId}}' startDate="{{startDate}}" />
+</view>

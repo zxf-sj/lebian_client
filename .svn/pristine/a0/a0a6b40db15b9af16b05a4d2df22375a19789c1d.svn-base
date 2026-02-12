@@ -1,0 +1,193 @@
+// user_center/pages/invoiceList/invoiceList.js
+import http from '../../../utils/http';
+const app = getApp();
+Page({
+  data: {
+    loadingFailed: false,//数据加载失败,请重试
+    loading: false,//加载中...
+    noMore: false,//没有更多了
+    pageNo: 1,
+    listData: [],//订单列表
+    menuTapCurrent:0,
+    hasSelection:false,
+    checkboxAllType:false,
+    checkboxPageAllType:false,
+    pageNum:1,//总页数
+  },
+  onLoad: function (options) {
+    console.log('onLoad')
+  },
+  onShow(){
+    console.log('onShow')
+    this.setData({
+        listData: [],
+        pageNum:1,
+        pageNo: 1,
+        hasSelection:false,
+        checkboxAllType:false,
+        checkboxPageAllType:false,
+    })
+    this.getOrderList();
+  },
+  onUnload(){
+   
+  },
+
+  //到达底部
+  scrollToLower: function (e) {
+    let _this = this;
+    if (!_this.data.loading && _this.data.pageNum > _this.data.pageNo + 1) {
+        _this.setData({
+        loading: true,
+        pageNo: _this.data.pageNo + 1
+      });
+      _this.getOrderList();
+    }
+  },
+  // 查询订单
+  getOrderList(props) {
+    let that = this;
+    var openid = wx.getStorageSync('openid');
+    if (!openid) {
+      that.setData({
+        listData:false,
+      })
+      wx.navigateTo({
+        url: '/user_center/pages/login/login',
+    })
+    }else{
+      var usreinfo = wx.getStorageSync('userInfo');
+      let reqData = {
+        limit: props=='all'? 0 : 10,
+        page: that.data.pageNo,
+        Personal:usreinfo.Id,
+        InvoiceState:that.data.menuTapCurrent == '0'?'100004-0001330001':'100004-0001330003'
+      }
+      console.log('查询订单')
+      wx.showLoading({
+        title: '',
+      })
+      http.postRequest("/Api/DispatchMobile/GetRideTicketInvoice", reqData, wx.getStorageSync('header'), res => {
+        wx.hideLoading()
+        that.setData({
+          loading: false
+        })
+        var listData = res.data
+        if(listData != null) {
+            if(res.code == 0 && props != 'all') {
+                let peopleWithAge = listData.map(person => {
+                    return { ...person, checked: false }; // 使用展开运算符(...)复制原有对象并添加新的属性
+                });
+                let pageNum = res.count / 10 + 1
+                that.setData({
+                    listData: [...that.data.listData,...peopleWithAge],
+                    pageNum:pageNum
+                })
+               } else {
+                let peopleWithAge = listData.map(person => {
+                    return { ...person, checked: true }; // 使用展开运算符(...)复制原有对象并添加新的属性
+                });
+                that.setData({
+                    listData: peopleWithAge
+                })
+               }
+        }
+       
+      }, err => {
+        wx.hideLoading()
+        this.setData({
+          loadingFailed: true
+        })
+        return false;
+      })
+    }  
+  },
+  //多选
+  handleCheckboxChange(e) {
+      let _this = this;
+    const checkedItems = e.detail.value
+    if(checkedItems.length == _this.data.listData.length) {
+        this.setData({
+            checkboxAllType: true
+        })
+    } else {
+        this.setData({
+            checkboxAllType: false
+        })
+    }
+    this.setData({
+      hasSelection: checkedItems.length > 0
+    })
+  },
+  //多选
+  onItemSelect(res) {
+    let _this = this;
+    let itemId = res.target.dataset.item.Id
+    console.log(itemId)
+    const newArray = _this.data.listData.map(item => 
+        item.Id === itemId ? {...item, checked: !item.checked} : item
+    );
+    console.log(newArray)
+    _this.setData({
+        listData:newArray
+    })
+  },
+ 
+  //本页全选
+  checkboxAll(e) {
+    let _this = this;
+    
+    _this.setData({
+        checkboxAllType:!_this.data.checkboxAllType
+    })
+    const newArray = _this.data.listData.map(item => ({ ...item, checked: _this.data.checkboxAllType })); // 使用展开运算符创建新对象
+    _this.setData({
+        listData:newArray,
+        hasSelection:_this.data.checkboxAllType,
+    })
+  },
+  //全部全选
+  checkboxPageAll(e) {
+    let _this = this;
+   
+    if(_this.data.checkboxPageAllType) {
+        const newArray = _this.data.listData.map(item => ({ ...item, checked: false })); // 使用展开运算符创建新对象
+        _this.setData({
+            listData:newArray,
+        })
+    } else {
+        _this.getOrderList('all')
+    }
+    _this.setData({
+        checkboxPageAllType:!_this.data.checkboxPageAllType,
+        hasSelection:!_this.data.checkboxPageAllType,
+        pageNo:999
+    })
+    
+  },
+  //标题切换
+  menuTap:function(e){
+    var current=e.currentTarget.dataset.current;//获取到绑定的数据
+    this.setData({
+      menuTapCurrent:current,
+      listData:[],
+      pageNo:1
+    });
+    this.getOrderList();
+  },
+  //下一步
+  goinvoice() {
+      let _this = this;
+      if(_this.data.hasSelection) {
+        const checkedItems = _this.data.listData.filter(item => item.checked);
+        const ids = checkedItems.map(obj => obj.Id).join(',');
+        let totalAmount = 0;
+        checkedItems.forEach(item => {
+        totalAmount += item.TotalAmount;
+        });
+        wx.navigateTo({
+            url: '/user_center/pages/invoice/invoice?ids=' + ids + '&totalAmount=' + totalAmount,
+        })
+      }
+  }
+})

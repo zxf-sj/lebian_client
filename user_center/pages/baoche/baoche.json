@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "information":"/components/information/information",
+    "distanceNav":"/components/distanceNav2/distanceNav2",
+    "remarks":"/components/remarks/remarks"
+  },
+  "navigationBarTitleText": "乐遍包车"
+}

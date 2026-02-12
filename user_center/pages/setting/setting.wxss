@@ -1,0 +1,27 @@
+@import '../../../app.wxss';
+page{
+  width: 100%;
+  height: 100vh;
+  background-color: #f4f6f8;
+}
+.container{
+  width: 100%;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.quit{
+  position: fixed;
+  left: 20rpx;
+  bottom: 40rpx;
+}
+
+.loginBtn{
+  width:710rpx;
+  height: 92rpx;
+  line-height: 92rpx;
+  font-size: 32rpx;
+  background-color:#fff;
+  color:#FF6600;
+  border:none;
+}

@@ -1,0 +1,83 @@
+<view class="font-text">订单信息</view>
+<view class="order">
+  <view class="detail">订单编号：{{order.Code}}</view>
+  <view class="detail">出行线路：{{order.PassengerLineId_Name}}</view>
+  <view class="detail">支付方式：{{order.PaymentType_Name}}</view>
+  <view class="detail">订单金额：{{order.PayAmount}}元</view>
+  <view class="detail">创建时间：{{order.CreateDate}}</view>
+</view>
+<view class="font-text">发票详情</view>
+<form bindsubmit="formSubmit">
+<view class='bg-w' style='padding:0 30rpx'>
+  <view class='info_li2'>
+    <view class='info_prefix_text info_left'>抬头类型</view>
+    <view class='info_right'>
+      <radio-group class="radio-group" bindchange="radioChange">
+        <label class="radio">
+            <radio value="1" checked="true"/>企业单位
+            <radio value="2" class="lastradio"/>个人/非企业单位
+        </label>
+    </radio-group>
+    </view>
+  </view>
+  <view class='info_li2'>
+    <view class='info_prefix_text info_left'>{{title}}</view>
+    <view class='info_right'>
+      <input name="name" class='text-right' placeholder="请填写{{title}}"  bindinput="bindname"></input>
+    </view>
+  </view>
+  <view class='info_li2'>
+    <view class='info_prefix_text info_left'>开票金额</view>
+    <view class='info_right'>
+      <input name="money" class='text-right' value="{{order.PayAmount}}" style="width:92%;color: #f59910;" disabled="true"></input><view class="yuan">元</view>
+    </view>
+  </view>
+  <view class='info_li2' wx:if="{{is_show}}">
+    <view class='info_prefix_text info_left'>税号</view>
+    <view class='info_right'>
+      <input name="code" class='text-right' placeholder="请填写税号" bindinput="bindcode"></input>
+    </view>
+  </view>
+  <view class='info_li3' wx:if="{{is_show}}">
+    <view class='info_prefix_text'>公司地址</view>
+    <view class='textar'>
+      <textarea placeholder="请填写公司地址" placeholder-style="font-size:24rpx;" name="address" bindinput="bindaddress"/>
+    </view>
+  </view>
+  <view class='info_li2' wx:if="{{is_show}}">
+    <view class='info_prefix_text info_left'>公司电话</view>
+    <view class='info_right'>
+      <input name="tel" class='text-right' placeholder="请填写公司电话"  bindinput="bindtel"></input>
+    </view>
+  </view>
+  <view class='info_li3' wx:if="{{is_show}}">
+    <view class='info_prefix_text'>公司开户行</view>
+    <view class='textar'>
+      <textarea placeholder="请填写公司开户行" placeholder-style="font-size:24rpx;" name="kaihuhang" bindinput="bindkaihuhang"/>
+    </view>
+  </view>
+  <view class='info_li2' wx:if="{{is_show}}">
+    <view class='info_prefix_text info_left'>开户行账号</view>
+    <view class='info_right'>
+      <input name="cardnum" class='text-right' placeholder="请填写开户行账号"  bindinput="bindcardnum"></input>
+    </view>
+  </view>
+  <view class='info_li3' wx:if="{{is_show}}">
+    <view class='info_prefix_text'>备注<text class="smallfont">该内容会打印在发票上</text></view>
+    <view class='textar'>
+      <textarea placeholder="按企业报销填写，如用车原因，用车时间等" placeholder-style="font-size:24rpx;" name="remark" bindinput="bindremark"/>
+    </view>
+  </view>
+  <view class='info_li2'>
+    <view class='info_prefix_text info_left'>电子邮箱</view>
+    <view class='info_right'>
+      <input name="email" type="email" class='text-right' placeholder="用于向您发送电子发票"  bindinput="bindemail"></input>
+    </view>
+  </view>
+  <view class='submit_button'>
+    <button class='btns' form-type='submit'>确定</button>
+  </view>
+  <view style="height: 50rpx;"></view>
+</view>  
+</form>
+<daohang></daohang>

@@ -1,0 +1,29 @@
+<view>	
+	<view>
+		<view class="map_container">
+			<map class='map' id="indexMap" style="width:{{ScreenTotalW}}rpx;height:{{ScreenTotalH}}rpx;" longitude='{{longitude}}' latitude='{{latitude}}' scale='{{scale}}' markers='{{markers}}' polyline='{{polyline}}' circles="{{circles}}" bindregionchange="bindregionchange" show-location="true">
+				<image class="current-site-icon" src="/assets/images/weizhi.png"></image>
+        <image bindtap="getMyLocation" class="current-mylocation" src="../../../assets/images/location.png"></image>
+			</map>
+		</view>
+	</view>
+  <view class="footer-address">
+    <view class="footer-end">
+      <view class="footer-endname" bindtap="toDestination">{{LineName||"选择捎货线路"}}</view>
+    </view>
+  </view>
+	<!-- 扫码 -->
+	<view class="footerBox {{fromScan?'scan-ft':''}}" wx:if="{{!isDriverFriends && !fixedLine}}">
+		<view class="nowTime">
+				<view class="circle-str"></view>
+				<view bindtap="toStarting">
+					<view class="didi-input-str">寄件地址:<text style="color: #6BBFC1">{{startAddress}}</text></view>
+				</view>
+				<view bindtap="toDestination1">
+					<view class="didi-input-end" style="color: #999">{{destination || '收件地址'}}</view>
+				</view>
+				<view class="circle-end"></view>
+		</view>
+	</view>
+
+</view>

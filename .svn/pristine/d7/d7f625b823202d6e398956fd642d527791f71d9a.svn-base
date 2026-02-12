@@ -1,0 +1,191 @@
+// components/travel/travel.js
+import http from '../../utils/http.js';
+let clickTimer = null;
+Component({
+  /**
+   * 组件的属性列表
+   */
+  properties: {
+    typeon: {
+      type: String,
+      value: 'pc'
+    }
+  },
+  lifetimes: {
+    attached: function () {
+      wx.removeStorageSync('personNum')
+      wx.removeStorageSync('passengerList')
+      wx.removeStorageSync('numberOfPeople')
+      wx.removeStorageSync('phoneStr')
+      wx.removeStorageSync('textareaValue')
+      wx.setStorageSync('numberOfPeople', 1)
+    },
+    detached: function () {
+      // 在组件实例被从页面节点树移除时执行
+    },
+  },
+  options: {
+    // 其他选项：'shared'（共享样式）、'apply-shared'（父组件影响子组件） 'isolated' // 默认值，隔离样式
+    styleIsolation: 'apply-shared'
+
+  },
+  /**
+   * 组件的初始数据
+   */
+  data: {
+    passenger: false, //乘车人数弹框
+    remark: false, //备注弹框
+    phone: '', //手机号
+    personArr: [],
+    textareaValue: '',
+    numberOfPeople: 1,
+    phoneStr: ''
+  },
+  methods: {
+    addPerson() {
+      let _this = this
+      let SeatNumber = wx.getStorageSync('SeatNumber')
+      if (_this.data.typeon == 'bc') {
+        if (SeatNumber == '') {
+          wx.showToast({
+            title: '请选择车型',
+            icon: 'none',
+          })
+        } else {
+          if (_this.data.numberOfPeople < SeatNumber) {
+            let numberOfPeople = _this.data.numberOfPeople += 1
+            _this.setData({
+              numberOfPeople: numberOfPeople
+            })
+            wx.setStorageSync('numberOfPeople', numberOfPeople)
+          } else {
+            wx.showToast({
+              title: '乘车人数不能超过' + SeatNumber + '人',
+              icon: 'none',
+            })
+          }
+        }
+      } else {
+        if (_this.data.numberOfPeople < 7) {
+          let numberOfPeople = _this.data.numberOfPeople += 1
+          _this.setData({
+            numberOfPeople: numberOfPeople
+          })
+          wx.setStorageSync('numberOfPeople', numberOfPeople)
+        }
+      }
+    },
+    reducePerson() {
+      let _this = this
+      if (_this.data.numberOfPeople > 1) {
+        let numberOfPeople = _this.data.numberOfPeople -= 1
+        _this.setData({
+          numberOfPeople: numberOfPeople
+        })
+        if (_this.data.phoneStr.length > numberOfPeople) {
+          const phoneStr = _this.data.phoneStr.slice(0, numberOfPeople);
+          const personArr = _this.data.personArr.slice(0, numberOfPeople);
+          _this.setData({
+            phoneStr,
+            personArr
+          })
+          wx.setStorageSync('phoneStr', phoneStr.toString())
+          wx.setStorageSync('personNum', numberOfPeople)
+          _this.handleCustomEvent({
+            detail: personArr
+          })
+        }
+        wx.setStorageSync('numberOfPeople', numberOfPeople)
+      }
+    },
+    handleTextareaValue(res) {
+      this.setData({
+        textareaValue: res.detail
+      })
+      wx.setStorageSync('textareaValue', res.detail)
+    },
+    //点击选择乘车人
+    handlePerson() {
+      let that = this
+      var openid = wx.getStorageSync('openid');
+      if (wx.getStorageSync('pcTypeId')) {
+        if (openid) {
+          that.setData({
+            passenger: true
+          })
+        } else {
+          wx.navigateTo({
+            url: '/user_center/pages/login/login'
+          })
+        }
+      } else {
+        wx.showToast({
+          title: "请先选择车辆",
+          icon: 'none',
+        })
+      }
+
+    },
+    //输入手机号
+    phoneInput(e) {
+      this.setData({
+        phone: e.detail.value
+      })
+    },
+    //乘车人数子=》父
+    handleCustomEvent(res) {
+      let _this = this;
+      if (_this.data.typeon == 'pc') {
+        let pcTimeSync = wx.getStorageSync('pcTimeSync');
+        let money = 0;
+        for (let i = 0; i < res.detail.length; i++) {
+          if (res.detail[i].isChildren == '100004-0000010002') {
+            money += pcTimeSync.Price
+          } else if (res.detail[i].isChildren == '100004-0000010001') {
+            money += (pcTimeSync.Price / 2)
+          }
+        }
+        console.log('pcTimeSync',pcTimeSync)
+        if (pcTimeSync.Version) {
+          money += res.detail.length * pcTimeSync.Version
+          const version = {
+            value: res.detail.length * pcTimeSync.Version
+          }
+          console.log('4444')
+          getApp().eventVersion.emit('dataChange', version)
+        }
+        const newData = {
+          value: money
+        }
+        console.log('3333')
+        getApp().eventCenter.emit('dataChange', newData)
+      }
+      _this.setData({
+        personArr: res.detail
+      })
+      let personNum = 0
+      let phoneStr = []
+      for (let i = 0; i < res.detail.length; i++) {
+        phoneStr.push(res.detail[i].Phone + '|' + res.detail[i].RealName)
+        personNum += 1
+      }
+      wx.setStorageSync('personNum', personNum)
+      if (personNum > _this.data.numberOfPeople) {
+        _this.setData({
+          numberOfPeople: personNum,
+        })
+        wx.setStorageSync('numberOfPeople', personNum)
+      }
+      _this.setData({
+        phoneStr
+      })
+      wx.setStorageSync('phoneStr', phoneStr.toString())
+    },
+    //点击备注信息
+    handleRemarks() {
+      this.setData({
+        remark: true
+      })
+    },
+  }
+})

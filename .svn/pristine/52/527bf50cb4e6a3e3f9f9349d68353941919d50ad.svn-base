@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "乐遍+",
+  "usingComponents": {
+    "daohang": "/components/daohang/daohang"
+  }
+}

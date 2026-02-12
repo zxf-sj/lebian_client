@@ -1,0 +1,50 @@
+<!--components/travel/travel.wxml-->
+<view class="page">
+	<view class="information">
+		<view class="destination1">
+			<view class="perpo_num">
+				<view class="left">乘车人</view>
+				<view class="right ">
+					<view class="btnAdd" bindtap="handlePerson">添加/修改</view>
+				</view>
+				<!-- <view class="right" bindtap="handlePerson" style="{{personArr.length == 0?'color:#BBBBBB;':'color:#010101;'}}">
+					{{personArr.length == 0?'请选择乘车人':personArr.length+"人"}}
+				</view> -->
+			</view>
+			<view class="perpo_list">
+				<view class="item" wx:for="{{personArr}}" wx:key="index">
+					<view class="btn">
+					
+					</view>
+					<view class="right">
+						<view class="name">
+							{{item.RealName}}
+						</view>
+						<view class="phoen">
+							电话：{{item.Phone}}
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+		<!-- <view class="destination">
+			<view class="left">联系方式</view>
+			<view class="right">
+				<input type="number" style="text-align: center;" placeholder="请填写联系方式" value="{{phone}}" maxlength="11" bindblur="phoneInput" placeholder-class="phcolor"></input>
+			</view>
+		</view> -->
+		<view class="destination">
+			<view class="left">乘车备注</view>
+			<view class="right" bind:tap="handleRemarks" style="{{textareaValue?'color:#010101;':'color:#bbbbbb;'}}">
+				{{textareaValue?textareaValue:'请输入乘客特殊需求'}}
+			</view>
+		</view>
+		<view class="remarks">
+			* 如是否携带大件行李、飞机航班号列班车次及乘坐时间、是否是孕妇或老人、是否是孩童单独乘车等，即便司机更好的为您服务。
+		</view>
+	</view>
+	<!-- 显示乘车人 -->
+	<passenger bind:customEvent="handleCustomEvent" typeon="{{typeon}}" wx:if="{{passenger}}" passenger="{{passenger}}" />
+	<!-- 显示备注信息 -->
+	<remarks bind:textareaValue="handleTextareaValue"  wx:if="{{remark}}" remark="{{remark}}" />
+</view>

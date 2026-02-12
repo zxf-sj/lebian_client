@@ -1,0 +1,78 @@
+/* components/information/information.wxss */
+page {
+	width: 100%;
+	border-top: 1px solid #bbbbbb;
+}
+.journey {
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
+	border: 1px solid #bbbbbb;
+	border-radius: 20rpx;
+  margin: 20rpx;
+  box-sizing: border-box;
+}
+.journey .item {
+	height: 120rpx;
+	border-bottom: 1px solid #bbbbbb;
+}
+
+.locationt .destination {
+	display: flex;
+	height: 100%;
+}
+.locationt .destination .left {
+	width: 10%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.locationt .destination .left .circle{
+	width: 20rpx;
+	height: 20rpx;
+	background-color: #54bcbd;
+	border-radius: 50%;
+}
+.locationt .destination .left .circle2 {
+	width: 20rpx;
+	height: 20rpx;
+	background-color: #c03c2f;
+	border-radius: 50%;
+}
+.locationt .destination .center {
+	width: 17%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #101010;
+}
+.locationt .destination .right {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+}
+.locations .destination {
+	display: flex;
+	height: 100%;
+}
+
+.locations .destination .center {
+	width: 24%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #101010;
+}
+.locations .destination .right {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+}
+.borders {
+	border: none !important;
+}
+.goods {
+  height: 175rpx !important;
+}

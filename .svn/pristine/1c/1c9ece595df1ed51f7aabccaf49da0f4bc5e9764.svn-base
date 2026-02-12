@@ -1,0 +1,35 @@
+<!--components/modelComponent/modelComponent.wxml-->
+<view class="modelComponent" wx:if="{{modelComponent}}">
+	<view class="inner">
+		<view class="nav">
+			<view class="nav_l" bind:tap="add">
+				
+			</view>
+			<view class="nav_r">
+				<view class="submit" catchtap="close">确定</view>
+			</view>
+		</view>
+		<view class="main">
+				<view class="group_7">
+            <view  wx:for="{{carTypeList}}" wx:key="index" class="group_8 {{carType===index?'typechecked':''}}"  bindtap="chooseCarType" data-index="{{index}}" data-nums="{{item.SeatNumber}}">
+              <view class="image-text_5">
+                <image src="https://www.qierchuxing.com/upload/Annex/202405/AX-20240521-644317-541.png" class="image_1"></image>
+                <view class="group_9"></view>
+                <text lines="1" class="text-group_5">{{item.Name}}</text>
+              </view>
+              <view class="group_10">
+                <image src="/assets/images/nav-me.png" class="thumbnail_5"></image>
+                <text lines="1" class="text_2">{{item.SeatNumber+1}}座</text>
+              </view>
+              <view class="text-wrapper_1">
+                <text lines="1" class="text_3">¥{{item.OriginalPrice}}</text>
+                <text lines="1" class="text_4">¥{{item.Price}}</text>
+              </view>
+              <view class="text-wrapper_2">
+                <text wx:if="{{item.Version!='0'}}" class="text_5">+摆渡价{{item.Version}}</text>
+              </view>
+            </view>
+          </view>
+		</view>
+	</view>
+</view>

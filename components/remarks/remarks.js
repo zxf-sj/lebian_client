@@ -1,0 +1,52 @@
+// components/slideCoupon/slideCoupon.js
+import http from '../../utils/http.js';
+const debounce = require('../../utils/debounce');
+let clickTimer = null;
+Component({
+  /**
+   * 组件的属性列表
+   */
+  properties: {
+    remark: {
+      type: Boolean,
+      value: true
+    },
+  },
+  lifetimes: {
+    attached: function() {
+      // 在组件实例进入页面节点树时执行
+     
+    },
+    detached: function() {
+      // 在组件实例被从页面节点树移除时执行
+    },
+  },
+  /**
+   * 组件的初始数据
+   */
+  data: {
+    textareaValue:'',
+  },
+
+
+  methods: {
+    //获取乘车人列表
+    close(){
+      this.setData({
+        remark:false
+      })
+      console.log(this.data.textareaValue)
+      this.triggerEvent('textareaValue', this.data.textareaValue); 
+    },
+    bindTextAreaBlur: debounce(function (e) {
+      this.setData({
+        textareaValue:e.detail.value
+      })
+    },500),
+    handleOptions(e) {
+      this.setData({
+        textareaValue:e.currentTarget.dataset.item
+      })
+    },
+  }
+})

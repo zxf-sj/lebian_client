@@ -1,0 +1,454 @@
+@import '/styles/driver.wxss';
+
+.footer {
+  background: #fff;
+  height: 60rpx;
+  margin: 0 40rpx;
+  padding-bottom: 6rpx;
+  border-top: 1px solid #f5f5f5;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+
+.driver_info {
+  position: absolute;
+  width: 550rpx;
+  float: left;
+  display: flex;
+  align-items: center;
+  margin-left: 40rpx;
+  font-size: 30rpx;
+}
+
+.driver_img {
+  width: 100rpx;
+  margin-right: 40rpx;
+  text-align: center;
+}
+
+.driver_img>.name {
+  width: 100rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.d_top {
+  width: 400rpx;
+  display: flex;
+  color: #777;
+  padding-top: 10rpx;
+}
+
+.d_top>view {
+  flex: 1;
+}
+
+.d_md {
+  width: 400rpx;
+  display: flex;
+  font-weight: bold;
+  color: #333;
+  margin: 5rpx 0;
+}
+
+.d_md>view {
+  flex: 1;
+}
+
+.total {
+  width: auto;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.enpty-box {
+  width: 100%;
+  height: 0;
+  border: 0.5px solid #f5f5f5;
+}
+
+.payBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 40rpx;
+  border-top: 1rpx solid #eee;
+}
+
+.pay-total {
+  font-size: 32rpx;
+  margin: 0 10rpx;
+  color: #333;
+}
+
+.pay-total_num {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.pay-detail {
+  color: #999;
+  font-size: 24rpx;
+  line-height: 40rpx;
+  margin: 10rpx 0;
+}
+
+.handle {
+  display: flex;
+  justify-content: space-around;
+  width: 400rpx;
+  color: #999;
+  font-size: 24rpx;
+  line-height: 40rpx;
+}
+
+.handle-icon {
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #333;
+  font-weight: bold;
+  padding: 40rpx 0;
+}
+
+.detail-icon,
+.contact-icon,
+.friend-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pay-btn {
+  width: 646rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 32rpx;
+  background-color: #5093E1;
+  color: #fff;
+  border: none;
+  margin: 20rpx 0;
+}
+
+/* .mask{
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, .6);
+  z-index: 9999;
+}
+
+.pay-box{
+  width: 100%;
+  height: 360rpx;
+  background: #fff;
+  font-size: 28rpx;
+  color: #333;
+  position: fixed;
+  bottom: 0;
+  box-sizing: border-box;
+}
+
+.confirm-title{
+  width: 100%;
+  height: 100rpx;
+  line-height: 100rpx;
+  display: flex;
+  justify-content: space-between;
+  font-size: 30rpx;
+  color: #333;
+  padding: 0 60rpx;
+  box-sizing: border-box;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.confirm-list{
+  padding: 0 40rpx; 
+  box-sizing: border-box;
+}
+
+.confirm-list-item{
+  line-height: 80rpx;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.item-img{
+  display: inline-block;
+  width: 64rpx;
+  height: 64rpx;
+  vertical-align: middle ;
+  margin-right: 10rpx;
+}
+
+.confirm-bg{
+  width: 100%;
+  height: 160rpx;
+  padding-top: 16rpx;
+  background: #f4f6f8;
+  box-sizing: border-box;
+  position: fixed;
+  bottom: 0;
+}
+
+.confirm-bottom{
+  width: 100%;
+  height: 144rpx;
+  align-items: center;
+  background: #fff;
+  padding: 32rpx 32rpx 0 32rpx;
+  box-sizing: border-box;
+}
+
+.confirm-btn{
+  width: 100%;
+  background: #10A0F4;
+  font-size: 32rpx;
+  color:#fff;
+  border:none;
+}
+
+.looking-img{
+    animation:  loading 1s linear infinite;
+}
+@keyframes loading {
+    0% {
+        transform: rotate(0)
+    }
+   
+    50% {
+        transform: rotate(180deg)
+    }
+   
+    100% {
+        transform: rotate(360deg)
+    }
+} */
+
+.map {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
+}
+
+.modal-text {
+  line-height: 120rpx;
+}
+
+.addFriend {
+  text-align: center;
+  font-weight: bold;
+  font-size: 32rpx;
+  color: #333;
+}
+
+.addFriend>image {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.over {
+  margin: 20rpx 30rpx;
+  box-sizing: border-box;
+  border-radius: 20rpx;
+  background-color: #fff;
+  padding: 10rpx 20rpx 0;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.h2 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+
+.h2 .str {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  color: #999;
+}
+
+.h2 .end {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  color: #999;
+}
+
+.h2 image {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.h2 .car-img {
+  position: relative;
+  margin: 0 80rpx;
+}
+
+.h2 .car-img::before {
+  content: "";
+  width: 50rpx;
+  height: 1rpx;
+  background-color: #999;
+  position: absolute;
+  left: -64rpx;
+  top: 50%;
+  margin-top: -2rpx;
+}
+
+.h2 .car-img::after {
+  content: "";
+  width: 50rpx;
+  height: 1rpx;
+  background-color: #999;
+  position: absolute;
+  right: -64rpx;
+  top: 50%;
+  margin-top: -2rpx;
+}
+
+.close-to-home {
+  width: 44rpx;
+  height: 44rpx;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 999;
+  background-color: #fff;
+  border-radius: 50%;
+}
+
+.close-to-home>image {
+  width: 44rpx;
+  height: 44rpx;
+}
+
+/* 远程 */
+
+.line-handle {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 40rpx 100rpx;
+  color: #333;
+  font-size: 28rpx;
+}
+
+.line-handle image {
+  width: 24rpx;
+  height: 24rpx;
+  margin-left: 10rpx;
+}
+
+.line-pay {
+  margin-top: 0;
+}
+
+.line-finish-text {
+  margin: 40rpx 0 0;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.line-detail {
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.line-contact {
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.call-phone {
+  margin-right: 70rpx;
+}
+
+/* --------------摆渡 */
+.line-address {
+  width: 100%;
+  height: 140rpx;
+  background-color: #fff;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.line-address image {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.line-show-price {
+  font-size: 36rpx;
+  margin-top: 30rpx;
+  color: #FF8008;
+}
+
+.EXC_finish {
+  padding: 30rpx 0 0;
+  font-weight: bold;
+}
+
+.EXC_pay {
+  padding: 30rpx 0;
+  color: #FF8008;
+  font-weight: bold;
+}
+
+.movable-area {
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+  left: 0;
+  top: 100rpx;
+  pointer-events: none;
+}
+
+.movable-view {
+  width: 200rpx;
+  height: 200rpx;
+  z-index: 9998;
+  pointer-events: auto;
+}
+
+.integral-img {
+  width: 100%;
+  height: 100%;
+}
+
+.sb-gif {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 9999;
+}

@@ -1,0 +1,38 @@
+<!--driving_status/pages/payCard/payCard.wxml-->
+<view class="page">
+  <view class="box">
+    <view class="nav">
+      <text class="referrer">推荐人：</text>
+      <input class="weui-input" name="phone" confirm-type="send" type="number" maxlength="11" placeholder="请输入推荐人电话" bindinput="changeTel" />
+    </view>
+    <view class="list" wx:for="{{dataList}}" wx:key="item.Id">
+      <image src="../../../assets/images/cika.png" mode="" />
+      <view class="item">
+        <view class="item_l">
+        <view class="kong">
+          {{item.Note}}
+        </view>
+          <view class="five">
+            {{item.Quantity}}<text>次</text>
+          </view>
+          <view class="remaining">
+            剩余{{item.Remaining}}张
+          </view>
+        </view>
+        <view class="item_r">
+          <view class="item_r_t">{{item.Name}}</view>
+          <view class="item_r_b">
+            <view class="item_main">￥<text>{{item.Amount}}</text></view>
+          </view>
+        </view>
+      </view>
+      <view class="pay" bind:tap="payCard" data-Id="{{item.Id}}">立即购买</view>
+    </view>
+    <view class="main">
+      使用说明:
+      <view>1、适用范围:仅限本人在乐遍城际小程序下单 <text class="txt">太原 ⇌ 孝义</text> 线路非溢价范围内出行服务使用。</view>
+      <view>2、使用期限:本卡自购买后，生效日期为 2026年1月，有效期一年，暂不支持元旦、春节、清明、五一、端午、中秋、国庆等法定节假日使用，其余时间可正常使用。</view>
+      <view>3、使用方式:单笔订单不限使用次数，次数用尽后卡失效。本服务为定制化产品，暂不支持线上退款，如涉及相关售后问题，请咨询客服电话0351-6078977。</view>
+    </view>
+  </view>
+</view>

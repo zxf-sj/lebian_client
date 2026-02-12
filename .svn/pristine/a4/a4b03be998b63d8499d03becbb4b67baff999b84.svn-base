@@ -1,0 +1,29 @@
+<view class="container">
+  <view class="header">
+    <image src="/user_center/assets/images/shiyongshuoming.png"></image>
+    <view>优惠券使用说明</view>
+  </view>
+  <view class="lingqu">点击优惠劵领取</view>
+  <view class="list">
+    <view class="item" bindtap="lingQu" data-ids="{{item.Id}}" wx:for="{{listData}}" wx:key="key">
+      <view class="left">
+        <image src="/assets/images/youhuiquan_bg_small_vip@2x.png"></image>
+        <view class="text">
+          <view class="price">￥<text>{{item.CouponMoney}}</text></view>
+          <!-- <view class="price"><text>9</text>折</view> -->
+        </view>
+      </view>
+      <view class="right">
+        <view class="top">
+          <view class="name" style="color:#D99F05">{{item.Name}}</view>
+          <view>{{item.CouponType_Name}}</view>
+        </view>
+        <view class="btm">{{item.DeadDate}}</view>
+        <view class="tag">
+          <image src="../../assets/images/youhuiquan_biaoqian01.png"></image>
+          <view class="num">{{item.GetNum}}张</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

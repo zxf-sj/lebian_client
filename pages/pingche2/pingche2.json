@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "information":"/components/information/information",
+    "distanceNav":"/components/distanceNav/distanceNav",
+    "mp-dialog": "weui-miniprogram/dialog/dialog",
+    "remarks":"/components/remarks/remarks",
+    "slideCoupon":"/components/slideCoupon/slideCoupon"
+  },
+  "navigationBarTitleText": "乐遍拼车"
+}

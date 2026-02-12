@@ -1,0 +1,122 @@
+/* pages/pingche2/pingche2.wxss */
+@import '../../app.wxss';
+
+.page {
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.location {
+	box-shadow: 0 2px 4px rgb(0, 0, 0,.4), 0 0 6px rgba(0, 0, 0, .04);
+	margin: 30rpx 20rpx 0;
+	border-radius: 10px;
+}
+
+.location .go {
+	border-bottom: 1px solid #ccc;
+}
+.information {
+	box-shadow: 0 2px 4px rgb(0, 0, 0,.4), 0 0 6px rgba(0, 0, 0, .04);
+	margin: 30rpx 20rpx 0;
+	border-radius: 10px;
+}
+.information .destination {
+	display: flex;
+	height: 100rpx;
+	border-bottom: 1px solid #ccc;
+}
+
+.information .remarks {
+	font-size: 12px;
+	height: 150rpx;
+	line-height: 40rpx;
+	padding: 20rpx;
+	color: #F08718;
+}
+.prompt {
+	font-size: 12px;
+	color: #FF0000;
+	text-align: right;
+	margin: 20rpx ;
+}
+.destination .juan_l {
+	width: 36%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.destination .juan_l .box {
+	width: 200rpx;
+	height: 60rpx;
+	background: linear-gradient(180deg, rgba(253,209,0,1) 0%,rgba(240,135,24,1) 100%);
+	border-radius: 20rpx;
+	color: #fff;
+	line-height: 60rpx;
+	text-align: center;
+}
+.destination .juan_r {
+	flex: 1;
+	text-align: right;
+	line-height: 120rpx;
+	padding-right: 20rpx;
+	font-size: 14px;
+	color: #BBBBBB;
+}
+.destination .juan_r .txt {
+	display: inline-block;
+	line-height: 120rpx;
+	height: 100%;
+}
+.destination .money_l {
+	width: 36%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #F08718;
+}
+/* .destination .money_r {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #FF0000;
+} */
+
+
+.mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 999;
+}
+.box_3{
+  background: #fefefe;
+  width: 80%;
+  position: absolute;
+  left: 10%;
+  top: 10%;
+  border-radius: 20rpx;
+}
+
+.subMit {
+	height: 200rpx;
+	
+}
+.subMit .btn {
+	width: 440rpx;
+	height: 100rpx;
+	line-height: 100rpx;
+	text-align: center;
+	margin: 0 auto 40rpx;
+	background: linear-gradient(180deg, rgba(253,209,0,1) 0%,rgba(240,135,24,1) 100%);
+	color: #fff;
+	border-radius: 20rpx;
+}
+.phcolor {
+	color: #BBBBBB;
+	text-align: center;
+}

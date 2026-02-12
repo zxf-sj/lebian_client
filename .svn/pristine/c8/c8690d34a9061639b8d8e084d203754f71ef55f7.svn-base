@@ -1,0 +1,29 @@
+<view class="container">
+	<view class="banner">
+		<image src="{{bannerImg}}"></image>
+	</view>
+	<view class="priceBox">
+		
+		<!-- 包车 -->
+		<view class="line-tips">
+			<block>
+				<view class="line-tit">按线路包车计费规则</view>
+				<view class="line-desc">按线路包车采用线路整价计费方式</view>
+				<view class="line-cont"> 包车行程将根据您的用车计算价格，按线路计费。行程中有一定的免费等待时长赠送，超出部分根据时间收费梯度进行计费。如在中途下车按照全程费用收取。</view>
+			</block>
+		</view>
+		<!-- 明细 -->
+		<view class="listBox">
+			<block wx:for="{{list}}" wx:key="key">
+				<view class="list-title" style="padding-top:40rpx">
+					<text class="title-28" style="font-size:32rpx">{{item.Name}}</text>
+					<text class="title-28" style="font-size:32rpx">{{item.ComputeType_Name}}</text>
+				</view>
+				<view class="list-item">
+					<text class="text-24" style="font-size:28rpx">{{item.FormTypeId_Name}}</text>
+					<text class="text-24" style="font-size:28rpx">{{item.ComputeValue}}</text>
+				</view>
+			</block>
+		</view>
+	</view>
+</view>

@@ -1,0 +1,20 @@
+<view class="container">
+	<view class="priceBox">
+		<view class="header">预估详情</view>
+		<view class="listBox" wx:for="{{costList}}" wx:key="index">
+			<view class="list-title">
+				<text class="title-28">{{item.feeName}}</text>
+				<text class="title-28">{{item.totalFee}}元</text>
+			</view>
+			<block wx:if="{{item.subCostList}}">
+				<view class="list-item" wx:for="{{item.subCostList}}" wx:for-index="idx" wx:for-item="subItem" wx:key="subItem">
+					<text class="text-24">{{subItem.timeFrame}}</text>
+					<text class="text-24">{{subItem.cost}}元</text>
+				</view>
+			</block>
+		</view>
+    <view class="tips">*车费计算四舍五入取小数点后两位</view>
+    <view class="desc">预估价是根据实时交通状况、预估行驶里程、时间等因素预估计算得出，存在波动，仅供参考。高速费以司机实际支付为准</view>
+	</view>
+  <view class="price-rules" bindtap="toPriceRules">计费规则></view>
+</view>

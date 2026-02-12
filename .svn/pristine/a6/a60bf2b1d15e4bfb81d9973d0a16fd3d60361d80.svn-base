@@ -1,0 +1,104 @@
+import http from '../../../utils/http';
+const app = getApp();
+Page({
+  data: {
+    loadingFailed: false,
+    loading: false,
+    noMore: false,
+    pageNo: 1,
+    listData: null,
+    FormTypeId:"",
+    showEdit:false,
+    orderid:'',
+  },
+  onLoad: function (options) {
+    
+  },
+  onShow(){
+    this.getOrderList();
+
+  },
+  //到达底部
+  scrollToLower: function (e) {
+    // if (!this.data.loading && !this.data.noMore) {
+    //   this.setData({
+    //     loading: true,
+    //     pageNo: this.data.pageNo + 1
+    //   });
+    //   this.getOrderList(true,this.data.FormTypeId);
+    // }
+  },
+
+  // 查询订单
+  getOrderList() {
+    let that = this;
+    var usreinfo = wx.getStorageSync('userInfo');
+    http.getRequest("/Api/Mobile/AddressList?MemberId="+usreinfo.Id, '', wx.getStorageSync('header'), res => {
+      that.setData({
+        loading: false
+      })
+      if (res.code == 0) {
+        var listDdata = res.data;
+        console.log('乘车人列表',res.data)
+        that.setData({
+          listData:listDdata
+        })
+      }else{
+        that.setData({
+          listData:[],
+          noMore:true
+        })
+      }
+    }, err => {
+      this.setData({
+        loadingFailed: true
+      })
+      return false;
+    })
+  },
+  delUser(e){
+    let that = this;
+    var orderId = e.currentTarget.dataset.ids;
+    var userinfo = wx.getStorageSync('userInfo');
+    wx.showModal({
+      title: '提示',
+      content: '确定删除该乘车人信息吗',
+      success: function (res) {
+        if (res.confirm) {//这里是点击了确定以后
+          http.getRequest("/Api/Mobile/AddressDel?MemberId="+userinfo.Id+"&id="+orderId, '', wx.getStorageSync('header'), res => {
+            if (res.code == 0) {
+              wx.showToast({
+                title: res.msg,
+                icon: 'loading',
+                duration: 1000,
+                success:function(){
+                  that.getOrderList();
+                }
+              });
+            }else{
+              wx.showToast({
+                title: '取消失败',
+                icon:'error'
+              })
+            }
+          }, err => {
+            console.log(err)
+          })
+          
+        } else {//这里是点击了取消以后
+        }
+      }
+    })
+  },
+  editUser(e){
+    var item = e.currentTarget.dataset.item;
+    wx.navigateTo({
+      url: '/pages/addUser2/addUser2?item='+JSON.stringify(item),
+    })
+  },
+  addUser(){
+    wx.navigateTo({
+      url: '/pages/addUser2/addUser2',
+    })
+  },
+})

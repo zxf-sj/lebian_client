@@ -1,0 +1,47 @@
+<view class="container">
+	<view class="location">
+			<image class="arrow-icon" src="/assets/images/wz.png"></image>
+			<view class="dott_line1"></view>
+			<view class="dott_line2"></view>
+		<view class="location-city">
+			<text>{{startCity}}</text>
+		</view>
+		<input type="text" class="location-input" value="{{value}}" bindinput="searchInputend" placeholder="请输入地点关键字" placeholder-style="color:#cccccc" />
+			<view class="location-cancel" bindtap="quxiao">取消</view>
+	</view>
+  <view class='hotcity-wrap'>
+      <view class='title1'>热门地点<image class="arrow-icon1" src="https://www.qierchuxing.com/upload/Annex/202405/AX-20240509-766802-800.png"></image></view>
+      <view class='item-wrap'>
+         <view class='hotcity-item' bindtap="bindArea" data-area="火车站">火车站</view>
+         <view class='hotcity-item' bindtap="bindArea" data-area="汽车站">汽车站</view>
+         <view class='hotcity-item' bindtap="bindArea" data-area="医院">医  院</view>
+         <view class='hotcity-item' bindtap="bindArea" data-area="学校">学  校</view>
+      </view>
+  </view>
+  <view class="map_container">
+    <map class='map' id="indexMap" longitude='{{longitude}}' latitude='{{latitude}}' scale='{{scale}}' markers='{{markers}}' bindregionchange="bindregionchange" show-location="true">
+      <view class="current-mylocation-box">
+        <image bindtap="getMyLocation" class="current-mylocation" src="/assets/images/location.png">
+        </image>
+     </view>
+      <image src="/assets/images/weizhi.png" class="current-site-icon"></image>
+    </map>
+  </view>
+  <button type="primary" class="buttonCheck" bindtap="checkOk">确定选择</button>
+	<view class="addressList" wx:if="{{address}}">
+		<scroll-view scroll-y='true' style="height:83vh">
+			<view class="destination" wx:for="{{address}}" bindtap="clickAddress" wx:key="index" data-item="{{item}}">
+				<view class="destination-content">
+					<view class="content-image">
+						<image src="/assets/images/weizhi.png"></image>
+					</view>
+					<view class="content">
+						<text class="content-name">{{item.name}}</text>
+						<text class="content-detail">{{item.address}}</text>
+					</view>
+				</view>
+			</view>
+		</scroll-view>
+	</view>
+
+</view>

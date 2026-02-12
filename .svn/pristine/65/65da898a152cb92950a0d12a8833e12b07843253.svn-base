@@ -1,0 +1,23 @@
+<view class="container">
+	<block wx:if="{{noMessage}}">
+		<view class="no_msg">
+			<image src="/assets/images/nomsg.png"></image>
+			<view class="no_txt">这里很干净，没有消息</view>
+		</view>
+	</block>
+	<block wx:else>
+		<view class="has-read {{allRead?'read-done':''}}">全部信息</view>
+    <scroll-view class="content" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height: 100vh"  bindscrolltolower="loadMore">
+      <view class="sys_notice" wx:for="{{noticeList}}" wx:key="index" data-id="{{item.Id}}" bindtap="toDetail">
+			<image src="/assets/images/xiaoxi.png"></image>
+			<view class="cont">
+				<view class="top">
+					<view class="tit">{{item.Name}}</view>
+					<view class="time">{{item.ModifyDate}}</view>
+				</view>
+				<view class="btm">{{item.MsgContent}}</view>
+			</view>
+		</view>
+    </scroll-view>
+	</block>
+</view>

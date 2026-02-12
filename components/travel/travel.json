@@ -1,0 +1,11 @@
+{
+  "usingComponents": {
+    "slideCoupon":"/components/slideCoupon/slideCoupon",
+    "passenger":"/components/passenger/passenger",
+    "daohang":"/components/daohang/daohang",
+    "orderBottom":"/components/orderBottom/orderBottom",
+    "information":"/components/information/information",
+    "travel":"/components/travel/travel",
+    "remarks":"/components/remarks/remarks"
+  }
+}

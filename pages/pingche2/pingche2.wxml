@@ -1,0 +1,172 @@
+<!--pages/pingche2/pingche2.wxml-->
+<view class="page">
+  <distanceNav price="{{price}}" bind:nav_change_date="nav_change_date" bind:nav_change_line="nav_change_line"  />
+  <information typeon="pc" bind:getCarList="getCarList" bind:nav_change_date="nav_change_date"  bind:information_phone_number="information_phone_number" />
+  <view class="person_box">
+    <view class="car_box" wx:if="{{carTypeList.length > 0}}">
+      <view class="car_nav">车型选择</view>
+      <view class="car_main">
+        <view class="main">
+          <view class="group_7">
+            <view wx:for="{{carTypeList}}" wx:key="index" class="group_8 {{carType===index?'typechecked':''}} {{item.CarSeatState?'':'prohibit'}}" bindtap="chooseCarType" data-index="{{index}}" data-nums="{{item.SeatNumber}}">
+              <view class="image-text_5">
+                <image src="{{item.Note == '' || item.Note == null?'https://www.qierchuxing.com/upload/Annex/202405/AX-20240521-644317-541.png': baseUrl + item.Note}}" class="image_1"></image>
+                <view class="group_9"></view>
+                <text lines="1" class="text-group_5">{{item.Name}}</text>
+              </view>
+              <view class="group_10">
+                <image src="/assets/images/nav-me.png" class="thumbnail_5"></image>
+                <text lines="1" class="text_2">{{item.SeatNumber+1}}座</text>
+              </view>
+              <view class="text-wrapper_1">
+                <text lines="1" class="text_3">¥{{item.OriginalPrice}}</text>
+                <text lines="1" class="text_4" wx:if="{{item.PromotionDiscountType == 9}}">¥{{item.Price}}</text>
+                <text lines="1" class="text_4" wx:if="{{item.PromotionDiscountType == 0}}">¥{{item.Price * item.PromotionDiscount}}</text>
+              </view>
+              <view class="text-wrapper_2">
+                <text wx:if="{{item.Version!='0'}}" class="text_5">+摆渡价{{item.Version}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="person_nav_box">
+      <view class="person_nav_item">
+        <view class="c_person">成人</view>
+        <view class="calculate">
+          <view class="chind_reduce" bind:tap="adult_reduce">-</view>
+          <view class="chind_num">{{aduit_num}}</view>
+          <view class="chind_add" bind:tap="adult_add">+</view>
+        </view>
+      </view>
+      <text class="split"></text>
+      <view class="person_nav_item">
+        <view class="c_person">儿童</view>
+        <view class="calculate">
+          <view class="chind_reduce" bind:tap="chind_reduce">-</view>
+          <view class="chind_num">{{child_num}}</view>
+          <view class="chind_add" bind:tap="chind_add">+</view>
+        </view>
+      </view>
+    </view>
+    <view class="person_list">
+      <view class="person_item">
+        <view class="person_phone_txt">联系方式</view>
+        <input class="person_phone"  style="{{phone_number?'color:#010101;':'color:#bbbbbb;'}}" value="{{phone_number}}" maxlength="11" placeholder="请输入手机号" bindinput="person_phone" />
+      </view>
+    </view>
+    <view class="destination">
+      <view class="left">乘车备注</view>
+      <view class="right" bind:tap="handleRemarks" style="{{textareaValue?'color:#010101;':'color:#bbbbbb;'}}">
+        {{textareaValue?textareaValue:'航班号/动车次'}}
+      </view>
+    </view>
+    <view class="remarks">
+      * 如是否携带大件行李、飞机航班号、列车车次及乘坐时间、是否是孕妇或老人、是否是孩童单独乘车等，以便更好的为您服务。
+    </view>
+  </view>
+  <view class="prompt">* 儿童是指3岁以下的小朋友。</view>
+  <view class="bottom">
+    <view class="location">
+      <view class="destination go" bindtap="showCoupon">
+        <view class="juan_l">
+          <view class="box">次卡</view>
+        </view>
+        <view class="juan_r">
+          {{couponList - use_couponList}}张可用 <text class="txt">></text>
+        </view>
+      </view>
+      <view class="destination">
+        <view class="money_l">订单总金额</view>
+        <view class="money_r">￥ {{price?price:0}}
+          <view wx:if="{{Version && typeon == 'bc'}}" style="margin-left: 10rpx;font-size: 12px;">(含超范围：+ {{Version}})
+          </view>
+        </view>
+      </view>
+      <view class="zhe" wx:if="{{typeon == 'pc' && PromotionDiscountType == 0}}">活动期间享75折优惠</view>
+      <view class="details">
+        <view class="detailList" wx:if="{{carTypeList.length > 0}}">
+          <view class="detailList_l">基本票价（成人）</view>
+          <view class="detailList_r" wx:if="{{PromotionDiscountType == 9}}">
+            {{initialPrice}} X {{aduit_num}}
+          </view>
+          <view class="detailList_r" wx:if="{{PromotionDiscountType == 0}}">
+            {{initialPrice}} X {{PromotionDiscount}} X {{aduit_num}}
+          </view>
+          <view class="detailList_r" wx:if="{{PromotionDiscountType == 1}}">
+            {{initialPrice}} - {{PromotionDiscount}} X {{aduit_num}}
+          </view>
+        </view>
+        <view class="detailList" wx:if="{{child_num > 0}}">
+          <view class="detailList_l">基本票价（儿童半价票） </view>
+          <view class="detailList_r">
+            {{initialPrice / 2}} X {{child_num}}
+          </view>
+        </view>
+        <view class="detailList" wx:if="{{rangfenceMapList.length > 0}}" wx:for="{{rangfenceMapList}}" wx:key="index">
+          <view class="detailList_l">{{item.Name}}超范围 </view>
+          <view class="detailList_r">
+            {{item.Price}} X {{aduit_num + child_num}}
+          </view>
+        </view>
+        <view class="detailList" wx:if="{{use_couponList > 0}}">
+          <view class="detailList_l">次卡</view>
+          <view class="detailList_r">
+            <view class="additional">- {{use_couponList}} 张</view>
+          </view>
+        </view>
+        <view class="detailList">
+          <view class="detailList_l">合计</view>
+          <view class="detailList_r">
+            {{price?price:0}}
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="signUp-tip" bind:tap="showView">
+      <checkbox-group style=" height: 40rpx;">
+        <checkbox value="agree" checked="{{agree}}" size="mini" />
+      </checkbox-group>
+      <view class="signUp-tip-txt">
+        下单即同意本服务条款
+        <text class="signUp-tip-txt-protocol" bindtap="gotoxieyi">《用户须知》</text>
+      </view>
+    </view>
+    <import src="/pages/wxParse/wxParse" />
+    <view class="mask" catchtouchmove="true" wx:if="{{isshow}}">
+      <view class="box_3">
+        <scroll-view scroll-y="true" style="height:70vh;">
+          <template is="wxParse" data="{{wxParseData:content.nodes}}" />
+        </scroll-view>
+      </view>
+      <view class="buttonsView">
+        <button class="buttons1" bind:tap="tongyi">同意</button>
+        <button class="buttons2" bind:tap="guanbi">取消</button>
+      </view>
+    </view>
+    <view class="mask" catchtouchmove="true" wx:if="{{shIsshow}}">
+      <view class="box_3">
+        <scroll-view scroll-y="true" style="height:70vh;">
+          <template is="wxParse" data="{{wxParseData:ContrabandGoods.nodes}}" />
+        </scroll-view>
+      </view>
+      <view class="buttonsView">
+        <button class="buttons1" bind:tap="tongyi2">同意</button>
+        <button class="buttons2" bind:tap="tongyi2">取消</button>
+      </view>
+    </view>
+    <view class="subMit">
+      <!-- 确认支付并下单 -->
+      <!-- handleCallCar -->
+      <view class="btn" bind:tap="handletel" style="{{agree==true?'color:#fff;':'background:#eee;'}}">确认下单</view>
+    </view>
+    <!-- 显示优惠卷 -->
+    <slideCoupon wx:if="{{showCoupon}}" class="slide-comp" params="{{slideCouponParams}}" hasChooseId="{{hasChooseId}}" showCoupon="{{showCoupon}}" bindCouponState="couponStateHandle" bindHasChooseCouponData="onHasChooseCouponData" bindExchangeItem="onExchangeItem" person_number="{{aduit_num + child_num}}"></slideCoupon>
+  </view>
+  <!-- 显示备注信息 -->
+  <remarks bind:textareaValue="handleTextareaValue" wx:if="{{remark}}" remark="{{remark}}" />
+  <mp-dialog title="提示" show="{{dialogShow}}" bindbuttontap="tapDialogButton" buttons="{{buttons}}">
+    <view>乘车人信息与乘车人数不匹配</view>
+  </mp-dialog>
+</view>

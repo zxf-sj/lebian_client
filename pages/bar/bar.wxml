@@ -1,0 +1,37 @@
+<!-- 搜索框 -->
+<view class="search-container">
+  <input 
+    placeholder="输入公交线路或站点" 
+    bindinput="handleSearchInput"
+    value="{{searchValue}}"
+  />
+  <button bindtap="handleSearch">搜索</button>
+</view>
+
+<!-- 线路列表 -->
+<scroll-view scroll-y class="route-list">
+  <block wx:for="{{routeList}}" wx:key="index">
+    <view class="route-item" bindtap="navigateToDetail" data-id="{{item.id}}">
+      <view class="route-number">{{item.routeNumber}}</view>
+      <view class="route-name">{{item.routeName}}</view>
+      <view class="route-direction">
+        <text>{{item.startStation}} → {{item.endStation}}</text>
+      </view>
+      <view class="route-info">
+        <text>首班: {{item.firstBus}}</text>
+        <text>末班: {{item.lastBus}}</text>
+        <text>票价: {{item.price}}元</text>
+      </view>
+    </view>
+  </block>
+  
+  <!-- 加载更多 -->
+  <view wx:if="{{hasMore}}" class="load-more" bindtap="loadMore">
+    <text>加载更多</text>
+  </view>
+</scroll-view>
+
+<!-- 无数据提示 -->
+<view wx:if="{{routeList.length === 0}}" class="no-data">
+  <text>暂无公交线路数据</text>
+</view>

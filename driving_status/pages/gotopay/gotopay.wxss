@@ -1,0 +1,52 @@
+.money-box {
+	background: #fff;
+	margin-bottom: 20rpx;
+  padding-top: 30rpx;
+  text-align: center;
+}
+.time {
+  font-size: 36rpx;
+  color: #ef0909;
+  line-height: 70rpx;
+}
+.money {
+  font-size: 36rpx;
+  color: #ef0909;
+  line-height: 70rpx;
+}
+.money1{
+  font-size: 32rpx;
+  color: #999;
+  line-height: 70rpx;
+}
+.pay-item {
+  height: 90rpx;
+  padding: 0 30rpx;
+  font-size: 26rpx;
+  background: #fff;
+  width: 750rpx;
+  border-bottom: 1rpx solid #eeeeee;
+  margin-top: 46rpx;
+}
+.last-child {
+  border-bottom: none;
+}
+.pay-img {
+  width: 80rpx;
+  height: 80rpx;
+  margin-right: 25rpx;
+  margin-bottom: -26rpx;
+}
+.pay-btn {
+	width: 690rpx;
+	line-height: 80rpx;
+	background: linear-gradient(90deg, rgba(240, 199, 133, 1), rgba(246, 214, 157, 1));
+	border-radius: 40rpx;
+	color: #fff;
+	margin: 100rpx auto 0;
+}
+.typeradio{
+  float: right;
+  margin-right: 60rpx;
+  margin-top: -40rpx;
+}

@@ -1,0 +1,488 @@
+// pages/pingche2/pingche2.js
+const throttle = require('../../utils/throttle.js').throttle;
+const BASE_URL = require("../../utils/BASE_URL");
+var baseUrl = BASE_URL.BASE_URL //配置基础url
+import http from '../../utils/http.js';
+const app = getApp();
+Page({
+
+  /**
+   * 页面的初始数据
+   */
+  data: {
+    dialogShow: false,
+    buttons: [{
+      text: '确认', // 按钮文字
+      type: 'default', // 按钮类型: 'default' | 'primary' | 'disabled'
+      link: '' // 点击后跳转的页面路径
+    }],
+  },
+
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad(options) {},
+
+  /**
+   * 生命周期函数--监听页面初次渲染完成
+   */
+  onReady() {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow() {
+
+  },
+  //
+  tapDialogButton() {
+    this.setData({
+      dialogShow: false
+    })
+  },
+  // 叫车
+  handleCallCar: throttle(function () {
+    const _this = this;
+    var openid = wx.getStorageSync('openid');
+    const numberOfPeople = wx.getStorageSync('numberOfPeople');
+    const phoneStr = wx.getStorageSync('phoneStr');
+    if (!openid) {
+      wx.navigateTo({
+        url: '/user_center/pages/login/login',
+      })
+      return false;
+    }
+    if (numberOfPeople > phoneStr.split(',').length) {
+      _this.setData({
+        dialogShow: true
+      })
+      return false;
+    }
+    var user = wx.getStorageSync('userInfo');
+    var startInfo = wx.getStorageSync('starInfo2');
+    var endInfo = wx.getStorageSync('endInfo2');
+    var storageSync = wx.getStorageSync('storageSync')
+    var pcTimeSync = wx.getStorageSync('pcTimeSync')
+    var nums = wx.getStorageSync('personNum');
+    var pcTypeId = wx.getStorageSync('pcTypeId');
+    var note = wx.getStorageSync('textareaValue');
+    var passengerList = wx.getStorageSync('passengerList');
+    var startDate = storageSync.startDate;
+    if (!startInfo.startAddress) {
+      wx.showToast({
+        title: '请选择出发乘车位置',
+        icon: 'none',
+        duration: 2000
+      })
+      return false;
+    }
+    if (!endInfo.endAddress) {
+      wx.showToast({
+        title: '请选择下车位置',
+        icon: 'none',
+        duration: 2000
+      })
+      return false;
+    }
+    if (!nums) {
+      wx.showToast({
+        title: '请选择乘车人',
+        icon: 'none',
+        duration: 2000
+      })
+      return false;
+    }
+    console.log(passengerList)
+    const hasAaa = passengerList.some(item => item.isChildren === "100004-0000010002")
+    if(!hasAaa) {
+      wx.showToast({
+        title: '儿童无法单独乘车',
+        icon: 'none',
+        duration: 2000
+      })
+      return false;
+    }
+
+    let starTime = pcTimeSync.StartTime.split(':')[0] + ':59:00'
+    let ArrivalTime = startDate + ' ' + starTime
+    let lineId = wx.getStorageSync('lineId')
+    let reqData = {
+      PassengerLineId: lineId,
+      IntoLocation: startInfo.startName,
+      IntoLongitude: startInfo.startLont,
+      IntoLatitude: startInfo.startLait,
+      OffLocation: endInfo.endName,
+      OffLongitude: endInfo.endLont,
+      OffLatitude: endInfo.endLait,
+      PassengerNumber: nums,
+      Departure: "100004-0000980001",
+      ArrivalTime: ArrivalTime,
+      Personal: user.Id,
+      SeatNumber: 0,
+      DispatchListId: "",
+      IsReservation: "100004-0000010002",
+      CouponDetailsId: pcTimeSync.hasChooseId ? pcTimeSync.hasChooseId : "",
+      PersonalIds: phoneStr,
+      Note: note, //备注信息
+      IsExclusive: "100004-0000010002",
+      IsPickGoods: '100004-0000010002',
+      SelectCarType: pcTypeId,
+      OrderSource: "小程序",
+      priceType: '100004-0001270001'
+    };
+    http.getRequest('/Api/DispatchMobile/IsUserHaveDayOrder?phone=' + phoneStr + '&timeDay=' + startDate, '', '', res => {
+      if (res.code == 0) {
+        console.log('请求成功',res)
+        if (res.count == 0) {
+          console.log('res.count == 0',this.data.dispatchListId)
+          if (this.data.dispatchListId) {
+            wx.showLoading({
+              title: '车辆调度中',
+            })
+          } else {
+            wx.showLoading({
+              title: '加载中...',
+            })
+          }
+          let that = this;
+          console.log('去下单',reqData)
+          wx.request({
+            url: baseUrl + '/Api/DispatchMobile/CreateRideTicketOrder',
+            data: reqData,
+            method: "POST",
+            success(orderRes) {
+              console.log('请求成功')
+              var ress = orderRes.data
+              if (ress.code == '0') {
+                console.log('下单成功',ress)
+                if(res.data.PayAmount != 0) {
+                  wx.hideLoading();
+                  http.getRequest('/Api/DispatchMobile/GoPay?LayerOrder=1&Id=' + ress.data.Id + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
+                    console.log('请求成功',LayerOrderRes)
+                    if (LayerOrderRes.code == 0) {
+                      console.log('获取支付所需信息成功')
+                      var data = JSON.parse(LayerOrderRes.data);
+                      console.log('拉起支+付')
+                      wx.requestPayment({
+                        timeStamp: data.timeStamp,
+                        nonceStr: data.nonceStr,
+                        package: data.package,
+                        signType: 'MD5',
+                        paySign: data.paySign,
+                        success(paymentRes) {
+                          console.log('支付成功')
+                          wx.removeStorageSync('starInfo2');
+                          wx.removeStorageSync('endInfo2');
+                          wx.removeStorageSync('storageSync')
+                          wx.removeStorageSync('passengerList')
+                          wx.removeStorageSync('pcTimeSync')
+                          wx.removeStorageSync('personNum')
+                          wx.removeStorageSync('pcTypeId');
+                          wx.removeStorageSync('SeatNumber')
+                          wx.removeStorageSync('textareaValue');
+                          wx.removeStorageSync('phoneStr')
+                          wx.removeStorageSync('lineId');
+                          wx.showToast({
+                            title: '支付成功',
+                            icon: 'success',
+                            duration: 2000,
+                            success: function () {
+                              that.setSubscribeMessage();
+                              setTimeout(function () {
+                                wx.reLaunch({
+                                  url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
+                                })
+                              }, 1000)
+                            }
+                          })
+                        },
+                        fail(paymentErr) {
+                          wx.removeStorageSync('starInfo2');
+                          wx.removeStorageSync('endInfo2');
+                          wx.removeStorageSync('storageSync')
+                          wx.removeStorageSync('passengerList')
+                          wx.removeStorageSync('pcTimeSync')
+                          wx.removeStorageSync('personNum')
+                          wx.removeStorageSync('pcTypeId');
+                          wx.removeStorageSync('SeatNumber')
+                          wx.removeStorageSync('textareaValue');
+                          wx.removeStorageSync('phoneStr')
+                          wx.removeStorageSync('lineId');
+                          console.log('拉起支付失败',paymentErr)
+                          setTimeout(function () {
+                            wx.reLaunch({
+                              url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
+                            })
+                          }, 1000)
+                        }
+                      })
+                    } else if(LayerOrderRes.code == 400 && LayerOrderRes.msg == "已付款"){
+                      wx.showToast({
+                        title: '支付成功',
+                        icon: 'success',
+                        duration: 2000,
+                        success: function () {
+                          that.setSubscribeMessage();
+                          setTimeout(function () {
+                            wx.reLaunch({
+                              url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
+                            })
+                          }, 1000)
+                        }
+                      })
+                    } else {
+                      console.log('获取支付所需信息失败')
+                      wx.showToast({
+                        title: LayerOrderRes.msg,
+                        icon: 'success',
+                        duration: 2000,
+                      })
+                    }
+                  }, (LayerOrderRrr) => {
+                    console.log('请求失败',LayerOrderRrr)
+                  })
+                } else {
+                  setTimeout(function () {
+                    wx.reLaunch({
+                      url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
+                    })
+                  }, 1000)
+                }
+              } else {
+                console.log('下单失败')
+                wx.showToast({
+                  title: ress.msg,
+                  icon: 'none',
+                  duration: 2000
+                })
+              }
+            },
+          })
+        } else {
+          console.log('res.count不为0')
+          var list = res.data;
+          var str = "";
+          list.forEach(function (item, index) {
+            str += item.PassengerLineId_Name + "," + "订单号为:" + item.Code + "\n"
+          });
+          wx.showModal({
+            title: '下单记录',
+            content: str,
+            cancelText: "取消下单",
+            confirmText: "继续下单",
+            complete: (res) => {
+              if (res.cancel) {
+                wx.navigateTo({
+                  url: '/pages/index/index',
+                })
+              }
+              if (res.confirm) {
+                if (this.data.dispatchListId) {
+                  wx.showLoading({
+                    title: '车辆调度中',
+                  })
+                } else {
+                  wx.showLoading({
+                    title: '加载中...',
+                  })
+                }
+                let that = this;
+                wx.request({
+                  url: baseUrl + '/Api/DispatchMobile/CreateRideTicketOrder',
+                  data: reqData,
+                  method: "POST",
+                  success(orderRes) {
+                    console.log('请求成功')
+                    var ress = orderRes.data
+                    if (ress.code == '0') {
+                      console.log('下单成功',ress)
+                      wx.hideLoading();
+                      // wx.navigateTo({
+                      //   url: '/driving_status/pages/gotopay/gotopay?orderId='+ress.data.Id,
+                      // })
+                      // console.log('去拿支付所需信息')
+                      http.getRequest('/Api/DispatchMobile/GoPay?LayerOrder=1&Id=' + ress.data.Id + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
+                        console.log('请求成功',LayerOrderRes)
+                        if (LayerOrderRes.code == 0) {
+                          console.log('获取支付所需信息成功')
+                          var data = JSON.parse(LayerOrderRes.data);
+                          console.log('拉起支+付')
+                          wx.requestPayment({
+                            timeStamp: data.timeStamp,
+                            nonceStr: data.nonceStr,
+                            package: data.package,
+                            signType: 'MD5',
+                            paySign: data.paySign,
+                            success(paymentRes) {
+                              console.log('支付成功')
+                              wx.removeStorageSync('starInfo2');
+                              wx.removeStorageSync('endInfo2');
+                              wx.removeStorageSync('storageSync')
+                              wx.removeStorageSync('passengerList')
+                              wx.removeStorageSync('pcTimeSync')
+                              wx.removeStorageSync('personNum')
+                              wx.removeStorageSync('pcTypeId');
+                              wx.removeStorageSync('SeatNumber')
+                              wx.removeStorageSync('textareaValue');
+                              wx.removeStorageSync('phoneStr')
+                              wx.removeStorageSync('lineId');
+                              wx.showToast({
+                                title: '支付成功',
+                                icon: 'success',
+                                duration: 2000,
+                                success: function () {
+                                  that.setSubscribeMessage();
+                                  setTimeout(function () {
+                                    wx.reLaunch({
+                                      url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
+                                    })
+                                  }, 1000)
+                                }
+                              })
+                            },
+                            fail(paymentErr) {
+                              wx.removeStorageSync('starInfo2');
+                              wx.removeStorageSync('endInfo2');
+                              wx.removeStorageSync('storageSync')
+                              wx.removeStorageSync('passengerList')
+                              wx.removeStorageSync('pcTimeSync')
+                              wx.removeStorageSync('personNum')
+                              wx.removeStorageSync('pcTypeId');
+                              wx.removeStorageSync('SeatNumber')
+                              wx.removeStorageSync('textareaValue');
+                              wx.removeStorageSync('phoneStr')
+                              wx.removeStorageSync('lineId');
+                              console.log('拉起支付失败',paymentErr)
+                              setTimeout(function () {
+                                wx.reLaunch({
+                                  url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
+                                })
+                              }, 1000)
+                            }
+                          })
+                        } else if(LayerOrderRes.code == 400 && LayerOrderRes.msg == "已付款"){
+                          wx.showToast({
+                            title: '支付成功',
+                            icon: 'success',
+                            duration: 2000,
+                            success: function () {
+                              that.setSubscribeMessage();
+                              setTimeout(function () {
+                                wx.reLaunch({
+                                  url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
+                                })
+                              }, 1000)
+                            }
+                          })
+                        } else {
+                          console.log('获取支付所需信息失败')
+                          wx.showToast({
+                            title: LayerOrderRes.msg,
+                            icon: 'success',
+                            duration: 2000,
+                          })
+                        }
+                      }, (LayerOrderRrr) => {
+                        console.log('请求失败',LayerOrderRrr)
+                      })
+                     
+                    } else {
+                      console.log('下单失败')
+                      wx.showToast({
+                        title: ress.msg,
+                        icon: 'none',
+                        duration: 2000
+                      })
+                    }
+                  },
+                })
+              }
+            }
+          })
+        }
+      } else {
+        console.log('请求失败',res)
+        wx.showToast({
+          title: '数据请求失败，请稍后重试'+res.msg,
+          icon: "error"
+        })
+      }
+    }, err => {
+      console.log('下单失败',err)
+    })
+  }, 3000),
+  setSubscribeMessage: function () {
+    wx.requestSubscribeMessage({
+      tmplIds: ['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA'],
+      success(res) {
+        if (res['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA'] === 'accept') {
+          console.log('用户同意接收订阅消息');
+        } else {
+          wx.showModal({
+            title: '订阅消息',
+            content: '您当前拒绝接受消息通知，是否去开启',
+            confirmText: '开启授权',
+            confirmColor: '#345391',
+            cancelText: '仍然拒绝',
+            cancelColor: '#999999',
+            success(res) {
+              if (res.confirm) {
+                wx.openSetting({
+                  success(res) {
+                    console.log(res.authSetting);
+                  },
+                  fail(err) {
+                    //失败
+                    console.log(err);
+                  }
+                });
+              } else if (res.cancel) {
+                console.log('用户点击取消');
+              }
+            }
+          });
+        }
+      },
+      fail(err) {
+        console.log('请求订阅消息权限失败：', err);
+      }
+    });
+  },
+
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide() {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload() {
+
+  },
+
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh() {
+
+  },
+
+  /**
+   * 页面上拉触底事件的处理函数
+   */
+  onReachBottom() {
+
+  },
+
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage() {
+
+  }
+})

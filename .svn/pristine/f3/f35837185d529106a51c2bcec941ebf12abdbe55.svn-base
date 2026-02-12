@@ -1,0 +1,384 @@
+// components/slideCoupon/slideCoupon.js
+import http from "../../utils/http.js";
+const BASE_URL = require("../../utils/BASE_URL");
+var baseUrl = BASE_URL.BASE_URL; //配置基础url
+let clickTimer = null;
+Component({
+  /**
+   * 组件的属性列表
+   */
+  properties: {
+    typeon: {
+      type: String,
+      value: "pc",
+    },
+  },
+  options: {
+    // 其他选项：'shared'（共享样式）、'apply-shared'（父组件影响子组件） 'isolated' // 默认值，隔离样式
+    styleIsolation: "apply-shared",
+  },
+  lifetimes: {
+    attached: function () {
+      let that = this;
+      // 在组件实例进入页面节点树时执行
+      let storageSync = wx.getStorageSync("storageSync");
+      let starInfo2 = wx.getStorageSync("starInfo2");
+      let endInfo2 = wx.getStorageSync("endInfo2");
+      that.setData({
+        startingCity: storageSync.startingCity,
+        endingCity: storageSync.endingCity,
+      });
+      if (starInfo2) {
+        that.setData({
+          startingAddress: starInfo2.startName,
+          selectedCar: "",
+          timeIndex: "",
+        });
+      }
+      if (endInfo2) {
+        that.setData({
+          endingAddress: endInfo2.endName,
+          selectedCar: "",
+          timeIndex: "",
+        });
+      }
+      if (starInfo2 && endInfo2) {
+        //查询lineId
+        wx.request({
+          url: baseUrl + "/api/DispatchMobile/GetLineIdByCityName",
+          data: {
+            startCity: starInfo2.startCity,
+            endCity: endInfo2.endCity,
+          },
+          method: "GET",
+          success: (res) => {
+            if (res.data.code == 0) {
+              that.setData({
+                lineId: res.data.data.Id,
+              });
+              let storedData = wx.getStorageSync("storageSync") || {};
+              let updatedData = { ...storedData, lineId: res.data.data.Id };
+              wx.setStorageSync("storageSync", updatedData);
+              //拉出行时间列表
+              that.getTimeListForDate();
+            } else {
+              wx.showToast({
+                title: res.data.msg,
+                icon: "error",
+              });
+            }
+            //查询是否在运营范围内
+            that.getPriceListForLineId();
+          },
+        });
+      }
+      if (that.data.typeon == "bc" || that.data.typeon == "sh") {
+        // 设置起始日期为今天
+        let date = new Date();
+        let today = date.toISOString().split("T")[0]; // 获取今天的日期（格式：YYYY-MM-DD）
+        let storedData = wx.getStorageSync("pcTimeSync") || {};
+        let updatedData = {
+          ...storedData,
+          propsDay: today.substring(5, 7) + "/" + today.substring(8, 10),
+          propsTxt: "今天",
+        };
+        wx.setStorageSync("pcTimeSync", updatedData);
+        that.setData({
+          startDate: today,
+          date: today, // 初始选择也为今天
+          startTime:today
+        });
+        let storedData2 = wx.getStorageSync("storageSync") || {};
+        let updatedData2 = { ...storedData2, startDate: today };
+        wx.setStorageSync("storageSync", updatedData2);
+        // 设置结束日期为今天之后三天
+        let endDate = new Date();
+        endDate.setDate(endDate.getDate() + 3); // 增加三天
+        let endDateString = endDate.toISOString().split("T")[0]; // 获取格式化后的日期字符串
+        this.setData({
+          endTime: endDateString,
+        });
+      }
+    },
+    detached: function () {
+      // 在组件实例被从页面节点树移除时执行
+    },
+  },
+  /**
+   * 组件的初始数据
+   */
+  data: {
+    startDate: "", //出行日期
+    endDate: "",
+    takeDate: "", //取件时间
+    startingCity: "",
+    endingCity: "",
+    startingAddress: "",
+    endingAddress: "",
+    modelComponent: false,
+    lineId: "",
+    timeIndex: "", //出行时间
+    timeArr: [], //出行时间列表
+    selectedCar: null,
+    startTime:'',
+    endTime:''
+  },
+  methods: {
+    //是否在运营范围内
+    getPriceListForLineId() {
+      wx.showLoading({
+        title: "",
+      });
+      let that = this;
+      let starInfo2 = wx.getStorageSync("starInfo2");
+      let endInfo2 = wx.getStorageSync("endInfo2");
+      let IsExclusive = null;
+      if (that.data.typeon == "pc") {
+        IsExclusive = "100004-0000010002";
+      } else if (that.data.typeon == "bc") {
+        IsExclusive = "100004-0000010001";
+      }
+      var data = {
+        IsExclusive: IsExclusive,
+        Id: that.data.lineId,
+        StartLat: starInfo2.startLait,
+        StartLng: starInfo2.startLont,
+        EndLat: endInfo2.endLait,
+        EndLng: endInfo2.endLont,
+        ArrivalTime: '',
+      };
+      http.postRequest(
+        "/Api/DispatchMobile/getPriceListForLineId",
+        data,
+        "",
+        (res) => {
+          if (res.code == "0") {
+              if(res.msg == '有摆渡价') {
+                const price =res.data[0].Price + res.data[0].Version
+                const newData = { value: price }
+                getApp().eventCenter.emit('dataChange', newData)
+                const version = { value: res.data[0].Version }
+                getApp().eventVersion.emit('dataChange', version)
+                let pcTimeSync = wx.getStorageSync('pcTimeSync')
+                let updatedData = {
+                  ...pcTimeSync,
+                  Version:res.data[0].Version
+                }
+                wx.setStorageSync('pcTimeSync',updatedData)
+              }
+           
+          } else {
+            if (res.msg != "请选择下车位置") {
+              wx.showModal({
+                title: "服务范围提示",
+                content:
+                  "不在营运线路范围内,下单请联系客服，电话:0351-6078977，是否电话？",
+                confirmText: "确定",
+                cancelText: "关闭",
+                success(res) {
+                  that.setData({
+                    isShowModal: false,
+                  });
+                  if (res.confirm) {
+                    wx.makePhoneCall({
+                      phoneNumber: "0351-6078977",
+                    });
+                  }
+                },
+              });
+              wx.removeStorageSync('starInfo2')
+              wx.removeStorageSync('endInfo2')
+              that.setData({
+                startingAddress:'',
+                endingAddress:'',
+              })
+            }
+            
+          }
+          wx.hideLoading();
+        },
+        (err) => {
+          console.log(err);
+          wx.hideLoading();
+        }
+      );
+    },
+    updatedPrice(e) {
+      let that = this;
+      that.triggerEvent("updatedData");
+    },
+    //选择车辆传值
+    handleCarEvent(e) {
+      if (e.detail.Version != "0") {
+        if (wx.getStorageSync("personNum")) {
+          let personNum = wx.getStorageSync("personNum");
+          const price = personNum * (e.detail.Price + e.detail.Version);
+          const newData = { value: price };
+          getApp().eventCenter.emit("dataChange", newData);
+        } else {
+          const newData = { value: e.detail.Price + e.detail.Version };
+          getApp().eventCenter.emit("dataChange", newData);
+        }
+        getApp().eventCenter.emit(
+          "priceChange",
+          e.detail.Price
+        );
+      } else {
+        if (wx.getStorageSync("personNum")) {
+          let personNum = wx.getStorageSync("personNum");
+          const price = personNum * e.detail.Price;
+          const newData = { value: price };
+          getApp().eventCenter.emit("dataChange", newData);
+        } else {
+          const newData = { value: e.detail.Price };
+          getApp().eventCenter.emit("dataChange", newData);
+        }
+        getApp().eventCenter.emit("priceChange", e.detail.Price);
+      }
+
+      this.setData({
+        selectedCar: e.detail.Name,
+      });
+    },
+    getDayDisplay(dateStr) {
+      const now = new Date();
+      const inputDate = new Date(dateStr);
+
+      // 判断是否为今天
+      if (now.toDateString() === inputDate.toDateString()) {
+        return "今天";
+      }
+
+      // 返回星期几
+      const weekDays = [
+        "星期日",
+        "星期一",
+        "星期二",
+        "星期三",
+        "星期四",
+        "星期五",
+        "星期六",
+      ];
+      return weekDays[inputDate.getDay()];
+    },
+    //获取出行时间
+    getTimeListForDate() {
+      let that = this;
+      var line_id = that.data.lineId;
+      var startDate = that.data.startDate;
+      // var seatnumber = that.data.SeatNumber;
+      if (line_id && startDate) {
+        http.getRequest(
+          "/Api/DispatchMobile/getTimeListForDate?time=" +
+            that.data.startDate +
+            "&lineId=" +
+            line_id,
+          "",
+          "",
+          (res) => {
+            if (res.code == "0") {
+              that.setData({
+                timeArr: res.data,
+              });
+            }
+          },
+          (err) => {
+            console.log(err);
+          }
+        );
+      }
+    },
+    //点击选择时间
+    handleTap() {
+      let that = this;
+      if (that.data.timeArr == "" && that.data.lineId == "") {
+        wx.showToast({
+          title: "请先选择出行路线",
+          icon: "none",
+        });
+      }
+    },
+    //出行时间点击确定
+    bindTimeChange(e) {
+      let that = this;
+      var value = e.detail.value;
+      let timePeriod = that.data.timeArr[value].RunTimeShow.split("-");
+      that.setData({
+        timeIndex: value,
+      });
+      let storedData = wx.getStorageSync("pcTimeSync") || {};
+      let updatedData = {
+        ...storedData,
+        StartTime: timePeriod[0],
+        EndTime: timePeriod[1],
+      };
+      wx.setStorageSync("pcTimeSync", updatedData);
+      that.triggerEvent("updatedData");
+    },
+    handleModel() {
+      let that = this;
+      if (that.data.lineId == "") {
+        wx.showToast({
+          title: "请先选择出行路线",
+          icon: "none",
+        });
+      } else {
+        this.setData({
+          modelComponent: true,
+        });
+      }
+    },
+    toStarting() {
+      let that = this;
+      wx.navigateTo({
+        url:
+          "/pages/starting2/starting2?type=" +
+          that.data.typeon +
+          "&direction=starting",
+      });
+    },
+    toEnding() {
+      let that = this;
+      wx.navigateTo({
+        url:
+          "/pages/starting2/starting2?type=" +
+          that.data.typeon +
+          "&direction=ending",
+      });
+    },
+    //选择出行日期
+    bindDateChange: function (e) {
+      let that = this;
+      this.setData({
+        startDate: e.detail.value,
+        selectedCar: "",
+        timeIndex: "",
+      });
+      that.getTimeListForDate();
+      let handleDate = e.detail.value;
+      let storedData = wx.getStorageSync("pcTimeSync") || {};
+      let updatedData = {
+        ...storedData,
+        propsDay:
+          handleDate.substring(5, 7) + "/" + handleDate.substring(8, 10),
+        propsTxt: that.getDayDisplay(handleDate),
+      };
+      wx.setStorageSync("pcTimeSync", updatedData);
+
+
+
+      let storageSync = wx.getStorageSync("storageSync") || {};
+      let changeData = {...storageSync,startDate:handleDate};
+      wx.setStorageSync("storageSync", changeData);
+
+
+      
+      that.triggerEvent("updatedData");
+    },
+    bindtakeDateDateChange: function (e) {
+      this.setData({
+        takeDate: e.detail.value,
+      });
+    },
+  },
+});

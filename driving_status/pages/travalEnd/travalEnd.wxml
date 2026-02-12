@@ -1,0 +1,157 @@
+<!-- <loading hidden="{{hiddenLoading}}">数据加载中</loading> -->
+<view class="container">
+	<map class="map" id="map" style="width:{{ScreenTotalW}}rpx;height:{{ScreenTotalH}}rpx;" latitude="{{latitude}}" longitude="{{longitude}}" polyline="{{polyline}}" markers="{{markers}}" controls="{{controls}}"
+		include-points='{{points}}' show-location="true">
+	</map>
+
+	<view class="total">
+		<view wx:if="{{!fixedLine}}" class="total-driver">
+			<view class="driver_info">
+				<view class="driver_img">
+					<image class="driverImg" src="http://scapp.xysc16.com/upload/wmp/imgs/driver.png" />
+					<view class="name">{{driver.name}}</view>
+				</view>
+
+				<view class="driver_detailed">
+					<view class="d_top">
+						<view class="company">{{driver.company}}</view>
+						<view>{{driver.orderTotal}}单</view>
+					</view>
+
+					<view class="d_md">
+						<view class="detailed_Cartnumber">{{driver.licensePlate}}</view>
+						<view class="d_id">编号：{{driver.idNo}}</view>
+					</view>
+					<view class="detailed_cart">{{driver.carDesc}}</view>
+
+				</view>
+			</view>
+			<view class="driver-message call-phone">
+				<view class="phone" bindtap="callDriver">
+					<image style="width: 64rpx;height: 64rpx;" src="http://scapp.xysc16.com/upload/wmp/imgs/common_icon_phone.png" />
+				</view>
+			</view>
+		</view>
+
+		<view wx:else class="line-address">
+			<view class="line-str-address">{{driver.startStationName}}</view>
+			<image wx:if="{{driver.lineType == 0}}" src="http://scapp.xysc16.com/upload/wmp/imgs/line_mr.png" class="line_car_png"></image>
+			<image wx:elif="{{driver.lineType == 1}}" src="http://scapp.xysc16.com/upload/wmp/imgs/line-pt.png" class="line_car_png"></image>
+			<image wx:elif="{{driver.lineType == 2}}" src="http://scapp.xysc16.com/upload/wmp/imgs/line-gs.png" class="line_car_png"></image>
+			<view class="line-end-address">{{driver.endStationName}}</view>
+		</view>
+
+
+		<view class="payBox" wx:if="{{!isdriving}}">
+			<!-- 网约车 -->
+			<block wx:if="{{!fixedLine}}">
+				<block wx:if="{{exclusiveCar}}">
+					<view wx:if="{{!hasPay}}" class="pay-total EXC_pay">共<text class="pay-total_num">{{callPriceShowCont}}</text>元
+					</view>
+					<view wx:else class="pay-total EXC_finish">已完成</view>
+				</block>
+				<block wx:elif="{{taxi}}">
+					<view class="pay-total" style="color:#FF8008;padding: 30rpx 0 0;">已完成</view>
+				</block>
+				<block wx:else>
+					<view class="pay-total {{exclusiveCar?'EXC_pay':''}}">共<text
+							class="pay-total_num">{{callPriceShowCont}}</text>元</view>
+					<view class="pay-detail">已优惠{{driver.preferentialPrice}}元</view>
+				</block>
+				<view wx:if="{{showIcon}}" class="handle-icon">
+					<view class="detail-icon" bindtap="toDetail">
+						<image src="http://scapp.xysc16.com/upload/wmp/imgs/end-check-order.png" style="width:50rpx;height:50rpx;"></image>
+						<text>查看明细</text>
+					</view>
+					<view wx:if="{{taxi && !isFriend}}" class="friend-icon" bindtap="addFriend">
+						<image src="http://scapp.xysc16.com/upload/wmp/imgs/add.png" style="width:50rpx;height:50rpx;"></image>
+						<text>添加好友司机</text>
+					</view>
+					<view class="contact-icon" bindtap="toService">
+						<image src="http://scapp.xysc16.com/upload/wmp/imgs/icon-kefu.png" style="width:50rpx;height:50rpx;"></image>
+						<text>联系客服</text>
+					</view>
+				</view>
+				<view wx:else class="handle">
+					<view class="detail" bindtap="toDetail">查看明细></view>
+					<view class="contact" bindtap="toService">联系客服></view>
+				</view>
+
+				<button wx:if="{{!hasPay}}" class="pay-btn" bindtap="toPay">支付车费</button>
+				<view wx:if="{{hasPay}}" class="close-to-home" bindtap="closeToHome">
+					<image src="http://scapp.xysc16.com/upload/wmp/imgs/close1.png"></image>
+				</view>
+				<view wx:if="{{hasPay && !isFriend && !exclusiveCar && !taxi}}" class="addFriend" bindtap="addFriend">
+					<image src="http://scapp.xysc16.com/upload/wmp/imgs/add.png"></image>
+					<view>添加好友司机</view>
+				</view>
+				<!-- 撑起底部 -->
+				<!-- <view wx:if="{{hasPay && !isFriend && !taxi}}" style="width: 100%; height: 80rpx; margin: 20rpx 0"></view> -->
+			</block>
+
+			<!-- 远程 -->
+			<block wx:else>
+				<view class="line-finish-text" wx:if="{{hasPay}}">已完成</view>
+				<view class="line-show-price" wx:else>共{{priceShowCont}}元</view>
+				<view class="line-handle">
+					<view class="line-detail" bindtap="toDetail">
+						<view>查看明细</view>
+						<image src="http://scapp.xysc16.com/upload/wmp/imgs/arrow-right.png"></image>
+					</view>
+					<view class="line-contact" bindtap="toService">
+						<view>联系客服</view>
+						<image src="http://scapp.xysc16.com/upload/wmp/imgs/arrow-right.png"></image>
+					</view>
+				</view>
+
+				<view class="line-pay" wx:if="{{!hasPay}}" bindtap="toPay">
+					<button class="pay-btn line-pay">支付车费</button>
+				</view>
+
+				<view wx:if="{{hasPay}}" class="close-to-home" bindtap="closeToHome">
+					<image src="http://scapp.xysc16.com/upload/wmp/imgs/close1.png"></image>
+				</view>
+			</block>
+
+		</view>
+	</view>
+
+	<!-- 积分图标 -->
+	<movable-area class="movable-area" wx:if="{{showIntegral}}">
+		<movable-view class="movable-view" direction="all" x="350" catchtap="toMyIntegral">
+			<image class="integral-img" src="http://scapp.xysc16.com/upload/wmp/imgs/jifen1.gif"></image>
+		</movable-view>
+	</movable-area>
+
+	<!-- 撒币特效 -->
+	<view class="sb-gif" wx:if="{{showSb}}">
+		<image src="http://scapp.xysc16.com/upload/wmp/imgs/sb.gif" style="width:100%;height:100%;"></image>
+	</view>
+</view>
+
+<!-- 多种支付方式 -->
+<!-- <view class="mask" wx:if="{{showPayBox}}" bindtap="closePay">
+	<view class="pay-box" catchtap="preventSomething">
+		<view class="confirm-title">
+			<text>支付</text><text>{{driver.totalPrice}}元</text>
+		</view>
+		<view class="confirm-list">
+			<view class="confirm-list-item" wx:for="{{payTypeData}}" wx:for-item="item" wx:key="name">
+				<view>
+					<image class="item-img" src="{{item.img}}"></image>
+					<text>{{item.name}}</text>
+				</view>
+				<view>
+					<radio-group class="radio-group" bindchange="radioChange">
+						<radio class="radio-item" value="{{item.name}}" checked="{{item.checked}}"></radio>
+					</radio-group>
+				</view>
+			</view>
+		</view>
+		<view class="confirm-bg">
+			<view class="confirm-bottom">
+				<button class="confirm-btn" catchtap="confirmPay">确认支付</button>
+			</view>
+		</view>
+	</view>
+</view> -->

@@ -1,0 +1,8 @@
+<view class="container">
+  <!-- <image class="logo" src="https://cs.sxkhyx.com/upload/Annex/202406/AX-20240625-732177-241.jpg"></image> -->
+  <image class="logo" src="https://www.qierchuxing.com/upload/Annex/202406/AX-20240627-346046-842.jpg"></image>
+  <view class="openPage-header">
+    <!-- 跳过按钮 -->
+    <view class="openPage-btn" bindtap="skipOpenPage">跳过{{num}}s</view>
+  </view>
+</view>

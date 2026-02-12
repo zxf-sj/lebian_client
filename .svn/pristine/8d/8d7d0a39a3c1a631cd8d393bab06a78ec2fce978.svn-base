@@ -1,0 +1,28 @@
+<view class="container">
+  <!-- 页面标题 -->
+  <!-- <view class="line-title">🚌 105路 公交实时位置</view> -->
+
+  <!-- 公交线路容器 -->
+  <view class="bus-line-container">
+    <block wx:for="{{stations}}" wx:key="id">
+      <view class="station-row">
+        <!-- 垂直线上的圆点（绝对定位在主线上） -->
+        <view class="dot-wrapper">
+          <view class="dot {{item.status}}"></view>
+        </view>
+
+        <!-- 文字内容区：站名 + 标签 -->
+        <view class="text-content">
+          <!-- 站名（不同状态不同颜色，当前站放大） -->
+          <text class="station-name {{item.status}} {{item.status === 'current' ? 'highlight' : ''}}">
+            {{item.name}}
+          </text>
+
+          <!-- 到站 / 下一站 标签 -->
+          <text class="tag" wx:if="{{item.status === 'current'}}">到站</text>
+          <text class="tag next-tag" wx:if="{{item.status === 'next'}}">下一站</text>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

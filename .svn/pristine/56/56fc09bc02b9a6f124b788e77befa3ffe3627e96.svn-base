@@ -1,0 +1,36 @@
+<view class="container">
+ <scroll-view wx:if="{{listData}}"  scroll-y="true" class='hiddenBar' lower-threshold="100" style="height: 100vh"  bindscrolltolower="scrollToLower">
+      <view class="listBox" wx:for="{{listData}}" wx:for-index="id"  wx:for-item="item" wx:key="index">
+          <view class="list-time font-32">
+            <image src="/user_center/assets/images/user.png"></image>
+            <text class="time" decode='true'>{{item.RealName}} &ensp;<text class="time1" wx:if="{{item.isChildren=='100004-0000010001'}}">儿童</text><text class="time1" wx:if="{{!item.isChildren=='100004-0000010002'}}">成人</text>
+            </text>
+          </view>
+          <!-- <view class="list-time font-32">
+            <image src="/user_center/assets/images/idcard.png"></image>
+            <text class="time">{{item.IdCard}}</text>
+          </view> -->
+          <view class="list-time font-32">
+            <image src="/user_center/assets/images/common_icon_phone.png"></image>
+            <text class="time">{{item.Phone}}</text>
+          </view>
+          <view class="btn-list">
+              <view class="btn-area">
+                <button type="warn" size="mini" catchtap="delUser" data-ids="{{item.Id}}">删除</button>
+              </view>
+              <view class="btn-area">
+                <button type="primary" size="mini" catchtap="editUser" data-item="{{item}}">编辑</button>
+              </view>
+          </view>
+      </view>
+      <view style="text-align: center;margin: 10px;">
+        <view wx:if="{{loading}}">加载中...</view>
+        <view wx:if="{{noMore}}">暂无数据</view>
+        <view wx:if="{{loadingFailed}}">数据加载失败,请重试</view>
+      </view>
+ </scroll-view> 
+ <view class="bg" bindtap="addUser">
+  <image class="bg-img" src="/assets/images/icon-adduser.png"></image>
+ </view>
+</view>
+<daohang></daohang>

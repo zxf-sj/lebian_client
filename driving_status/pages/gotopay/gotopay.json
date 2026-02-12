@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "订单支付",
+  "usingComponents": {
+    "daohang":"/components/daohang/daohang"
+  }
+}

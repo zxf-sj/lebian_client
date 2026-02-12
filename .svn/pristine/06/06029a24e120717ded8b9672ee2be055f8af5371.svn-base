@@ -1,0 +1,291 @@
+/* components/orderBottom/orderBottom.wxss */
+.page {
+	width: 100%;
+}
+.location {
+	height: 240rpx;
+	box-shadow: 0 2px 4px rgb(0, 0, 0,.4), 0 0 6px rgba(0, 0, 0, .04);
+	margin: 30rpx 20rpx 0;
+	border-radius: 10px;
+}
+.location .destination {
+	display: flex;
+    height: 50%;
+    position: relative;
+}
+/* .triangle {
+    position: absolute;
+    top: 47rpx;
+    right: 20rpx;
+    width: 0;
+    height: 0;
+    border-left: 15rpx solid transparent; 
+    border-right: 15rpx solid transparent; 
+    border-top: 26rpx solid rgba(240,135,24,1); 
+    
+} */
+/* 基础三角形样式 */
+.arrow-container {
+    width: 140rpx;
+    height: 120rpx;
+    line-height: 120rpx;
+    font-size: 28rpx;
+    color: #0d88d0;    
+    text-decoration: underline;
+}
+  
+  /* 向下箭头 */
+  .arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 15rpx solid transparent;
+    border-right: 15rpx solid transparent;
+    border-top: 26rpx solid rgba(240,135,24,1);
+    transition: all 0.3s ease;
+  }
+  
+  /* 点击后翻转效果 */
+  .arrow-container.flipped {
+    transform: rotate(180deg);
+  }
+.passenger {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0,.7);
+  z-index: 9999;
+  overflow: hidden;
+  
+}
+
+@keyframes slideDown {
+    0% { 
+        bottom: -300rpx;
+        opacity: 0.3;
+    }
+    100% { 
+        bottom: 0;
+        opacity: 1;
+    }
+}
+.priceDetail {
+    min-height: 300rpx;
+    animation: slideDown 1s forwards;
+    width: 100%;
+    background-color: #fff;
+    position: absolute;
+    left: 0;
+    border-top-left-radius: 20rpx;      /* 左上角 */
+    border-top-right-radius: 20rpx;     /* 右上角 */
+    padding-bottom: 30rpx;
+}
+.DetailTitle {
+    position: relative;
+    height: 100rpx;
+    width: 100%;
+    line-height: 100rpx;
+    text-align: center;
+    color: #323232;
+    font-weight: 600;
+}
+.DetailTitle .xxx {
+    width: 40rpx;
+    height: 40rpx;
+    line-height: 40rpx;
+    position: absolute;
+    top: 10rpx;
+    right: 10rpx;
+    color: #8a8a8a;
+    
+}
+
+.location .destination .left {
+	width: 10%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.location .destination .left .circle{
+	width: 20rpx;
+	height: 20rpx;
+	background-color: #54bcbd;
+	border-radius: 50%;
+}
+.location .destination .left .circle2 {
+	width: 20rpx;
+	height: 20rpx;
+	background-color: #c03c2f;
+	border-radius: 50%;
+}
+.location .destination .center {
+	width: 14%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #101010;
+}
+.location .destination .right {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #BBBBBB;
+}
+.location .go {
+	border-bottom: 1px solid #ccc;
+}
+.destination .juan_l {
+	width: 36%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.destination .juan_l .box {
+	width: 200rpx;
+	height: 60rpx;
+	background: linear-gradient(180deg, rgba(253,209,0,1) 0%,rgba(240,135,24,1) 100%);
+	border-radius: 20rpx;
+	color: #fff;
+	line-height: 60rpx;
+	text-align: center;
+}
+.destination .money_l {
+	width: 36%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #F08718;
+}
+.destination .money_r {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #FF0000;
+}
+.signUp-tip{ 
+  font-size: 26rpx;
+  color: #999;
+  height: 60rpx;
+  line-height: 60rpx;
+  width: 100%;
+  margin-bottom: 10rpx;
+  /* margin-left:20%; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.signUp-tip-txt{
+  width: 70%;
+	height: 60rpx;
+	margin-top: 20rpx;
+  line-height: 60rpx;
+}
+.signUp-tip-txt-protocol{
+  font-size: 28rpx;
+	color: #0d88d0;
+}
+
+.mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 999;
+}
+.box_3{
+  background: #fefefe;
+  width: 80%;
+  position: absolute;
+  left: 50%; /* 移动元素到父容器的中央 */
+  transform: translateX(-50%); /* 移动元素自身的一半宽度，实现完全居中 */
+  top: 10%;
+  border-radius: 20rpx;
+  padding: 0 20rpx;
+}
+.buttonsView{
+  width: 80%;
+  position: absolute;
+  left: 50%; /* 移动元素到父容器的中央 */
+  transform: translateX(-50%); /* 移动元素自身的一半宽度，实现完全居中 */
+  top: 85%;
+  display: flex;
+}
+.buttons1{
+  width:130rpx;
+  font-size: 28rpx;
+  background: #d09c0a;
+  color: #fff;
+  /* margin-left: 170rpx; */
+}
+.buttons2{
+  width:130rpx;
+  font-size: 28rpx;
+  background: #e60c0c;
+  color: #fff;
+  /* margin-left: 100rpx; */
+}
+.subMit {
+	height: 200rpx;
+	margin-top: 20rpx;
+}
+.subMit .btn {
+	width: 440rpx;
+	height: 100rpx;
+	line-height: 100rpx;
+	text-align: center;
+	margin: 0 auto 40rpx;
+	background: linear-gradient(180deg, rgba(253,209,0,1) 0%,rgba(240,135,24,1) 100%);
+	color: #fff;
+	border-radius: 20rpx;
+}
+.phcolor {
+	color: #BBBBBB;
+	text-align: center;
+}
+.destination .juan_r {
+	flex: 1;
+	text-align: right;
+	line-height: 120rpx;
+	padding-right: 20rpx;
+	font-size: 14px;
+	color: #BBBBBB;
+}
+.destination .juan_r .txt {
+	display: inline-block;
+	line-height: 120rpx;
+	height: 100%;
+}
+.detailList {
+    height: 60rpx;
+    line-height: 60rpx;
+    display: flex;
+    padding: 0 10rpx;
+    border-bottom: 1px solid #cdcdcd;
+}
+.detailList_l {
+    height: 100%;
+    flex: 1;
+    text-align: left;
+    font-size: 14px;
+}
+.detailList_r {
+    height: 100%;
+    flex: 1;
+    text-align: right;
+    font-weight: 500;
+}
+.additional {
+    display: inline;
+    color: #FF0000;
+    font-size: 12px;
+}
+.isChildren {
+    display: inline;
+    font-size: 12px;
+    color: #04d661;
+}

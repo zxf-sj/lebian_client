@@ -1,0 +1,43 @@
+<view class="container">
+ <scroll-view wx:if="{{listData}}"  scroll-y="true" class='hiddenBar' lower-threshold="100" style="height: 100vh"  bindscrolltolower="scrollToLower">
+          <view class="listBox" wx:for="{{listData}}" wx:for-index="id"  wx:for-item="item" wx:key="index" data-item="{{item}}" data-status="{{item.FormState}}">
+              <view class="flex-title font-28">
+                <text class="font-30">{{item.PassengerLineId_Name}}</text>
+                <text class="status">{{item.FormState_Name}}<text class="iconRight"></text></text>
+              </view>
+              <view class="list-time font-28">
+                <image src="/user_center/assets/images/code.png"></image>
+                <text class="time">{{item.Code}}</text>
+              </view>
+              <view class="list-adress font-28">
+                <text class="circle-str circle"></text>
+                <text class="input-str">{{item.IntoLocation}}</text>    
+              </view>                          
+              <view class="list-adress font-28">
+                <text class="circle-end circle"></text>
+                <text class="input-end">{{item.OffLocation}}</text>               
+              </view>
+              <view class="list-time">
+                <text class="time">订单支付金额</text>
+                <view class="pmoney">
+                  ￥<text class="money">{{item.PayAmount}}</text>
+                </view>
+              </view>
+              <view class="btn-list">   
+                  <view class="btn-area" wx:if="{{item.FormState  == '100004-0001020004'}}">
+                    <button size="mini" catchtap="toKaiPiao" data-ids="{{item.Id}}" class="kaipiao">开票</button>
+                  </view>
+              </view>
+          </view>
+      <view style="text-align: center;margin: 10px;">
+        <view wx:if="{{loading}}">加载中...</view>
+        <view wx:if="{{noMore}}">没有更多了</view>
+        <view wx:if="{{loadingFailed}}">数据加载失败,请重试</view>
+      </view>
+ </scroll-view> 
+ <view wx:if="{{noOrder}}" class="bg">
+  <image class="bg-img" src="../../assets/images/no_list.png"></image>
+  <view class="bg-cont">近期没有行程记录~</view>
+ </view>
+</view>
+<daohang></daohang>

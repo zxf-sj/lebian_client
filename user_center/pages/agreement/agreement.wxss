@@ -1,0 +1,6 @@
+page {
+  background-color: #F5F5F5;
+}
+.wxParse{
+  padding: 20rpx 20rpx;
+}

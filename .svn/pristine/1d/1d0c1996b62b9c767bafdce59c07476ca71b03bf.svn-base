@@ -1,0 +1,44 @@
+<view class="redact-address">
+  <view class="possess-layout">
+    <view class="mains">
+      <view class="address-msg">
+        <view class="item-msg">姓名</view>
+        <view class="section">
+          <input type="text" placeholder="请填写姓名" value="{{consigneeName}}" bindblur="consigneeNameInput" placeholder-class="phcolor"></input>
+        </view>
+      </view>
+      <view class="address-msg">
+        <view class="item-msg">手机号码</view>
+        <view class="section">
+          <input type="number" placeholder="请填写手机号码" value="{{phone}}" maxlength="11" bindblur="phoneInput" placeholder-class="phcolor"></input>
+        </view>
+      </view>
+      <view class="address-msg">
+        <view class="item-msg">证件号码</view>
+        <view class="section">
+          <input type="idcard" placeholder="请填写证件号码" value="{{idcard}}" maxlength="18" bindblur="idcardInput" placeholder-class="phcolor"></input>
+        </view>
+      </view>
+      <view class="address-msg">
+        <view class="item-msg">是否儿童</view>
+        <view class="section">
+          <radio-group bindchange="radioChange" class="radgro">
+            <label wx:for="{{items}}" wx:key="key" class="labs">
+              <view class="names">
+                <radio value="{{item.value}}" checked="{{item.checked==1?'checked':''}}"/>
+              </view>
+              <view class="values">{{item.name}}</view>
+            </label>
+          </radio-group>
+        </view>
+      </view>
+      <view class="default-setting">
+        <view class="defaul-setting-left">
+            <!-- 身高在1.2米以下或者 -->
+          <view>提醒:儿童是指4岁以下的小朋友</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+<view class="btn" bindtap="submit">保存</view>

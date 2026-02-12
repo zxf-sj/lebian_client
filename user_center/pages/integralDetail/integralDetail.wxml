@@ -1,0 +1,43 @@
+<view class="container">
+  <view class="banner">
+    <view class="inner-top">
+      <view class="num">{{number}}</view>
+      <view class="num-desc">
+        <image src="../../assets/images/five-star.png" style="width:32rpx;height:32rpx;margin-right:10rpx;"></image>
+        <text>当前可用积分</text>
+      </view>
+    </view>
+    <view class="tab">
+      <view class="detail" bindtap="toIntegral">
+        <image src="../../assets/images/my-integral.png" style="width:90rpx;height:90rpx;"></image>
+        <view class="tab-name">我的积分</view>
+      </view>
+      <view class="order" bindtap="toOrder">
+        <image src="../../assets/images/order.png" style="width:90rpx;height:90rpx;"></image>
+        <view class="tab-name">兑换订单</view>
+      </view>
+    </view>
+  </view>
+  <scroll-view scroll-y="true" class="scroll-box" bindscrolltolower="scrollToLower">
+    <block wx:if="{{hasOrder}}">
+      <view class="item" wx:for="{{listData}}" wx:key="index">
+        <view class="l">
+          <view class="item-name">{{item.Note}}</view>
+          <view class="item-time">{{item.CreateDate}}</view>
+        </view>
+        <view class="r">{{item.ChangeScore}}</view>
+      </view>
+      <view class="btm">仅为您显示最近一年的积分明细</view>
+      <view style="text-align: center;margin: 10px;font-size:26rpx;color:#999;">
+        <view wx:if="{{loading}}">加载中...</view>
+        <view wx:if="{{noMore}}">没有更多了</view>
+        <view wx:if="{{loadingFailed}}">数据加载失败,请重试</view>
+      </view>
+    </block>
+    <view wx:else class="no-data">
+      <image src="/user_center/assets/images/nojifen.png" style="width:300rpx;height:300rpx;margin-bottom:20rpx;"></image>
+      <view>暂无积分明细</view>
+    </view>
+  </scroll-view>
+</view>
+<daohang></daohang>

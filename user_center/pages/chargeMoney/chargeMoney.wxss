@@ -1,0 +1,62 @@
+page{
+  background: #fff;
+}
+.charging_my{
+  width: 100vw;
+  height: 45vw;
+  border-top:1px solid #F8F8F8;
+  background:#67B2F5;
+  color: #fff;
+}
+.charging_my1{
+  height: 10vw;
+  margin-top:12vw;
+  text-align: center;
+  font-size: 60rpx;
+}
+.charging_my2{
+  height: 10vw;
+  text-align: center;
+  font-size: 28rpx;
+  margin-top: 10rpx;
+}
+.charging{
+  padding:5vw;
+  margin-top:5vw;
+}
+.charging1{
+  width: calc(28.5vw - 2px);
+  height: 15vw;
+  line-height: 15vw;
+  text-align: center;
+  font-size:34rpx;
+  float: left;
+  border:1px solid  #F0F0F0;
+  margin-bottom:2vw;
+  color: #333;
+  font-weight:800;
+}
+.charging1_click{
+  border:1px solid #FBBF5D;
+  color: #FBBF5D;
+}
+
+.charging1:nth-child(3n+2) {
+  margin-right:2.25vw;
+}
+.charging1:nth-child(3n+1) {
+  margin-right:2.25vw;
+}
+
+.tj_btn{
+  width: 90vw;
+  height: 8vh;
+  line-height: 8vh;
+  text-align: center;
+  font-size: 38rpx;
+  border-radius: 100rpx;
+  background: linear-gradient(to right,#67B2F5,#366AE9);
+  color: #fff;
+  position: absolute;
+  top: 85%;
+}

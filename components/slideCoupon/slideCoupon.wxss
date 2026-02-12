@@ -1,0 +1,288 @@
+.slide-coupon{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0,.7);
+  z-index: 9999;
+  overflow: hidden;
+}
+
+@keyframes slide-up{
+  from{
+    bottom: -650rpx;
+  }
+  to{
+    bottom: 0;
+  }
+}
+
+.inner{
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 650rpx;
+  background-color: #fff;
+  box-sizing: border-box;
+  padding: 30rpx;
+  color: #333;
+  animation: slide-up .5s;
+}
+
+.title{
+  width: 100%;
+  margin-bottom: 20rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  text-align: center;
+  position: relative;
+}
+
+.del{
+  width: 44rpx;
+  height: 44rpx;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0;
+}
+.submitBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0;
+}
+
+.del-img{
+  width: 100%;
+  height: 100%;
+}
+
+.scroll-box{
+  width: 100%;
+  height: 540rpx;
+}
+
+.item{
+  width: 98%;
+  height: 200rpx;
+  box-sizing: border-box;
+  margin: 6rpx 0 20rpx 4rpx;
+  box-shadow: 4rpx 4rpx 6rpx #eee,-4rpx -4rpx 6rpx #eee;
+  border-radius: 10rpx;
+}
+
+.top{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 200rpx;
+  box-sizing: border-box;
+  padding-right: 20rpx;
+  position: relative;
+}
+
+.l{
+  display: flex;
+  align-items: center;
+}
+.l image {
+  height: 160rpx;
+  width: 160rpx;
+}
+
+.r{
+  width: 140rpx;
+  height: 60rpx;
+  border-radius: 60rpx;
+  line-height: 60rpx;
+  text-align: center;
+  color: #F11818;
+  font-size: 24rpx;
+  font-weight: bold;
+  background-color: #FFC8C7;
+}
+
+.cur-r{
+  background-color: #ccc;
+  color: #fff;
+}
+
+.item-name{
+  font-size: 28rpx;
+  font-weight: bold;
+  margin-left: 20rpx;
+}
+
+.item-num{
+  font-size: 24rpx;
+  color: #F11818;
+  margin-top: 10rpx;
+}
+
+.btm{
+  font-size: 22rpx;
+  color: #999;
+}
+
+.no-coupon{
+  position: absolute;
+  top: 140rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: #FF8008;
+  font-size: 28rpx;
+}
+.checkOut {
+  width: 60rpx;
+  height: 100%;
+  overflow: hidden;
+}
+.juanList {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+}
+.coupon {
+  padding:10rpx 10rpx 10rpx 30rpx;
+  border-radius: 30rpx 0 0 30rpx;
+  /* background-color: #FF8008; */
+  color: #fff;
+}
+.session {
+  padding:10rpx 30rpx 10rpx 10rpx;
+  border-radius: 0 30rpx 30rpx 0;
+  /* background-color: #FF8008; */
+  color: #fff;
+}
+.choice {
+  background-color: #FFC8C7 !important;
+  color: #F11818;
+}
+.item2{
+  position: relative;
+  height: 200rpx;
+  display: flex;
+  background-color: #fff;
+  flex: 1;
+}
+
+.left{
+  width: 200rpx;
+  height: 200rpx;
+  color: #fff;
+  
+}
+
+.left>image{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200rpx;
+  height: 200rpx;
+}
+
+.left>.text{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200rpx;
+  height: 200rpx;
+}
+.price{
+  font-size: 32rpx;
+}
+
+.price>text{
+  font-size: 80rpx;
+}
+.right{
+  flex: 1;
+  padding: 20rpx;
+}
+
+.top2{
+  font-size: 34rpx;
+  padding-bottom: 10rpx;
+  margin-bottom: 10rpx;
+  border-bottom: 1rpx dotted #bbb;
+}
+
+.top2>view{
+  color: #333;
+  line-height: 56rpx;
+  font-size: 28rpx;
+}
+
+.top2>.name{
+  color: #f00;
+  font-size: 34rpx;
+  font-weight: bold;
+}
+
+.btm{
+  color: #999;
+  font-size: 20rpx;
+  display: flex;
+  align-items: center;
+}
+
+.tag{
+  width: 120rpx;
+  height: 120rpx;
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: #f00;
+}
+
+.tag image{
+  width: 120rpx;
+  height: 120rpx;
+}
+
+.num{
+  font-size: 24rpx;
+  position: absolute;
+  right: 25rpx;
+  top: 25rpx;
+  transform: rotate(45deg);
+}
+.lingqu{
+  height: 40rpx;
+  background: #fff;
+  line-height: 40rpx;
+  font-size: 28rpx;
+  padding-left: 80rpx;
+  color: #fb0101;
+  padding-bottom: 10rpx;
+}
+
+.hiddenBar{
+  width: 100%;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+.bg{
+  padding: 0 50rpx;
+  margin: 216rpx auto 0;
+  text-align: center;
+  color: #9A9A9A;
+  font-size: 28rpx;
+}
+
+.bg-img{
+  width: 324rpx;
+  height: 317rpx;
+  margin-bottom: 21rpx;
+}
+.bg-cont{
+  color: #FF8008;
+}

@@ -1,0 +1,39 @@
+<view class="jftb">
+  <view class="wdjf">
+    <view class="wdjf1">余额</view>
+    <view class="wdjf2">
+      <view class="wdjf2_1">{{Balance}}</view>
+      <view class="wdjf2_2" bindtap="goChargingMoney">
+       <image src="/user_center/assets/images/chognzhi.png" style="width:60rpx;height:60rpx;"></image>
+       <view class="chongzhi">充值</view> 
+      </view>
+      <view class="clear"></view>
+    </view>
+  </view>
+</view>
+<view class="jfmx">
+  <!-- 标题 -->
+  <view class="jfbt">
+  余额明细
+  </view>
+  <!-- 明细 --> 
+  <view class="mxlb" wx:if="{{list.length>0}}">
+    <block wx:for="{{list}}" wx:key="Id">
+      <view class="mxlbinfo">
+        <view class="mxlb1 dhsl numline">
+          {{item.Note}}
+        </view>
+        <view class="mxlb2">
+          <view class="mxlb2_1 numline">{{item.ChangeBalance}}</view>
+          <view class="mxlb2_2 numline">{{item.CreateDate}}</view>
+        </view>
+        <view class="clear"></view>
+      </view>
+    </block>
+  </view>
+  <view wx:else class="bg">
+    <image class="bg-img" src="../../assets/images/no_list.png"></image>
+    <view class="bg-cont">暂无数据</view>
+  </view>
+</view>
+<daohang></daohang>

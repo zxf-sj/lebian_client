@@ -1,0 +1,13 @@
+{
+  "usingComponents": {
+    "orderBottom":"/components/orderBottom/orderBottom",
+    "information":"/components/information/information",
+    "distanceNav":"/components/distanceNav2/distanceNav2",
+    "travel":"/components/travel/travel",
+    "remarks":"/components/remarks/remarks",
+    "mp-uploader": "../../../miniprogram_npm/weui-miniprogram/uploader/uploader",
+    "mp-cells": "../../../miniprogram_npm/weui-miniprogram/cells/cells",
+    "mp-cell": "../../../miniprogram_npm/weui-miniprogram/cell/cell"
+  },
+  "navigationBarTitleText": "乐遍小件物流"
+}

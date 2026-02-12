@@ -1,0 +1,211 @@
+const BASE_URL = require("../../utils/BASE_URL");
+var baseUrl = BASE_URL.BASE_URL //配置基础url
+import http from '../../utils/http.js';
+Component({
+  /**
+   * 组件的属性列表
+   */
+  properties: {
+    update: {
+      type: String,
+      value: 'pc'
+    },
+  },
+  observers: {
+    'update': function(newVal) {
+      let pcTimeSync = wx.getStorageSync('pcTimeSync');
+      let storageSync = wx.getStorageSync('storageSync');
+      this.setData({
+        propsTxt:pcTimeSync.propsTxt,
+        propsDay:pcTimeSync.propsDay,
+        startingCity:storageSync.startingCity,
+        endingCity:storageSync.endingCity,
+        StartTime:pcTimeSync.StartTime,
+        EndTime:pcTimeSync.EndTime,
+        Price:pcTimeSync.price,
+      })
+    }
+  },
+  lifetimes: {
+    attached: function() {
+      // 在组件实例进入页面节点树时执行
+      const _this = this;
+      let date = new Date();
+      let today = date.toISOString().split("T")[0]; // 获取今天的日期（格式：YYYY-MM-DD）
+       // 设置结束日期为今天之后三天
+       let endDate = new Date();
+       endDate.setDate(endDate.getDate() + 3); // 增加三天
+       let endDateString = endDate.toISOString().split("T")[0]; // 获取格式化后的日期字符串
+      _this.setData({
+        StartDay:today,
+        EndDay:endDateString
+      })
+      let pcTimeSync = wx.getStorageSync('pcTimeSync');
+      let storageSync = wx.getStorageSync('storageSync');
+      
+      _this.setData({
+        propsTxt:pcTimeSync.propsTxt,
+        propsDay:pcTimeSync.propsDay,
+        startingCity:storageSync.startingCity,
+        endingCity:storageSync.endingCity,
+        StartTime:pcTimeSync.StartTime,
+        EndTime:pcTimeSync.EndTime,
+        Price:pcTimeSync.Price,
+      })
+      getApp().eventCenter.on('priceChange', (data) => {
+        _this.setData({ Price: data})
+      })
+      _this.getList();
+      _this.getLine();
+    }
+  },
+  /**
+   * 组件的初始数据
+   */
+  data: {
+    propsTxt:'',
+    propsDay:'',
+    startingCity:'',
+    endingCity:'',
+    StartTime:'',
+    EndTime:'',
+    StartDay:'',
+    EndDay:'',
+    Price:'',
+    date:'',
+    dayValue:'',
+    TimeList:[],
+    addArr:[]
+  },
+  onLoad(){
+    
+  },
+  onShow(){
+   
+  },
+  /**
+   * 组件的方法列表
+   */
+
+  methods: {
+    bindDateChange(e) {
+      const _this = this;
+      const dayValue = e.detail.value
+      const days = ['星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      const weeks =  days[new Date(dayValue).getDay()];
+      _this.setData({
+        propsDay:dayValue.slice(5,7) + '/' + dayValue.slice(8,10),
+        propsTxt:weeks,
+        dayValue:dayValue
+      })
+      let storedData = wx.getStorageSync('pcTimeSync') || {};
+      let updatedData = { ...storedData, propsDay: _this.data.propsDay, propsTxt:_this.data.propsTxt};
+      wx.setStorageSync('pcTimeSync', updatedData);
+      _this.getList()
+    },
+    //请求列表
+   getList() {
+    const _this = this;
+    const lineId = wx.getStorageSync("lineId")
+    wx.showLoading({
+      title: '加载中',
+    })
+    return new Promise((resolve) => {
+      wx.request({
+        url: baseUrl + '/api/DispatchMobile/GetLineEmptySeatNumAndPrice',
+        data:{
+          lineId:lineId,
+          today:_this.data.dayValue,
+          IsExclusive:'100004-0000010002',
+        },
+        method:"GET",
+        success:(res)=>{
+          wx.hideLoading()
+          if(res.data.code == 0) {
+            let data = res.data.data
+            const dataList = data.SeatData[0].SeatList;
+            const newList = dataList.filter(item => item.SeatNum != 0)
+            const TimeList = newList.map(item => {
+              return `${item.StartTime} ~ ${item.EndTime}`;
+            });
+            _this.setData({
+              TimeList
+            })
+            for (let item of dataList) {
+              if (item.SeatNum > 0) {
+                _this.setData({
+                  StartTime:item.StartTime,
+                  EndTime:item.EndTime
+                })
+                let storedData = wx.getStorageSync('pcTimeSync') || {};
+                let updatedData = { ...storedData, EndTime:item.EndTime,StartTime:item.StartTime};
+                wx.setStorageSync('pcTimeSync', updatedData);
+                  break; 
+              }
+          }
+          if(_this.data.update == 'pc') {
+            wx.setStorageSync('pcTypeId', data.PriceList[0].Id);
+          }
+            
+          } else {
+            wx.showToast({
+              title: res.data.msg,
+              icon:"error"
+            })
+          }
+          resolve(res)
+        },
+        fail(res) {
+          wx.hideLoading()
+        },
+        complete(res) {
+          wx.hideLoading()
+        }
+      })
+    })
+  },
+  bindPickerLine(e) {
+    const _this = this;
+    const index = e.detail.value
+    const cityList = _this.data.addArr[index].Name.split('===>')
+    _this.setData({
+      startingCity:cityList[0],
+      endingCity:cityList[1]
+    })
+    wx.setStorageSync('lineId',_this.data.addArr[index].Id)
+    _this.getList()
+  },
+  bindPickerTime(e) {
+    const index = e.detail.value
+    const _this = this;
+    const timeList = _this.data.TimeList[index].split('~')
+    _this.setData({
+      StartTime:timeList[0],
+      EndTime:timeList[1]
+    })
+    let storedData = wx.getStorageSync('pcTimeSync') || {};
+    let updatedData = { ...storedData, EndTime:timeList[1],StartTime:timeList[0]};
+      wx.setStorageSync('pcTimeSync', updatedData);
+  },
+  getLine() {
+    const _this = this;
+    http.getRequest('/Api/DispatchMobile/getPassengerLine?page=1&limit=10&city=','', wx.getStorageSync('header'), res => {
+      if(res.code==0){
+        if(res.data.length>0){
+          console.log(res.data)
+          _this.setData({
+            addArr:res.data,
+          });
+        }
+      }else{
+        wx.showToast({
+          title: '数据请求失败，请稍后重试',
+          icon:"error"
+        })
+      }
+    }, err => {
+      console.log(err)
+    })
+  }
+  }
+})

@@ -1,0 +1,37 @@
+<view class="page">
+<view class="nav">
+	<view  class="tab_keep {{switchDate == 0 ? 'handle_keep' : ''}}" bindtap="switchDate" data-item="0" data-tody='{{day1}}' data-txt="今天">
+		<view class="item">今天</view>
+		<view class="item">{{day1}}</view>
+	</view>
+	<view class="tab_keep {{switchDate == 1 ? 'handle_keep' : ''}}" bindtap="switchDate" data-item="1" data-tody='{{day2}}' data-txt="明天">
+		<view class="item">明天</view>
+		<view class="item">{{day2}}</view>
+	</view>
+	<view class="tab_keep {{switchDate == 2 ? 'handle_keep' : ''}}" bindtap="switchDate" data-item="2" data-tody='{{day3}}' data-txt="后天">
+		<view class="item" >后天</view>
+		<view class="item">{{day3}}</view>
+	</view>
+	<view class="tab_keep {{switchDate == 3 ? 'handle_keep' : ''}}" bindtap="switchDate" data-item="3" data-tody='{{day4}}' data-txt="{{week}}">
+		<view class="item">{{week}}</view>
+		<view class="item">{{day4}}</view>
+	</view>
+</view>
+<view class="main">
+	<scroll-view scroll-y class="scroll-view" >
+	 <view wx:for="{{seatList}}" wx:key="index" style="{{item.SeatNum == 0?'background-color:#dcdcdc;':''}}"   class="main_item {{handleItem == index ? 'soldOut' : ''}}" data-item="{{index}}" bindtap="handleItem" data-itemdata="{{item}}" >
+		<view class="item_left">
+			<view class="path">{{startingCity}} —— {{endingCity}}</view>
+			<view class="time">{{item.StartTime}} ~ {{item.EndTime}}</view>
+		</view>
+		<view class="item_right">
+			<view class="seat" wx:if="{{item.SeatNum != 0}}">余座：{{item.SeatNum}}</view>
+			<view class="seat" wx:else style="color: tomato;">已售满</view>
+			<view class="money" wx:if="{{priceList.length > 1}}">￥ {{priceList[0].Price}} ~ ￥ {{priceList[1].Price}}</view>
+      <view class="money" wx:else>￥ {{priceList[0].Price}} </view>
+		</view>
+	 </view>
+	</scroll-view>
+</view>
+<view class="bottom"></view>
+</view>

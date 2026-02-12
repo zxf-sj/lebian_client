@@ -1,0 +1,39 @@
+<view class="container">
+  <scroll-view wx:if="{{listData}}"  scroll-y="true" scroll-x="false" class='hiddenBar' lower-threshold="100" style="height:90vh"  bindscrolltolower="scrollToLower">
+    <view class="header">
+      <image src="/user_center/assets/images/shiyongshuoming.png"></image>
+      <view>优惠券使用说明</view>
+    </view>
+    <view class="lingqu">点击优惠劵去使用</view>
+    <view class="list">
+      <block wx:for="{{listData}}" wx:key="key">
+        <view class="item" bindtap="lingQu" data-ids="{{item.Id}}">
+          <view class="left">
+            <image src="/assets/images/youhuiquan_bg_small_vip@2x.png"></image>
+            <view class="text">
+              <view class="price">￥<text>{{item.CouponMoney}}</text></view>
+              <!-- <view class="price"><text>9</text>折</view> -->
+            </view>
+          </view>
+          <view class="right">
+            <view class="top">
+              <view class="name" style="color:#D99F05">{{item.CouponId_Name}}</view>
+              <view>{{item.CouponType_Name}}</view>
+            </view>
+            <view class="btm" wx:if="{{item.EndTime}}">{{item.EndTime}}</view>
+            <view class="btm" wx:if="{{!item.EndTime}}">长期有效</view>
+            <view class="tag">
+              <image src="../../assets/images/youhuiquan_biaoqian01.png"></image>
+              <view class="num">1张</view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </scroll-view>
+  <view wx:else class="bg">
+    <image class="bg-img" src="../../assets/images/no_list.png"></image>
+    <view class="bg-cont">暂无优惠劵~</view>
+  </view>
+</view>
+<daohang></daohang>

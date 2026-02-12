@@ -1,0 +1,16 @@
+<!--components/distanceNav/distanceNav.wxml-->
+<view class="page">
+	<view class="main">
+		<view class="main_item">
+			<view class="day">
+				<view class="item">{{propsTxt}}</view>
+				<view class="item">{{propsDay}}</view>
+			</view>
+			<view class="path">
+				<view class="item">{{startingCity}} —— {{endingCity}}</view>
+				<view class="item">{{StartTime}} ~ {{EndTime}}</view>
+			</view>
+			<view class="money">￥ {{Price}}</view>
+		</view>
+	</view>
+</view>

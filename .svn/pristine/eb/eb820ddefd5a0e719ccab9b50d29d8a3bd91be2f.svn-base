@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "随车捎货",
+  "usingComponents": {
+    "daohang":"/components/daohang/daohang"
+  }
+}

@@ -1,0 +1,33 @@
+
+@import '../../../app.wxss';
+
+page{
+  width: 100%;
+  height: 100vh;
+  background-color: #f2f2f2;
+}
+
+.sectionBox{
+  width: 100%;
+  height: 240rpx;
+  text-align: center;
+  background-color: #fff;
+  margin-bottom: 20rpx;
+  box-sizing: border-box;
+}
+.head{
+  padding-top: 40rpx;
+}
+.head_img{
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.head_nick{
+  font-size: 24rpx;
+  color: #000;
+}
+
+

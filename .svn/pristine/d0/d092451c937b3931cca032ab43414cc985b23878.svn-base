@@ -1,0 +1,24 @@
+{
+  "requires": true,
+  "lockfileVersion": 1,
+  "dependencies": {
+    "js-base64": {
+      "version": "2.5.2",
+      "resolved": "https://registry.npm.taobao.org/js-base64/download/js-base64-2.5.2.tgz",
+      "integrity": "sha512-Vg8czh0Q7sFBSUMWWArX/miJeBWYBPpdU/3M/DKSaekLMqrqVPaedp+5mZhie/r0lgrcaYBfwXatEew6gwgiQQ=="
+    },
+    "jsbn": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/jsbn/-/jsbn-1.1.0.tgz",
+      "integrity": "sha1-sBMHyym2GKHtJux56RH4A8TaAEA="
+    },
+    "miniprogram-sm-crypto": {
+      "version": "0.1.0",
+      "resolved": "https://registry.npmjs.org/miniprogram-sm-crypto/-/miniprogram-sm-crypto-0.1.0.tgz",
+      "integrity": "sha512-LVqqteGNCarEepLezmKVMxuD1V795EIN1+Js4SU2nWEqnH50mwv93Vivp3F6LIWFMLE9Il4Cow1QIoqgoOTzyA==",
+      "requires": {
+        "jsbn": "^1.1.0"
+      }
+    }
+  }
+}

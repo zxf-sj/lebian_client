@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "选择出发城市",
+  "usingComponents": {
+    "daohang":"/components/daohang/daohang"
+  }
+}

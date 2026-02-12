@@ -1,0 +1,44 @@
+<view class="page">
+  <view class="block_3">
+    <view class="box_2">
+      <text lines="1" class="text_4">活动</text>
+      <view class="section_1">
+        <view class="image-text_1">
+          <image src="/assets/images/search.png" class="thumbnail_1"></image>
+          <input type="text" class="text-group_1" placeholder="搜索活动标题"/>
+        </view>
+        <view class="group_1"></view>
+      </view>
+    </view>
+    <view class="box_3">
+      <view class="menu_box">
+        <text class='menu1 {{menuTapCurrent==0?"borders":""}}' data-current="0" catchtap="menuTap">全部活动</text>
+        <text class='menu1 {{menuTapCurrent==1?"borders":""}}' data-current="1" catchtap="menuTap">进行中</text>
+        <text class='menu1 {{menuTapCurrent==2?"borders":""}}' data-current="2" catchtap="menuTap">已结束</text>
+      </view>
+    </view>
+    <view class="list"> 
+      <view class="box_4">
+        <view class="box_5">
+          <image src="/assets/images/hdimg.png" class="hdImg"></image>
+        </view>
+        <view class="box_7"></view>
+        <text lines="1" class="text_9">2024新年登山挑战赛</text>
+        <view class="image-text_2">
+          <image src="/assets/images/rili.png" class="thumbnail_2"></image>
+          <text lines="1" decode="true" class="text-group_2">2024-01-01&nbsp;09:00</text>
+        </view>
+        <view class="image-text_3">
+          <image src="/assets/images/weiz.png" class="thumbnail_3"></image>
+          <text lines="1" class="text-group_3">蓝山国家公园</text>
+        </view>
+        <view class="box_8">
+          <view class="text-wrapper_7">
+            <text lines="1" class="text_10">报名中</text>
+          </view>
+          <text lines="1" decode="true" class="text_11">已报名&nbsp;56/100</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

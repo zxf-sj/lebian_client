@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "选择线路",
+  "usingComponents": {
+    "daohang":"/components/daohang/daohang"
+  }
+}

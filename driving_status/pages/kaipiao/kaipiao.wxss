@@ -1,0 +1,102 @@
+page{
+  background-color: #f3f3f3
+}
+.bg-w{
+  background-color: #fff;
+}
+.font-text{
+  padding: 10rpx;
+  font-size: 25rpx;
+  color: rgb(145, 145, 145);
+  text-align: left;
+}
+.info_li{
+  height: 200rpx;
+  line-height: 200rpx;
+  position: relative;
+  border-bottom: 1px solid rgb(214, 214, 214);
+}
+.touxiang-img{
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  position: absolute;
+  top: 35rpx;
+  right: 30rpx;
+  overflow: hidden;
+}
+
+.info_li2{
+  height: 100rpx;
+  line-height: 100rpx;
+  border-bottom: 1px solid rgb(214, 214, 214);
+}
+.info_left{
+  float: left;
+  
+}
+.info_right{
+  float: right;
+  width: 70%;
+  margin-top: 30rpx;
+  height: 70rpx;
+  font-size: 25rpx;
+  text-align: right;
+}
+.userInfoName{
+  display: block;
+  font-size: 30rpx;
+  float: right;
+  margin-top: -30rpx;
+}
+
+.submit_button{
+  width: 90%;
+  margin: 20px auto;
+}
+
+.btns{
+  color: #fff;
+  border-radius: 80rpx;
+  background: linear-gradient(to right, #26D9B7, #0ca2dc);
+  margin-bottom: 20rpx;
+}
+.weizhi{
+  position: absolute;
+  right: 20rpx;
+}
+.picker{
+  margin-top: -28rpx;
+}
+.radio-group{
+  line-height: 50rpx;
+}
+.lastradio{
+  margin-left:50rpx;
+}
+.info_li3{
+  border-bottom: 1px solid rgb(214, 214, 214);
+}
+.textar{
+  height: 150rpx;
+  margin-top: 10rpx;
+}
+.smallfont{
+  font-size: 28rpx;
+  color: #999;
+  margin-left: 20rpx;
+}
+.order{
+  background-color: #fff;
+  height:360rpx;
+}
+.detail{
+  color: #333;
+  font-size: 32rpx;
+  padding: 10rpx 50rpx 10rpx 50rpx;
+}
+.yuan{
+  width:8%;
+  float: inline-end;
+  margin-top: -70rpx;
+}

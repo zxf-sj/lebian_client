@@ -1,0 +1,26 @@
+<!--components/remarks/remarks.wxml-->
+<view class="remakes" wx:if="{{remark}}">
+	<view class="inner">
+		<view class="nav">
+			<view class="nav_l" bind:tap="add">
+				
+			</view>
+			<view class="nav_r">
+				<view class="submit" catchtap="close">确定</view>
+			</view>
+		</view>
+		<view class="txt">
+			<image src="/assets/images/pen.png" mode=""/>
+			<textarea value="{{textareaValue}}" 	placeholder-style="line-height: 20px;font-size:14px;color:#BBBBBB;" class="textarea" bindinput="bindTextAreaBlur"  placeholder="请输入您的详细备注" />
+		</view>
+		<view class="options">
+				<view class="item" bind:tap="handleOptions" data-item="有大件行李">有大件行李</view>
+				<view class="item" bind:tap="handleOptions" data-item="有孕妇，请多关照">有孕妇，请多关照</view>
+				<view class="item" bind:tap="handleOptions" data-item="儿童单独乘车">儿童单独乘车</view>
+				<view class="item" bind:tap="handleOptions" data-item="老年人单独乘车">老年人单独乘车</view>
+				<view class="item" bind:tap="handleOptions" data-item="大件行李需要后备箱">大件行李需要后备箱</view>
+				<view class="item" bind:tap="handleOptions" data-item="携带宠物，有宠物笼">携带宠物，有宠物笼</view>
+				<view class="item" bind:tap="handleOptions" data-item="酒后乘车，请多关照">酒后乘车，请多关照</view>
+		</view>
+	</view>
+</view>

@@ -1,0 +1,76 @@
+.container{
+  width: 100%;
+  height: 100vh;
+  background-color: #f2f2f2;
+  padding: 20rpx 40rpx;
+  box-sizing: border-box;
+}
+.priceBox{
+  padding: 30rpx;
+  padding-top: 0;
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: #fff;
+  box-shadow: 5rpx 9rpx 9rpx #ddd;
+}
+
+.header{
+  text-align: center;
+  padding: 30rpx 0;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.listBox{
+  padding-bottom: 20rpx;
+  margin-bottom: 20rpx;
+  border-bottom: 1rpx solid #f2f2f2;
+}
+
+.list-title{
+  display: flex;
+  justify-content: space-between;
+  font-size: 32rpx;
+  color: #333;
+}
+
+.list-item{
+  display: flex;
+  justify-content: space-between;
+}
+
+.list-item text{
+  line-height: 34rpx;
+}
+
+.title-28{
+  font-size: 32rpx;
+  color: #333;
+}
+
+.text-24{
+  font-size: 28rpx;
+  color: #999;
+  margin: 8rpx 0;
+}
+
+.tips{
+  text-align: center;
+  font-size: 28rpx;
+  color: #999;
+  padding: 30rpx 0;
+}
+
+.desc{
+  font-size: 28rpx;
+  padding: 0 20rpx;
+  color: #ff6600;
+}
+
+.price-rules{
+  margin-top: 40rpx;
+  font-size: 30rpx;
+  color: #999;
+  text-align: center;
+}

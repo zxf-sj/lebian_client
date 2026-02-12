@@ -1,0 +1,48 @@
+<!--components/passenger/passenger.wxml-->
+<view class="passenger" wx:if="{{passenger}}" >
+	<view class="inner">
+		<view class="title">请选择乘车人</view>
+        <view class="txt">
+            人数包括婴儿，儿童，且不要携带没有宠物笼、宠物包的宠物上车，否则司机可能取消订单，务必准确填写。
+        </view>
+        <view class="serch">
+           检索： <input  class="weui-input serchiNPUT" placeholder="输入姓名/手机号检索" bindinput="bindKeyInput"/>
+        </view>
+		<view class="nav">
+			<view class="nav_l" bind:tap="add">
+				<image src="/assets/images/add-friend.png" mode=""/>
+				<view class="add">添加新的乘车人</view>
+			</view>
+			<view class="nav_r">
+				<view class="submit" bind:tap="close">确定</view>
+			</view>
+		</view>
+		<view class="list">
+			<scroll-view wx:if="{{hasCoupon}}" class="scroll-box" scroll-y="true" bindscrolltolower="scrollToLower">
+        <view class="item" wx:for="{{listData}}" wx:key="index" catchtap="change" data-index="{{index}}">
+					<view class="item_l" >
+						<view class='goods-check'>
+							<icon wx:if="{{item.selected}}" type="success" color="red"  />
+							<icon wx:else type="circle"  />
+						</view>
+					</view>
+					<view class="item_c">
+						<view  class="first">
+							<view class="name">{{item.RealName}}</view>
+							<view class="child"  wx:if="{{item.isChildren=='100004-0000010001'}}">儿童</view>
+						</view>
+						<view>
+							<view>手机号：{{item.Phone}}</view>
+						</view>
+						<view>
+							身份证：{{item.IdCard?item.IdCard:''}}
+						</view>
+					</view>
+					<view class="item_r" bindtap="revise" data-item="{{item}}">
+						<image src="/assets/images/pen.png" mode=""/>
+					</view>
+        </view>
+      </scroll-view>
+		</view>
+	</view>
+</view>

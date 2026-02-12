@@ -1,0 +1,55 @@
+<view class="container">
+    <!-- 顶部信息栏 -->
+    <view class="header">
+      <view class="route-info">
+        <text class="route-name">太孝城际大巴</text>
+        <text class="station-names">太原市区==>孝义城区</text>
+      </view>
+      <view class="meta-info">
+        <text class="operating-time">运营时间: 06:30-20:00</text>
+        <text class="fare">票价: 2元</text>
+      </view>
+      <view class="header-actions">
+        <icons type="refresh" size="20" color="#666" bindtap="refreshData"></icons>
+        <icons type="calendar" size="20" color="#666" bindtap="showTimetable"></icons>
+      </view>
+    </view>
+
+    <!-- 实时到站信息 -->
+    <view class="arrival-info">
+      <view class="bus-info" wx:for="{{BusInfo}}" wx:key="index">
+        <view class="bus-icon-container">
+          <uni-icons type="bus" size="24" color="#FF6D00"></uni-icons>
+          <text class="bus-number">{{ item.number }}</text>
+        </view>
+        <text class="distance-info">距离{{ item.nextStation }}还有{{ item.stationsAway }}站</text>
+        <text class="time-info">约{{ item.eta }}分钟</text>
+      </view>
+    </view>
+
+    <!-- 站点列表 -->
+    <scroll-view class="station-list" scroll-x="true">
+      <view style="display:flex;">
+        <view class="progress-container" wx:for="{{StationInfo}}" wx:key="index">
+          <view class="progress-bar">
+            <view class="progress-segment" style="background-color:{{item.isdao?'#FF6D00':'#4CAF50'}};width:100%"></view>
+          </view>
+          <view class="progress-labels">
+            <text class="station-label" style="width:118rpx;">
+              {{ item.name }}
+            </text>
+          </view>
+        </view>
+      </view>
+      <view class="station-list-inner">
+        <view class="station-item {{item.isdao?'transfer':'nodao'}}" wx:for="{{StationInfo}}" wx:key="index">
+          <text class="station-number">{{ index + 1 }}</text>
+          <text class="station-name">{{ item.name }}</text>
+          <text class="transfer-info" wx:if="{{item.isTransfer}}">换乘地铁</text>
+        </view>
+      </view>
+    </scroll-view>
+    <view>
+      红色已到站，绿色未到站
+    </view>
+  </view>

@@ -1,0 +1,182 @@
+page {
+  height: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20rpx 30rpx;
+  background-color: #fff;
+}
+
+/* 顶部信息栏 */
+.header {
+  margin-bottom: 30rpx;
+}
+
+.route-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.route-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-right: 20rpx;
+}
+
+.station-names {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.meta-info {
+  display: flex;
+  margin-bottom: 20rpx;
+}
+
+.operating-time, .fare {
+  font-size: 24rpx;
+  color: #999;
+  margin-right: 30rpx;
+}
+
+.header-actions {
+  position: absolute;
+  right: 30rpx;
+  top: 30rpx;
+  display: flex;
+}
+
+.header-actions uni-icons {
+  margin-left: 20rpx;
+}
+
+/* 实时到站信息 */
+.arrival-info {
+  margin-bottom: 40rpx;
+  padding: 20rpx;
+  background-color: #F5F5F5;
+  border-radius: 10rpx;
+}
+
+.bus-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.bus-info:last-child {
+  margin-bottom: 0;
+}
+
+.bus-icon-container {
+  display: flex;
+  align-items: center;
+  margin-right: 20rpx;
+}
+
+.bus-number {
+  font-size: 24rpx;
+  color: #333;
+  margin-left: 10rpx;
+}
+
+.distance-info {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.time-info {
+  font-size: 28rpx;
+  color: #FF6D00;
+  font-weight: bold;
+}
+
+/* 站点进度条 */
+.progress-container {
+  margin-bottom: 30rpx;
+}
+
+.progress-bar {
+  display: flex;
+  height: 10rpx;
+  margin-bottom: 10rpx;
+  border-radius: 5rpx;
+  overflow: hidden;
+}
+
+.progress-segment {
+  height: 100%;
+}
+
+.progress-labels {
+  display: flex;
+  margin-bottom: 30rpx;
+}
+
+.station-label {
+  font-size: 20rpx;
+  color: #999;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 站点列表 */
+.station-list {
+  width: 100%;
+  margin-bottom: 30rpx;
+}
+
+.station-list-inner {
+  display: flex;
+}
+
+.station-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80rpx;
+  padding: 15rpx 10rpx;
+  margin-right:60rpx;
+  border-radius: 10rpx;
+  height:auto;
+}
+.transfer{
+  border:2rpx solid red;
+}
+.nodao{
+  border:2rpx solid green;
+}
+.station-item.current {
+  background-color: #FFF8E1;
+  border: 1px solid #FFC107;
+}
+
+.station-item.transfer {
+  background-color: #E3F2FD;
+}
+
+.station-number {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.station-name {
+  font-size: 28rpx;
+  color: #333;
+  text-align: center;
+  width:40rpx;
+}
+
+.transfer-info {
+  font-size: 20rpx;
+  color: #2196F3;
+  margin-top: 20rpx;
+}

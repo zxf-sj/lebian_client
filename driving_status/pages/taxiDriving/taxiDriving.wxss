@@ -1,0 +1,179 @@
+view{
+  box-sizing: border-box;
+}
+
+.container{
+  width: 100%;
+  height: 66vh;
+  padding: 20rpx 30rpx;
+  background-color: #F2F2F2;
+}
+
+.top , .md , .btm {
+  background-color: #fff;
+  border-radius: 10rpx;
+}
+
+.top{
+  width: 100%;
+  height: 640rpx;
+  margin-bottom: 20rpx;
+}
+
+.end-address{
+  font-size: 36rpx;
+}
+
+.to-location{
+  display: flex;
+  font-size: 32rpx;
+  margin: 30rpx 0 40rpx;
+}
+
+.total_driver{
+  position: relative;
+}
+
+.driver_info {
+  width: 550rpx;
+  float: left;
+  display: flex;
+  align-items: center;
+  margin-left: 30rpx;
+  font-size: 30rpx;
+}
+
+.driver_img {
+  margin-right: 22rpx;
+  text-align: center;
+}
+
+.driver_img>.name {
+  /* width: 140rpx; */
+  font-size: 28rpx;
+  font-weight: bold;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.driverImg {
+  width: 120rpx;
+  height:120rpx;
+  margin-top: 44rpx;
+}
+
+.car_img {
+  margin-left: 30rpx;
+  margin-right: 22rpx;
+  text-align: center;
+}
+.carimage{
+  width:320rpx;
+  height: 240rpx;
+}
+.d_top {
+  width: 400rpx;
+  font-size: 28rpx;
+  display: flex;
+  color: #333;
+  padding-top: 42rpx;
+}
+
+.d_top1 {
+  width: 600rpx;
+  font-size: 28rpx;
+  display: flex;
+  color: #333;
+  padding-top:16rpx;
+}
+.d_top>view {
+  flex: 1;
+}
+
+.d_md {
+  width: 220rpx;
+  display: flex;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin: 16rpx 0 20rpx;
+}
+
+.d_md>.detailed_Cartnumber {
+  padding: 0 8rpx;
+  text-align: center;
+  margin-right: 23rpx;
+}
+
+.d_md>.d_id {
+  padding: 0 8rpx;
+  text-align: center;
+  background-color: #F2F2F2;
+}
+
+.d_md>.detailed_cart {
+  font-size: 24rpx;
+}
+
+.driver_icon {
+  position: absolute;
+  top: 458rpx;
+  right:48rpx;
+}
+
+.driver_icon image {
+  width:100rpx;
+  height:100rpx;
+}
+
+.call-service{
+  width: 650rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx 0;
+  margin: 0 auto;
+  border-top: 2rpx solid #f2f2f2;
+}
+
+.call-icon {
+  width: 50rpx;
+  height: 50rpx;
+  align-items: center;
+}
+
+.call-text {
+  display: block;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.tips{
+  text-align: center;
+  margin: 20rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.btm{
+  width: 100%;
+  min-height: 100rpx;
+}
+.cars{
+  margin-top: -116rpx;
+}
+.calldriver{
+  position: absolute;
+  top: 584rpx;
+  left: 546rpx;
+  font-size: 28rpx;
+}
+.zhongdian{
+  background: #0e6ed0;
+  color: #fff;
+}
+.btn-area{
+  margin-bottom: 4rpx;
+}

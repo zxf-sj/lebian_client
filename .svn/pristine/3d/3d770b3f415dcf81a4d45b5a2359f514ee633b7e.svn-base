@@ -1,0 +1,62 @@
+<view class='pa-l30 pa-r30 pa-t20 pa-b20 fo-g fo-26'>
+  可直接修改信息
+</view>
+<form bindsubmit="formSubmit">
+<view class='bg-w' style='padding:0 30rpx'>
+  <button class='panel panel-between border-b item-center' style='padding:30rpx 0' open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+    <view class='fo-30'>头像</view>
+    <view class='panel-end item-center'>
+      <image src='{{avatarUrl}}' style='height:100rpx;width:100rpx;border-radius:100rpx' mode='aspectFill'></image>
+      <image src='/user_center/assets/images/right.png' class='icon-25 ma-l20'></image>
+    </view>
+  </button>
+  <view class='panel panel-between border-b item-center' style='padding:30rpx 0'>
+    <view class='fo-30'>昵称</view>
+    <view class='panel-end item-center'>
+      <input name="nick_name" bindinput="changeName" class='fo-30 fo-g text-right' placeholder="请填写昵称(必填)" value='{{msg.Name}}' ></input>
+    </view>
+  </view>
+  <view class='panel panel-between border-b item-center' style='padding:30rpx 0'>
+    <view class='fo-30'>手机号</view>
+    <view class='panel-end item-center'>
+      <input name="phone" type="number" maxlength="11" class='fo-30 fo-g text-right' placeholder="请填写11位手机号(必填)" value='{{msg.Phone}}' bindinput="changeTel"></input>
+    </view>
+  </view>
+  <view wx:if="{{ phoneError }}" class="error-tip">
+    {{ phoneError }}
+  </view>
+  <view class='panel panel-between item-center border-b' style='padding:30rpx 0'>
+    <view class='fo-30'>性别</view>
+    <view class='panel-end item-center'>
+      <picker bindchange="bindSex" value="{{sex}}" range="{{array}}" class="ftc999">
+          {{msg.Gender_Name || ''}}
+      </picker>
+    </view>
+  </view>
+  <view class='panel panel-between item-center border-b' style='padding:30rpx 0'>
+    <view class='fo-30'>生日</view>
+    <view class='panel-end item-center'>
+      <picker mode="date" value="{{birthday}}" bindchange="bindBirthday" class="ftc999">
+        {{msg.Birthday || '请选择生日'}}
+      </picker>
+    </view>
+  </view>
+  <view class='panel panel-between item-center border-b' style='padding:30rpx 0'>
+    <view class='fo-30'>所在地区</view>
+    <view class='panel-end item-center'>
+      <picker mode="region" bindchange="bindRegionChange" value="{{region}}"  class="ftc999">
+        <view >{{ region[0] }} {{ region[1] }} {{ region[2] }}</view>
+      </picker>
+    </view>
+  </view>
+  <view class='panel panel-between item-center' style='padding:30rpx 0'>
+    <view class='fo-30'>详细地址</view>
+    <view class='panel-end item-center'>
+      <input name="address" bindblur="changeAddr" class='fo-30 fo-g text-right' placeholder="请填写详细地址" value="{{msg.HomeAddress}}"></input>
+    </view>
+  </view>
+</view>
+<!-- <view class='pa-30'>
+  <button class='btns' form-type='submit'>保存修改</button>
+</view> -->
+</form>

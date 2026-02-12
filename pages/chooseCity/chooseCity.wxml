@@ -1,0 +1,48 @@
+<view class="container">
+
+    <view class='list-city' hidden="{{cityListShow}}">
+        <scroll-view scroll-y="true" style="height:100%;" scroll-into-view="{{scrollTopId}}" scroll-with-animation="true" enable-back-to-top="true">
+            <view class='item'>
+                <view class='fullname top-box'>
+                    <!-- <view class="city-name">当前选择地市：{{city}}</view> -->
+                    <view class="inp">
+                        <input value="{{searchCityVal}}" placeholder="请输入城市" bindinput="handleInput" bindconfirm="searchCity" confirm-type="search"></input>
+                        <image src="/assets/images/search.png" bindtap="searchCity"></image>
+                    </view>
+                </view>
+            </view>
+            <!-- 显示全部 -->
+            <block wx:if="{{showAllCity}}">
+                <!-- 热门城市 -->
+                <view class='item'>
+                    <view class='py' id="hot">★ 热门城市</view>
+                    <view class="fullname" wx:for="{{hotCityData}}" wx:key="key" data-fullname="{{item.fullname}}" data-code="{{item.id}}" data-lat="{{item.location.lat}}" data-lng="{{item.location.lng}}" bindtap='selectCity'>{{item.fullname}}
+                    </view>
+                </view>
+                <!-- 全部 -->
+                <!-- <view class='item' wx:for="{{cityData}}" wx:for-index="idx" wx:for-item="group" wx:key="key">
+                    <view class='py' id="{{idx}}">{{idx}}</view>
+                    <view class="fullname" wx:for="{{group}}" wx:key="key" data-fullname="{{item.fullname}}" data-code="{{item.id}}" data-lat="{{item.location.lat}}" data-lng="{{item.location.lng}}" bindtap='selectCity'>{{item.fullname}}
+                    </view>
+                </view> -->
+            </block>
+            <!-- 显示搜索结果 -->
+            <block wx:else>
+                <view class='item' style="padding-bottom:25rpx;">
+                    <view class='py' id="hot">搜索结果</view>
+                    <view hidden="{{hasCityRes}}" class="no-city-res">查询无记录</view>
+                    <view wx:if="{{hasCityRes}}" class="fullname" wx:for="{{searchCityRes}}" wx:key="key" data-fullname="{{item.fullname}}" data-code="{{item.id}}" data-lat="{{item.location.lat}}" data-lng="{{item.location.lng}}" bindtap='selectCity'>{{item.fullname}}
+                    </view>
+                </view>
+            </block>
+        </scroll-view>
+        <!-- 首字母 -->
+        <view wx:if="{{searchCityRes.length === 0}}" class='city-py' bindtouchstart="tStart" bindtouchend="tEnd" catchtouchmove="tMove">
+            <view wx:for="{{_py}}" wx:key="key" bindtouchstart="getPy" bindtouchend="setPy" id="{{item}}">{{item == 'hot' ? "★" : item}}
+            </view>
+        </view>
+    </view>
+</view>
+<!--选择显示-->
+<view hidden="{{hidden}}" class="showPy">{{showPy == 'hot' ? "★" : showPy}}</view>
+<daohang></daohang>

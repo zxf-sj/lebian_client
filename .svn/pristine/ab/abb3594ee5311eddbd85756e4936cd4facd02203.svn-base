@@ -1,0 +1,49 @@
+<!--服务评价-->
+<view class="service">
+  <!--评分-->
+  <view class='score'>
+    <view class='left'>
+      评分
+    </view>
+    <view class='right'>
+       <view bindtap="starTap" data-index="{{index}}"  class="star" wx:for="{{userStars}}" wx:key="index">
+        <image src="{{item}}"></image>
+      </view>
+      <text class='rtxt'>{{wjxScore}}.0分</text>
+    </view>
+  </view>
+  <!--内容-->
+  <view class='content'>
+    <view class='left'>
+      评价
+    </view>
+    <view class='right'>
+      <text bindtap='label'  class="{{attitude===true ? 'labelColor':''}}" data-index="{{attitude}}">车内干净</text>
+      <text bindtap='label1' class="{{time===false? 'labelColor':''}}" data-index="{{time}}">司机热情</text>
+      <text bindtap='label2' class="{{efficiency===false?'labelColor':''}}" data-index="{{efficiency}}">方便快捷</text>
+      <text bindtap='label3' class="{{environment===false?'labelColor':''}}" data-index="{{environment}}">按时到达</text>
+      <text bindtap='label4' class="{{professional===false?'labelColor':''}}" data-index="{{professional}}">线路熟悉</text>
+      <text bindtap='label5' class="{{jishu===false?'labelColor':''}}" data-index="{{jishu}}">技术很好</text>
+    </view>
+  </view>
+  <!--图片-->
+  <!-- <view class='picture'>
+    <view class='left'>
+      图片
+    </view>
+    <view class='right'>
+       <view class="parcel" wx:for="{{pics}}" wx:key="{{index}}">
+       <image src="{{pics[index]}}" class="According" data-index="{{index}}" mode="aspectFill" bindtap="previewImg"></image>
+       </view>
+      <image src='../img/add.png' class='add' bindtap='choose'></image>
+    </view>
+  </view> -->
+</view>
+<!--textarea-->
+<view class="conts">
+    <textarea class="areas" placeholder='更多评价请写在这里（最多300字）' minlength="{{min}}" maxlength="{{max}}" bindinput="inputs">
+        <text class="currentWordNumber">{{currentWordNumber|0}}/{{max}}</text>
+    </textarea>
+</view>
+<!--提交评价-->
+<button class='btn' bindtap='handleBtn'>提交评价</button>

@@ -1,0 +1,14 @@
+<!--pages/pingche2/pingche2.wxml-->
+<view class="page">
+	<distanceNav />
+	<information typeon="pc"  />
+	<travel />
+    <!-- 身高在1.2米以下或者 -->
+	<view class="prompt">* 儿童是指3岁以下的小朋友。</view>
+	<orderBottom bind:handleCallCar="handleCallCar" typeon='pc' />
+  <!-- pages/result/result.wxml -->
+  
+  <mp-dialog title="提示" show="{{dialogShow}}" bindbuttontap="tapDialogButton" buttons="{{buttons}}">
+        <view>乘车人信息与乘车人数不匹配</view>
+    </mp-dialog>
+</view>

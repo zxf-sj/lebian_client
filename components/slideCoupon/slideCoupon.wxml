@@ -1,0 +1,55 @@
+<view id="slide-coupon" class="slide-coupon" wx:if="{{showCoupon}}" bind:tap="handleBox" >
+  <view class="inner">
+    <view class="title">
+      <text>选择次卡</text>
+      <!-- 选择优惠券 -->
+      <!-- {{types =='优惠卷'? 'choice':''}} -->
+      <text class="coupon " catchtap="clickyouhui"></text>
+      <!-- 选择次卡 -->
+      <!-- {{types =='次卡'? 'choice':''}} -->
+      <text class="session " catchtap="clickcika"></text>
+      <button class="mini-btn submitBtn" catchtap="handleSubmit" type="primary" size="mini">确定</button>
+    </view>
+    <scroll-view wx:if="{{hasCoupon}}" class="scroll-box" scroll-y="true" bindscrolltolower="scrollToLower">
+      <view class="item" wx:for="{{types == '次卡'?ka:juan}}" wx:key="index">
+        <view class="top">
+          <!-- wx:if="{{fromIcon}}" -->
+          <block >
+            <view class="item2" data-ids="{{item.Id}}" catchtap="handleRadio" data-item="{{index}}">
+              <view class="left">
+                <image src="{{item.CarType == '300251-02b89150d44e4fb4aa0dcc36e5a20f17'?'/assets/images/youhuiquan_bg_small01.png':'/assets/images/youhuiquan_bg_small_vip@2x.png'}}"></image>
+                <view class="text">
+                  <view wx:if="{{item.CouponType == '100004-0001030028'}}" class="ka">单次</view>
+                  <view wx:else class="price">￥<text>{{item.CouponMoney}}</text></view>
+                  <!-- <view class="price"><text>9</text>折</view> -->
+                </view>
+              </view>
+              <view class="right">
+                <view class="top2">
+                  <view class="name" style="{{item.CarType == '300251-02b89150d44e4fb4aa0dcc36e5a20f17'?'color:#f23d3d':'color:#D99F05'}}">{{item.CouponId_Name}}</view>
+                  <view>太原←→孝义</view>
+                </view>
+
+                <view class="btm">长期有效</view>
+                <!--  -->
+              </view>
+            </view>
+            <label class="radio">
+              <radio checked="{{item.selected}}" catchtap="handleRadio" data-item="{{index}}" />
+            </label>
+            <view class="tag" catchtap="handleRadio" data-item="{{index}}">
+              <image src="../../user_center/assets/images/youhuiquan_biaoqian01.png"></image>
+              <view class="num">1张</view>
+            </view>
+          </block>
+        </view>
+        <view class="btm" wx:if="{{item.IsForever=='100004-0000010002'}}">长期有效</view>
+        <!-- <view class="btm" wx:if="{{item.IsForever=='100004-0000010002'}}">有效时间：{{item.EndTime}}</view> -->
+      </view>
+    </scroll-view>
+    <view class="no-coupon" wx:elif="{{!hasCoupon}}">
+      <image src="/assets/images/no-coupon.png" style="width:296rpx;height:200rpx;margin-bottom:20rpx;"></image>
+      <view>没有该车型次卡</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "orderBottom":"/components/orderBottom/orderBottom",
+    "information":"/components/information/information",
+    "distanceNav":"/components/distanceNav2/distanceNav2",
+    "travel":"/components/travel/travel"
+  },
+  "navigationBarTitleText": "乐遍包车"
+}

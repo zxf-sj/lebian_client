@@ -1,0 +1,156 @@
+// components/slideCoupon/slideCoupon.js
+import http from '../../utils/http.js';
+let clickTimer = null;
+Component({
+  /**
+   * 组件的属性列表
+   */
+  properties: {
+    params: {
+      type: Object,
+      value: {
+        money:0
+      }
+    },
+    showCoupon: {
+      type: Boolean,
+      value: true
+    },
+    fromIcon: {
+      type: Boolean,
+      value: true
+    },
+    hasChooseId: String,
+  },
+
+  /**
+   * 组件的初始数据
+   */
+  data: {
+    listData: null,
+    curItemId: null,
+    pageNo: 1,
+    loadingFailed: false,
+    loading: false,
+    noMore: false,
+    hasCoupon: false,
+  },
+
+  lifetimes: {
+    attached() {
+      this.reqChooseListData();
+      if (this.data.hasChooseId) {
+        this.setData({
+          curItemId: this.data.hasChooseId
+        })
+      }
+    },
+  },
+  methods: {
+    //到达底部
+    scrollToLower: function (e) {
+      // if (!this.data.loading && !this.data.noMore) {
+      //   this.setData({
+      //     loading: true,
+      //     pageNo: this.data.pageNo + 1
+      //   });
+      //   this.reqExchangeListData(true);
+      // }
+    },
+
+    tapUseBtn(e) {
+      let item = e.currentTarget.dataset.item;
+      if (item.couponId !== this.data.curItemId) {
+        this.setData({
+          curItemId: item.couponId
+        })
+      } else {
+        this.setData({
+          curItemId: null
+        })
+      }
+    },
+    close() {
+      this.setData({
+        showCoupon: false
+      })
+      this.triggerEvent("CouponState", false);
+      if (this.data.fromIcon) {
+
+      } else {
+        this.chooseCoupon();
+      }
+    },
+    reqChooseListData() {
+      let params = this.data.params;
+      var userinfo = wx.getStorageSync('userInfo');
+      let data = {
+        MemberId:userinfo.Id,
+        Money:2
+      }
+      http.postRequest("/Api/DispatchMobile/CanUseCoupon", data, wx.getStorageSync('header'), res => {
+        if (res.code==0) {
+          if (this.data.hasChooseId) {
+            let listData = res.data;
+            this.setData({
+              listData,
+              hasCoupon:true
+            })
+          } else {
+            this.setData({
+              listData: res.data,
+              hasCoupon:true
+            })
+          }
+        } else {
+          this.setData({
+            hasCoupon: false
+          })
+        }
+      }, err => {
+        console.log(err)
+      })
+    },
+    chooseCoupon() {
+      let params = this.data.params;
+      let id = this.data.curItemId || 0;
+      let data = {
+        couponId: id,
+        businessType: params.businessType || 0,
+        lineId: params.lineId || 0,
+        lineType: params.lineType || 0,
+        rideNumber: params.rideNumber || 0,
+      }
+      http.postRequest("/v2/passenger/integral/selectCoupon", data, wx.getStorageSync('header'), res => {
+        if (this.data.curItemId) {
+          this.triggerEvent("HasChooseCouponData", {
+            data: res.content,
+            isChoose: true
+          });
+        } else {
+          this.triggerEvent("HasChooseCouponData", {
+            data: res.content,
+            isChoose: false
+          });
+        }
+      }, err => {
+        console.log(err)
+      })
+    },
+
+    exchange(e) {
+      let item = e.currentTarget.dataset.item;
+      if (clickTimer) clearTimeout(clickTimer);
+      clickTimer = setTimeout(() => {
+        this.exchangeReq(item);
+      }, 500);
+    },
+
+    exchangeReq(item) {
+      this.triggerEvent("ExchangeItem", item);
+      this.setData({
+        showCoupon:false
+      })
+    }
+  }
+})

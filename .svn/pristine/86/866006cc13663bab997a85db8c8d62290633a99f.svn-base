@@ -1,0 +1,17 @@
+<!--user_center/pages/invoiceTitle/invoiceTitle.wxml-->
+<view>
+    <view class="box">
+        <view class="nav_icon" bind:tap="handle_to" wx:for="{{dataList}}" wx:key="{{item.id}}" data-index="{{item.Id}}">
+            <view class="item_l">
+                <view class="pop_title">{{item.Name}}</view>
+                <view class="pop_num">{{item.TaxID}}</view>
+            </view>
+            <view class="item_r" >
+                >
+            </view>
+        </view>
+    </view>
+    <view class="pop_bottom" bind:tap="handle_add">
+        添加常用发票抬头
+    </view>
+</view>

@@ -1,0 +1,74 @@
+
+.search-container {
+  display: flex;
+  padding: 15px;
+  background-color: #f5f5f5;
+}
+
+.search-container input {
+  flex: 1;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.search-container button {
+  width: 80px;
+  height: 36px;
+  line-height: 36px;
+  font-size: 14px;
+}
+
+/* 线路列表样式 */
+.route-list {
+  height: calc(100vh - 66px);
+}
+
+.route-item {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.route-number {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1a73e8;
+}
+
+.route-name {
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0;
+}
+
+.route-direction {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.route-info {
+  display: flex;
+  font-size: 12px;
+  color: #999;
+}
+
+.route-info text {
+  margin-right: 15px;
+}
+
+/* 加载更多 */
+.load-more {
+  text-align: center;
+  padding: 15px;
+  color: #1a73e8;
+}
+
+/* 无数据提示 */
+.no-data {
+  text-align: center;
+  padding: 50px 0;
+  color: #999;
+}

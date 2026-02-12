@@ -1,0 +1,192 @@
+<view class="page">
+  <map id="myMap" style="width:{{ScreenTotalW}}rpx;height:45vh;" longitude="{{longitude}}"
+    latitude="{{latitude}}" polyline="{{polyline}}" markers="{{markers}}" controls="{{controls}}"
+    include-points='{{points}}' show-location="true">
+    <view class="current-mylocation-box">
+      <image bindtap="getMyLocation" class="current-mylocation" src="/assets/images/location.png">
+      </image>
+    </view>
+  </map>
+  <view class="container">
+    <view class="footerBox">
+      <view class="infoBox">
+        <view class="footer-tab-title">
+          <view class="flex-box font-30">
+            <view  class="flex-item {{changeTab == 1 ? 'footerActive' : ''}}" data-current="1" bindtap="footerTab">营运线路包车</view>
+            <view class="flex-item {{changeTab == 2 ? 'footerActive' : ''}}" data-current="2" bindtap="footerTab">非营运线路包车</view>
+          </view>
+        </view>
+        <view class='info_li2' wx:if="{{changeTab == 1}}">
+          <view class='info_prefix_text info_left'>
+          <view class="personIcon"><image src="/assets/images/luxian.png" class="personImg"></image></view>
+          选择线路:</view>
+          <view class='info_right1'>
+            <picker range="{{addArr}}" range-key="{{'Name'}}" bindchange="addChange" data-item="{{addArr[addIndex]}}">
+              <view>{{addIndex?addArr[addIndex].Name:'请选择出行线路'}}</view>
+            </picker>
+          </view>
+        </view>
+        <view class='info-loca'>
+          <view class="info-loca-border">
+            <view class="circle-str"></view>
+            <view class="input-str" style="color: #6BBFC1" bindtap="toStarting">{{strAddress}}</view>
+            <view class="input-end" style="color: #333333" bindtap="toEnding">{{endAddress}}</view>
+            <view class="circle-end"></view>
+            <view class="info_loca-line"></view>
+          </view>
+        </view>
+        <scroll-view class="car-types" scroll-x="true" wx:if="{{carTypeList.length>0}}">
+          <view class="viewcar">请选择车型:</view>
+          <view class="group_7">
+            <view  wx:for="{{carTypeList}}" wx:key="index" class="group_8 {{carType===index?'typechecked':''}}"  bindtap="chooseCarType" data-index="{{index}}" data-nums="{{item.SeatNumber}}">
+              <view class="image-text_5">
+                <image src="https://www.qierchuxing.com/upload/Annex/202405/AX-20240521-644317-541.png" class="image_1"></image>
+                <view class="group_9"></view>
+                <text lines="1" class="text-group_5">{{item.Name}}</text>
+              </view>
+              <view class="group_10">
+                <image src="/assets/images/nav-me.png" class="thumbnail_5"></image>
+                <text lines="1" class="text_2">{{item.SeatNumber+1}}座</text>
+              </view>
+              <view class="text-wrapper_1">
+                <text lines="1" class="text_3">¥{{item.OriginalPrice}}</text>
+                <text lines="1" class="text_4">¥{{item.Price}}</text>
+              </view>
+              <view class="text-wrapper_2">
+                <text wx:if="{{item.Version!='0'}}" class="text_5">+摆渡价{{item.Version}}</text>
+              </view>
+            </view>
+          </view>
+        </scroll-view>
+        <view class='info_li2'>
+          <view class='info_prefix_text info_left'>
+          <view class="personIcon"><image src="/assets/images/rili.png" class="personImg"></image></view>
+          出行日期:</view>
+          <view class='info_right1'>
+            <picker mode="date" value="{{startDate}}" start="{{startYear}}" end="2099-01-01" bindchange="bindDateChange">
+              <view>
+                {{startDate?startDate:"请选择出行日期"}}
+              </view>
+            </picker>
+          </view>
+        </view>
+        <view class='info_li2'>
+          <view class='info_prefix_text info_left'>
+          <view class="personIcon"><image src="/assets/images/time.png" class="personImg"></image></view>
+          出行时间:</view>
+          <view class='info_right1'>
+            <picker range="{{timeArr}}" range-key="{{'RunTimeShow'}}" bindchange="bindTimeChange" data-item="{{timeArr[timeIndex]}}">
+              <view>{{timeIndex?timeArr[timeIndex].RunTimeShow:'请选择时间'}}</view>
+            </picker>
+          </view>
+        </view>
+        <view class='info_li2'>
+          <view class='info_prefix_text info_left'>
+          <view class="personIcon"><image src="/assets/images/chengke.png" class="personImg"></image></view>
+          乘车人数:</view>
+          <view class='info_right1' bindtap="choosePerson">
+            <view wx:if="{{personNum==0}}">选择乘车人</view>
+            <view wx:if="{{personNum!=0}}">{{personNum}}人</view>
+          </view>
+        </view>
+        <view class='info_li2'>
+          <view class='info_prefix_text info_left'>
+          <view class="personIcon">
+            <image src="/assets/images/juan.png" class="personImg"></image></view>
+          优惠劵:</view> 
+          <view class='info_right' bindtap="showCoupon">
+            <input name="personNum" type="number" disabled="true" value="{{couponName}}" placeholder="点击选择优惠劵"></input>
+          </view>
+        </view>
+        <block>
+          <view class="cost color-red"> 
+            <view>
+              <view class="big-price">约 <text class="cost-text_num">{{ygprice}}</text> 元
+                <image class="p_arrow" src="/assets/images/tan.png"></image>
+                <text class="yhprice">已优惠{{yhprice}}元,</text>
+                <text class="yhprice">使用余额支付还可优惠{{yehprice}}元</text>
+              </view>
+              <view class="preferentialPrice" wx:if="{{peakPriceStr}}">
+                <view class="choose-coupon-text">{{peakPriceStr}}</view>
+              </view>
+              <view class="preferentialPrice">
+                <view class="choose-coupon-text">全程大约：{{countLen}}公里</view>
+                <!-- <view class="choose-coupon-text">预计时间：{{yjTimes}}分钟</view> -->
+              </view>
+            </view>
+            <view class="signUp-tip" bind:tap="showView">
+              <checkbox-group style="float: left;">
+                <checkbox value="agree" checked="{{agree}}"/>
+              </checkbox-group>
+              <view class="signUp-tip-txt">下单即同意本服务条款
+                <text class="signUp-tip-txt-protocol" bindtap="gotoxieyi">《用户须知》</text>
+              </view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+  <view class="btnBox">
+    <button style="{{agree==true?'color:#fff;':'background:#eee;'}}" class="next-step" bindtap="callCar" disabled="{{!agree}}">确认下单</button>
+  </view>
+  <!-- 显示优惠卷 -->
+  <slideCoupon wx:if="{{showCoupon}}" class="slide-comp" fromIcon="{{isFromIcon}}"  params="{{slideCouponParams}}"
+    hasChooseId="{{hasChooseId}}" showCoupon="{{showCoupon}}" bindCouponState="couponStateHandle"
+    bindHasChooseCouponData="onHasChooseCouponData" bindExchangeItem="onExchangeItem"></slideCoupon>
+  <!-- 推荐车辆 -->
+  <view class="popup-box" wx:if="{{showList}}" bindtap="closePopup"></view> 
+  <view class="info-bottom" wx:if="{{showList}}">
+    <view class="row-info">
+      <view class="titl">
+        <text class="line left-line"></text>
+        <text>推荐车辆</text>
+        <text class="line right-line"></text>
+      </view>
+      <view class="close" bindtap="closePopup">
+        <image class="closeimg" src="/assets/images/close.png"></image>
+      </view>
+      <scroll-view  scroll-y="true" class='hiddenBar' lower-threshold="200" style="height: 70vh"  bindscrolltolower="scrollToLower" >
+        <view class="listBox" wx:for="{{array}}" wx:key="index">
+            <view class="pai"><text style="background-color:#4682dc;border-radius: 10rpx;color:#fff;">{{item.CarDirId_Name}}</text> <text style="margin-left:20rpx;">{{item.CarDirId_ExtProp11?item.CarDirId_ExtProp11:""}}{{item.TypeSeatNum}}座</text> <text style="margin-left: 20rpx;">{{item.DriverId_Name}}</text>
+            </view>
+            <view class="info">
+              <text class="infoname">{{item.PassengerLineId_Name}}</text>
+            </view>
+            <view class="info">
+              <text class="infoname">{{item.OnLineCarType_Name}}</text>|
+              <text class="infoname">剩余座位:{{item.seatListStr}}</text>
+            </view>
+            <view class="carimg">
+              <image class="imgs" src="{{item.CarDirId_CarPicture?httpsUrl+item.CarDirId_CarPicture:'https://www.qierchuxing.com/upload/Annex/202405/AX-20240521-644317-541.png'}}"></image>
+            </view>
+            <view class="chufa">
+              <text class="chutime">距离您</text>
+              <text class="chutime">{{item.distance?item.distance+'公里':'暂无距离信息'}}</text>
+            </view>
+            <view class="chufa" bindtap="chooseCar" data-item="{{item}}" wx-if="{{Tindex==0}}">
+              <button size="mini" type="primary" class="xuanz">去选座</button>
+            </view>
+            <view class="chufa" bindtap="xuanze" data-item="{{item}}" wx-if="{{Tindex==1}}">
+              <button size="mini" type="primary" class="xuanz">选择此车</button>
+            </view>
+        </view>
+    </scroll-view> 
+    <view class="nomore" wx:if="{{nomore}}">
+      <view>暂无更多推荐车辆</view>
+    </view>
+    </view>
+  </view>
+  <import src="../wxParse/wxParse.wxml"/>
+  <view class="mask" catchtouchmove="true" wx:if="{{isshow}}">
+    <view class="box_3">
+      <scroll-view scroll-y="true" style="height:70vh;">
+        <template is="wxParse" data="{{wxParseData:content.nodes}}"/>
+      </scroll-view>
+    </view>
+    <view class="buttonsView">
+      <button class="buttons1" bind:tap="tongyi">同意</button>
+      <button class="buttons2" bind:tap="guanbi">取消</button>
+    </view>
+  </view>
+</view>

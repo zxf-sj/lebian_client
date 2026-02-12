@@ -1,0 +1,144 @@
+// user_center/pages/complaint/complaint.js
+const app = getApp();
+import http from '../../../utils/http';
+Page({
+    data: {
+        current: 0,
+        attitude: true,
+        time: true,
+        efficiency: true,
+        environment: true,
+        professional: true,
+        jishu: true,
+        userStars: [
+            "/assets/images/stars.png",
+            "/assets/images/stars.png",
+            "/assets/images/stars.png",
+            "/assets/images/stars.png",
+            "/assets/images/stars.png"
+        ],
+        wjxScore: 5,
+        // textarea
+        min: 5, //最少字数
+        max: 300, //最多字数 (根据自己需求改变)
+        //pics: [],
+        content: '',
+        orderId: ""
+    },
+    // 星星点击事件
+    starTap: function (e) {
+        var that = this;
+        var index = e.currentTarget.dataset.index; // 获取当前点击的是第几颗星星
+        var tempUserStars = this.data.userStars; // 暂存星星数组
+        var len = tempUserStars.length; // 获取星星数组的长度
+        for (var i = 0; i < len; i++) {
+            if (i <= index) { // 小于等于index的是满心
+                tempUserStars[i] = "/assets/images/stars.png";
+                that.setData({
+                    wjxScore: i + 1,
+                })
+            } else { // 其他是空心
+                tempUserStars[i] = "/assets/images/kxing.png"
+            }
+        }
+        // 重新赋值就可以显示了
+        that.setData({
+            userStars: tempUserStars
+        })
+    },
+    // 标签
+    label: function (e) {
+        console.log(e)
+        var that = this;
+        that.setData({
+            attitude: !e.currentTarget.dataset.index
+        })
+    },
+    label1: function (e) {
+        console.log(e)
+        var that = this;
+        that.setData({
+            time: !e.currentTarget.dataset.index
+        })
+    },
+    label2: function (e) {
+        console.log(e)
+        var that = this;
+        that.setData({
+            efficiency: !e.currentTarget.dataset.index
+        })
+    },
+    label3: function (e) {
+        console.log(e)
+        var that = this;
+        that.setData({
+            environment: !e.currentTarget.dataset.index
+        })
+    },
+    label4: function (e) {
+        console.log(e)
+        var that = this;
+        that.setData({
+            professional: !e.currentTarget.dataset.index
+        })
+    },
+    label5: function (e) {
+        var that = this;
+        that.setData({
+            jishu: !e.currentTarget.dataset.index
+        })
+    },
+    // 留言
+    //字数限制
+    inputs: function (e) {
+        // 获取输入框的内容
+        var value = e.detail.value;
+        // 获取输入框内容的长度
+        var len = parseInt(value.length);
+        //最多字数限制
+        if (len > this.data.max)
+            return;
+        // 当输入框内容的长度大于最大长度限制（max)时，终止setData()的执行
+        this.setData({
+            currentWordNumber: len, //当前字数
+            content: value
+        });
+    },
+    onLoad: function (options) {
+        console.log(options)
+        this.setData({
+            orderId: options.orderId
+        })
+    },
+    handleBtn() {
+        var userInfo = wx.getStorageSync('userInfo');
+        var data = {};
+        data = {
+            "FormType": "200015-fd38fd819a2f4fba99a1f6c51377a9db",
+            "FormId": this.data.orderId,
+            "LikeLevel": this.data.wjxScore,
+            "Content": this.data.content,
+            "MemberId": userInfo.Id
+        }
+        http.postRequest('/Api/DispatchMobile/CommentAdd', data, wx.getStorageSync('header'), (res) => {
+            if (res.code == 0) {
+                wx.showToast({
+                    title: '评价成功',
+                    icon: 'success',
+                    duration: 3000,
+                    success: function (res) {
+                        wx.navigateBack(-1);
+                    }
+                })
+            } else {
+                wx.showToast({
+                    title: '评价失败',
+                    icon: 'error',
+                    duration: 2000
+                })
+            }
+        }, (err) => {
+            console.log(err)
+        })
+    }
+})
