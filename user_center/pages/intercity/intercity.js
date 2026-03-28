@@ -9,17 +9,172 @@ Page({
     seatList:[{
       startCity:'太原',
       endCity:'孝义',
-      startTime:'11:00',
-      money:50,
+      startTime:'05:10',
+      endTime:'08:10',
+      car_type:'便民通勤',
       num:20
+    }],
+    addList:[{
+      startTime:"05:10",
+      endTime:'08:10',
+      car_type:'枢纽直达',
     },
     {
-      startCity:'太原',
-      endCity:'孝义',
-      startTime:'14:00',
-      money:48,
-      num:6
-    }],
+      startTime:"05:40",
+      endTime:'08:40',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"06:00",
+      endTime:'09:00',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"06:15",
+      endTime:'09:15',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"06:30",
+      endTime:'09:30',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"06:45",
+      endTime:'09:45',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"07:00",
+      endTime:'10:00',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"07:15",
+      endTime:'10:15',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"07:30",
+      endTime:'10:30',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"07:45",
+      endTime:'10:45',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"08:00",
+      endTime:'11:00',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"08:25",
+      endTime:'11:25',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"08:55",
+      endTime:'11:55',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"09:25",
+      endTime:'12:25',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"09:55",
+      endTime:'12:55',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"10:25",
+      endTime:'13:25',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"11:25",
+      endTime:'14:25',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"12:25",
+      endTime:'15:25',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"13:25",
+      endTime:'16:25',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"13:55",
+      endTime:'16:55',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"14:25",
+      endTime:'17:25',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"14:55",
+      endTime:'17:55',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"15:25",
+      endTime:'18:25',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"15:55",
+      endTime:'18:55',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"16:25",
+      endTime:'19:25',
+      car_type:'枢纽直达',
+    },
+    {
+      startTime:"16:30",
+      endTime:'19:30',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"16:45",
+      endTime:'19:45',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"17:00",
+      endTime:'20:00',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"17:15",
+      endTime:'20:15',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"17:30",
+      endTime:'20:30',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"17:45",
+      endTime:'19:45',
+      car_type:'通勤便民',
+    },
+    {
+      startTime:"18:00",
+      endTime:'20:00',
+      car_type:'通勤便民',
+    }
+   ],
     handleItem:null,
   },
 
@@ -34,6 +189,21 @@ Page({
       day3:_this.getFutureDate(2),
       day4:_this.getFutureDate(3),
       week:_this.getDayAfterTomorrow()
+    })
+    let storageSync = wx.getStorageSync('storageSync')
+    let seatList = []
+    this.data.addList.forEach(item => {
+      seatList.push({
+        startCity:storageSync.startingCity,
+        endCity:storageSync.endingCity,
+        startTime:item.startTime,
+        endTime:item.endTime,
+        car_type:item.car_type,
+        num:20
+      })
+    })
+    this.setData({
+      seatList
     })
   },
 
@@ -74,9 +244,10 @@ getFutureDate(days) {
     this.setData({
       handleItem:e.currentTarget.dataset.item
     })
-    let data = e.currentTarget.dataset.itemdata
+    let car_type = e.currentTarget.dataset.itemdata.car_type
+    let storageSync = wx.getStorageSync('storageSync')
     wx.navigateTo({
-      url: '/user_center/pages/bus/bus',
+      url: '/user_center/pages/bus/bus?car_type=' + car_type + '&startCity=' + storageSync.startingCity + '&endingCity=' + storageSync.endingCity,
     })
   },
   /**

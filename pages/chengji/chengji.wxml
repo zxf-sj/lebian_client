@@ -27,7 +27,7 @@
       城际巴士
       </view>
       <view class="chengji  {{car_type == 2 ? 'zhong' : ''}}" bindtap="car_type" data-item="2">
-      <view class="sh jiaobiao"></view>
+      <!-- <view class="sh jiaobiao"></view> -->
       小件捎货
       </view>
     </view>

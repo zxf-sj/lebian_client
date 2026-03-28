@@ -4,7 +4,7 @@
 
   <!-- 公交线路容器 -->
   <view class="bus-line-container">
-    <block wx:for="{{stations}}" wx:key="id">
+    <block wx:for="{{car_type == '枢纽直达'?stations:stations2}}" wx:key="id">
       <view class="station-row">
         <!-- 垂直线上的圆点（绝对定位在主线上） -->
         <view class="dot-wrapper">

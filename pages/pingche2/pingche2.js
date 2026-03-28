@@ -10,10 +10,12 @@ Page({
    * 页面的初始数据
    */
   data: {
+    couponList_list: [],
+    huodong_list: null,
     use_couponList: 0, //次卡使用张数
     isshow: false, //用户须知
     couponList: 0, //次卡张数
-    showCoupon: false, //优惠卷弹框
+    showCoupon: false, //优惠券弹框
     textareaValue: '', //备注信息
     remark: false, //点击备注信息显示弹框
     buttons: [{
@@ -22,6 +24,8 @@ Page({
       link: '' // 点击后跳转的页面路径
     }],
     aduit_num: 1, //成人人数
+    couponFlag_aduit_num: 0, //次卡*优惠券抵用成人人数
+    couponFlag: false, //是否存在次卡*优惠券抵用
     child_num: 0, //儿童人数 
     carTypeList: [], //车型列表
     carType: 0, //车型选择下标
@@ -62,6 +66,16 @@ Page({
   //nav 切换时间
   nav_change_date() {
     console.log('nav_change_date')
+    this.setData({
+      aduit_num: 1,
+      child_num: 0,
+      price: '',
+      use_couponList: 0,
+      carTypeList: [],
+      rangfenceMapList: [],
+      couponList_list:[],
+      couponList: 0
+    })
     this.getCarList()
   },
   information_phone_number(e) {
@@ -79,6 +93,7 @@ Page({
       use_couponList: 0,
       carTypeList: [],
       rangfenceMapList: [],
+      couponList_list:[],
       couponList: 0
     })
   },
@@ -120,6 +135,7 @@ Page({
   },
   // 叫车
   handleCallCar: throttle(function () {
+   
     const _this = this;
     var openid = wx.getStorageSync('openid');
     if (!openid) {
@@ -182,15 +198,15 @@ Page({
     http.getRequest('/Api/DispatchMobile/IsUserHaveDayOrder?phone=' + _this.data.phone_number + '&timeDay=' + startDate, '', '', res => {
       if (res.code == 0) {
         if (res.count == 0) {
-          if (this.data.dispatchListId) {
-            wx.showLoading({
-              title: '车辆调度中',
-            })
-          } else {
-            wx.showLoading({
-              title: '加载中...',
-            })
-          }
+          // if (this.data.dispatchListId) {
+          //   wx.showLoading({
+          //     title: '车辆调度中',
+          //   })
+          // } else {
+          //   wx.showLoading({
+          //     title: '加载中...',
+          //   })
+          // }
           let that = this;
           console.log('去下单', reqData)
           wx.request({
@@ -323,15 +339,15 @@ Page({
                 })
               }
               if (res.confirm) {
-                if (this.data.dispatchListId) {
-                  wx.showLoading({
-                    title: '车辆调度中',
-                  })
-                } else {
-                  wx.showLoading({
-                    title: '加载中...',
-                  })
-                }
+                // if (this.data.dispatchListId) {
+                //   wx.showLoading({
+                //     title: '车辆调度中',
+                //   })
+                // } else {
+                //   wx.showLoading({
+                //     title: '加载中...',
+                //   })
+                // }
                 let that = this;
                 // CreatePersonTicketOrder  新
                 wx.request({
@@ -450,15 +466,12 @@ Page({
           icon: "error"
         })
       }
-    }, err => {
-      console.log('下单失败', err)
-    })
+    }, err => {})
   }, 3000),
   setSubscribeMessage: function () {
     wx.requestSubscribeMessage({
       tmplIds: ['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA'],
       success(res) {
-        console.log(res)
         if (res['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA'] === 'accept') {
           console.log('用户同意接收订阅消息');
         } else {
@@ -494,7 +507,11 @@ Page({
   },
   //获取车辆列表
   getCarList() {
+    // wx.showLoading({
+    //   title: '加载中',
+    // })
     let that = this
+    var userinfo = wx.getStorageSync('userInfo');
     let starInfo2 = wx.getStorageSync('starInfo2')
     let endInfo2 = wx.getStorageSync('endInfo2')
     var storageSync = wx.getStorageSync('storageSync')
@@ -503,45 +520,73 @@ Page({
     let starTime = pcTimeSync.StartTime.split(':')[0] + ':59:00'
     let ArrivalTime = startDate + ' ' + starTime
     var data = {
-      "IsExclusive": '100004-0000010002',
-      "Id": storageSync.lineId,
-      "StartLat": starInfo2.startLait,
-      "StartLng": starInfo2.startLont,
-      "EndLat": endInfo2.endLait,
-      "EndLng": endInfo2.endLont,
-      "ArrivalTime": ArrivalTime
+      IsExclusive: '100004-0000010002',
+      Id: storageSync.lineId,
+      StartLat: starInfo2.startLait,
+      StartLng: starInfo2.startLont,
+      EndLat: endInfo2.endLait,
+      EndLng: endInfo2.endLont,
+      ArrivalTime: ArrivalTime,
+      MemberId: userinfo.Id,
+      AdultNumber: that.data.aduit_num,
     };
     if (storageSync.lineId) {
       http.postRequest('/Api/DispatchMobile/getPriceListForLineId', data, '', (res) => {
+        console.log(res)
+        wx.hideLoading();
         if (res.code == '0') {
           //这里是默认值  默认选中第一辆车
           let data = res.data[0];
-          if(!data.CarSeatState) {
+          console.log(data)
+          if (!data.CarSeatState) {
+            console.log('!data.CarSeatState')
             data = res.data[1]
             that.setData({
-              carType:1
+              carType: 1
             })
           }
+          console.log('data', data)
           wx.setStorageSync('pcTypeId', data.Id)
-          console.log(data)
-          console.log(data.CarSeatState)
           if (data.CarSeatState) {
+            console.log(data.CarSeatState)
             //默认座位数
             let seatNumber = data.SeatNumber + 1
             //默认价格 
             let price = 0
-            // 0 折扣 1 减 9 没活动
-            if (data.PromotionDiscountType == 0) {
-              price = data.Price * data.PromotionDiscount
-            } else if (data.PromotionDiscountType == 1) {
-              price = data.Price - data.PromotionDiscount
-            } else if (data.PromotionDiscountType == 9) {
-              price = data.Price
+            if (data.CouponFlag) {
+              price = data.Price - data.CouponMoneyTotal
+              that.setData({
+                couponList_list: data.CouponList,
+                couponFlag:true,
+                couponFlag_aduit_num:1
+              })
+            } else {
+              // 0 折扣 1 减 9 没活动
+              if (data.PromotionDiscountType == 0) {
+                price = data.Price * data.PromotionDiscount
+              } else if (data.PromotionDiscountType == 1) {
+                price = data.Price - data.PromotionDiscount
+              } else if (data.PromotionDiscountType == 9) {
+                price = data.Price
+              }
             }
             if (data.Version) {
               price = price + Number(data.Version)
             }
-            console.log(baseUrl + res.data[0].Note)
+            console.log(res.data)
+            // let dataArr = []
+            // res.data.forEach(item => {
+            //   if(item.CarType == '300251-a84bfd75d45d44c8beff6a6fe3f0e051' &&  (item.PassengerLineId == '300213-7bc4de5562764200a0610b630859d384' || item.PassengerLineId == '300213-96f23d82cea647168541241650c39790')    ) {
+            //     dataArr.push({...item,newPrice:item.Price -20})
+            //   } else if(item.CarType == '300251-02b89150d44e4fb4aa0dcc36e5a20f17'  &&  (item.PassengerLineId == '300213-7bc4de5562764200a0610b630859d384' || item.PassengerLineId == '300213-96f23d82cea647168541241650c39790')) {
+            //     dataArr.push({...item,newPrice:item.Price -10})
+            //   } else {
+            //     dataArr.push({...item,newPrice:item.Price})
+            //   }
+              
+            // })
+             console.log(res.data)
+            
             that.setData({
               rangfenceMapList: data.rangfenceMapList, //超范围列表
               carTypeList: res.data, //车型列表
@@ -552,6 +597,7 @@ Page({
               PromotionDiscount: data.PromotionDiscount,
               version: Number(data.Version)
             })
+            wx.hideLoading();
             //获取次卡张数
             that.reqChooseListData()
           } else {
@@ -572,36 +618,16 @@ Page({
     let that = this;
     let index = e.currentTarget.dataset.index;
     let data = that.data.carTypeList[index]
-    wx.setStorageSync('pcTypeId', data.Id)
+    that.setData({
+      couponList_list: []
+    })
     if (data.CarSeatState) {
-      //默认座位数
-      let seatNumber = data.SeatNumber + 1
-      //默认价格 
-      let aduit_price = 0
-      // 0 折扣 1 减 9 没活动
-      if (data.PromotionDiscountType == 0) {
-        aduit_price = (data.Price * data.PromotionDiscount) * that.data.aduit_num
-      } else if (data.PromotionDiscountType == 1) {
-        aduit_price = (data.Price - data.PromotionDiscount) * that.data.aduit_num
-      } else if (data.PromotionDiscountType == 9) {
-        aduit_price = data.Price * that.data.aduit_num
-      }
-      let child_price = data.Price / 2 * that.data.child_num;
-      let price = child_price + aduit_price
-      if (data.Version) {
-        price = price + (data.Version * (that.data.aduit_num + that.data.child_num))
-      }
       that.setData({
-        rangfenceMapList: data.rangfenceMapList, //超范围列表
-        seatNumber, //座位数
-        price, //总价
         carType: index, //车型选中下标
-        initialPrice: data.Price, //初始票价
-        PromotionDiscountType: data.PromotionDiscountType,
-        PromotionDiscount: data.PromotionDiscount,
-        version: Number(data.Version),
-        use_couponList: 0
+        initialPrice: data.Price
       })
+      that.total_Price()
+      wx.setStorageSync('pcTypeId', data.Id)
       //获取次卡张数
       that.reqChooseListData()
       let pcTimeSync = wx.getStorageSync('pcTimeSync');
@@ -618,29 +644,95 @@ Page({
     }
   },
   //计算总价
-  total_Price() {
+  total_Price: debounce(function() {
+    console.log('计算总价')
     let _this = this;
+    // wx.showLoading({
+    //   title: '加载中',
+    // })
     //默认价格 
     let aduit_price = 0
     let child_price = 0
     let version_price = 0
-    // 0 折扣 1 减 9 没活动
-    if (_this.data.PromotionDiscountType == 0) {
-      aduit_price = _this.data.initialPrice * _this.data.PromotionDiscount * _this.data.aduit_num
-    } else if (_this.data.PromotionDiscountType == 1) {
-      aduit_price = (_this.data.initialPrice - _this.data.PromotionDiscount) * _this.data.aduit_num
-    } else if (_this.data.PromotionDiscountType == 9) {
-      aduit_price = _this.data.initialPrice * _this.data.aduit_num
+
+    //获取车辆列表
+    var userinfo = wx.getStorageSync('userInfo');
+    var storageSync = wx.getStorageSync('storageSync')
+    var startDate = storageSync.startDate;
+    var pcTimeSync = wx.getStorageSync('pcTimeSync')
+    let starTime = pcTimeSync.StartTime.split(':')[0] + ':59:00'
+    let starInfo2 = wx.getStorageSync('starInfo2')
+    let endInfo2 = wx.getStorageSync('endInfo2')
+    let ArrivalTime = startDate + ' ' + starTime
+    var data = {
+      IsExclusive: '100004-0000010002',
+      Id: storageSync.lineId,
+      StartLat: starInfo2.startLait,
+      StartLng: starInfo2.startLont,
+      EndLat: endInfo2.endLait,
+      EndLng: endInfo2.endLont,
+      ArrivalTime: ArrivalTime,
+      MemberId: userinfo.Id,
+      AdultNumber: _this.data.aduit_num,
+    };
+    if (storageSync.lineId) {
+      http.postRequest('/Api/DispatchMobile/getPriceListForLineId', data, '', (res) => {
+        if (res.code == '0') {
+          let data = res.data[_this.data.carType];
+          if (data.CouponFlag) {
+            const total = data.CouponList.reduce((sum, item) => {
+              return sum + item.Count;
+            }, 0);
+            _this.setData({
+              couponList_list: data.CouponList,
+              couponFlag:true,
+              couponFlag_aduit_num:total
+            })
+            if (_this.data.aduit_num == total) {
+              aduit_price = _this.data.aduit_num * data.Price - data.CouponMoneyTotal
+            } else {
+              let CouponFlag_num = total * data.Price - data.CouponMoneyTotal
+              let sheng_aduit_num = _this.data.aduit_num - total
+              if (data.PromotionDiscountType == 0) {
+                aduit_price = data.Price * data.PromotionDiscount * sheng_aduit_num
+                _this.setData({
+                  huodong_list: data.Price + 'x' + data.PromotionDiscount + 'x' + sheng_aduit_num
+                })
+              } else if (data.PromotionDiscountType == 1) {
+                aduit_price = (data.Price - _this.data.PromotionDiscount) * sheng_aduit_num
+
+              } else if (data.PromotionDiscountType == 9) {
+                aduit_price = data.Price * sheng_aduit_num
+              }
+              aduit_price = aduit_price + CouponFlag_num
+            }
+          } else {
+            // 0 折扣 1 减 9 没活动
+            if (data.PromotionDiscountType == 0) {
+              aduit_price = data.Price * data.PromotionDiscount * _this.data.aduit_num
+            } else if (data.PromotionDiscountType == 1) {
+              aduit_price = (data.Price - _this.data.PromotionDiscount) * _this.data.aduit_num
+            } else if (data.PromotionDiscountType == 9) {
+              aduit_price = data.Price * _this.data.aduit_num
+            }
+          }
+          child_price = (data.Price / 2) * _this.data.child_num
+          if (_this.data.version > 0) {
+            version_price = (_this.data.aduit_num + _this.data.child_num) * Number(_this.data.version)
+          }
+          let all_price = aduit_price + child_price + version_price;
+          _this.setData({
+            price: all_price
+          })
+          wx.hideLoading();
+        }
+      }, (err) => {
+        console.log(err)
+      })
     }
-    child_price = (_this.data.initialPrice / 2) * _this.data.child_num
-    if (_this.data.version > 0) {
-      version_price = (_this.data.aduit_num + _this.data.child_num) * Number(_this.data.version)
-    }
-    let all_price = aduit_price + child_price + version_price;
-    _this.setData({
-      price: all_price
-    })
-  },
+    //获取结束
+
+  },300),
   //成人人数+++
   adult_reduce() {
     let _this = this
@@ -737,9 +829,9 @@ Page({
     // const reg = /^1[3-9]\d{9}$/;
     // let isphone = reg.test(phone_number);
     // if (isphone) {
-      _this.setData({
-        phone_number
-      })
+    _this.setData({
+      phone_number
+    })
     // } else {
     //   wx.showToast({
     //     title: '请输入正确的手机号',
@@ -837,7 +929,7 @@ Page({
       console.log(err)
     })
   },
-  //点击使用优惠卷传过来的值
+  //点击使用优惠券传过来的值
   onExchangeItem(item) {
     console.log(item)
     let _this = this;

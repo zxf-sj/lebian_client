@@ -19,15 +19,18 @@ Page({
   getlist(){
     let that = this;
     var userinfo = wx.getStorageSync('userInfo');
-    http.getRequest("/Api/NewMobile/MyCouponList?MemberInfoId="+userinfo.Id+"&IsUse=100004-0000010002&page="+that.data.pageNo+"&limit=10",'',wx.getStorageSync('header'),res=>{
+    http.getRequest("/api/CarPromotion/MyCouponList?MemberInfoId="+userinfo.Id+"&IsUse=100004-0000010002&page="+that.data.pageNo+"&limit=10",'',wx.getStorageSync('header'),res=>{
+      console.log(res)
       if(res.code === 0){
         if(that.data.pageNo==1){
           let data = res.data;
+          console.log(data)
           this.setData({
             listData:data  
           })
         }else{
           var listData = res.data
+          console.log(this.data.listData.concat(listData))
           that.setData({
             listData: this.data.listData.concat(listData)
           })

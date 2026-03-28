@@ -4,7 +4,7 @@
       <image src="/user_center/assets/images/shiyongshuoming.png"></image>
       <view>优惠券使用说明</view>
     </view>
-    <view class="lingqu">点击优惠劵去使用</view> -->
+    <view class="lingqu">点击优惠券去使用</view> -->
     <view class="list">
       <block wx:for="{{listData}}" wx:key="key">
         <view class="item"  data-ids="{{item.Id}}">
@@ -19,10 +19,10 @@
           <view class="right">
             <view class="top">
               <view class="name" style="{{item.CarType == '300251-02b89150d44e4fb4aa0dcc36e5a20f17'?'color:#f23d3d':'color:#D99F05'}}">{{item.CouponId_Name}}</view>
-              <view>太原←→孝义</view>
+              <view>{{item.CardName}}</view>
             </view>
 
-            <view class="btm" >长期有效</view>
+            <view class="btm" >{{item.CouponType == '100004-0001030028'?'长期有效':'当天有效'}}</view>
             <view class="tag">
               <image src="../../assets/images/youhuiquan_biaoqian01.png"></image>
               <view class="num">1张</view>
@@ -34,7 +34,7 @@
   </scroll-view>
   <view wx:else class="bg">
     <image class="bg-img" src="../../assets/images/no_list.png"></image>
-    <view class="bg-cont">暂无优惠劵~</view>
+    <view class="bg-cont">暂无优惠券~</view>
   </view>
 </view>
 <daohang></daohang>

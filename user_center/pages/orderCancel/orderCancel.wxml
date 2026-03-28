@@ -32,7 +32,7 @@
           </view>
           <view class="border-bottom" wx:for="{{detailData.DetailList}}" wx:key="key">
             <!-- <view class=" font-28">
-             取消订单所使用优惠卷、次卡不返还
+             取消订单所使用优惠券、次卡不返还
             </view> -->
           </view>
         </block>

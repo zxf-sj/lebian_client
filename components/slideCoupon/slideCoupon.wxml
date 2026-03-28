@@ -1,9 +1,9 @@
 <view id="slide-coupon" class="slide-coupon" wx:if="{{showCoupon}}" bind:tap="handleBox" >
   <view class="inner">
     <view class="title">
-      <text>选择次卡</text>
+      <text>次卡/优惠券</text>
       <!-- 选择优惠券 -->
-      <!-- {{types =='优惠卷'? 'choice':''}} -->
+      <!-- {{types =='优惠券'? 'choice':''}} -->
       <text class="coupon " catchtap="clickyouhui"></text>
       <!-- 选择次卡 -->
       <!-- {{types =='次卡'? 'choice':''}} -->
@@ -27,15 +27,15 @@
               <view class="right">
                 <view class="top2">
                   <view class="name" style="{{item.CarType == '300251-02b89150d44e4fb4aa0dcc36e5a20f17'?'color:#f23d3d':'color:#D99F05'}}">{{item.CouponId_Name}}</view>
-                  <view>太原←→孝义</view>
+                  <view>{{item.CardName}}</view>
                 </view>
 
-                <view class="btm">长期有效</view>
+                <view class="btm">{{item.CouponType == '100004-0001030002'?'当天有效':'长期有效'}} {{item.CouponType == '100004-0001030002'?item.CouponType_Name:item.CouponType_Name}}</view>
                 <!--  -->
               </view>
             </view>
             <label class="radio">
-              <radio checked="{{item.selected}}" catchtap="handleRadio" data-item="{{index}}" />
+              <!-- <radio checked="{{item.selected}}" catchtap="handleRadio" data-item="{{index}}" /> -->
             </label>
             <view class="tag" catchtap="handleRadio" data-item="{{index}}">
               <image src="../../user_center/assets/images/youhuiquan_biaoqian01.png"></image>
@@ -43,7 +43,7 @@
             </view>
           </block>
         </view>
-        <view class="btm" wx:if="{{item.IsForever=='100004-0000010002'}}">长期有效</view>
+        <!-- <view class="btm" wx:if="{{item.IsForever=='100004-0000010002'}}">长期有效</view> -->
         <!-- <view class="btm" wx:if="{{item.IsForever=='100004-0000010002'}}">有效时间：{{item.EndTime}}</view> -->
       </view>
     </scroll-view>

@@ -60,7 +60,7 @@
                 <!-- <view class="cou_price" wx:if="{{item.couponType == 2}}"><text>{{item.couponValue}}</text>折</view> -->
               </view>
               <view class="cou_right">
-                <view class="cou_name">新人优惠卷</view>
+                <view class="cou_name">新人优惠券</view>
                 <view class="cou_time">2024-04-03 23:59:59</view>
               </view>
               <view class="cou_num"></view>

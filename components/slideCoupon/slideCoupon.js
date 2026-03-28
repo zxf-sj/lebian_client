@@ -112,11 +112,11 @@ Component({
           let juan = []
           let ka = []
           for (let i = 0; i < res.data.length; i++) {
-            if (res.data[i].CouponType == '100004-0001030028') {
+            // if (res.data[i].CouponType == '100004-0001030028') {
               ka.push(res.data[i])
-            } else {
-              juan.push(res.data[i])
-            }
+            // } else {
+            //   juan.push(res.data[i])
+            // }
           }
           ka.forEach(function (obj) {
             obj.selected = false; // 添加新的键值对
@@ -131,6 +131,7 @@ Component({
               }
             });
           }
+          console.log(juan,ka)
           this.setData({
             juan,
             ka,
@@ -157,7 +158,7 @@ Component({
           return
         }
         this.triggerEvent("ExchangeItem", rollArr);
-      } else if (that.data.types == "优惠卷") {
+      } else if (that.data.types == "优惠券") {
         let item = that.data.juan.filter(item => item.selected)
         this.triggerEvent("ExchangeItem", item);
       }
@@ -175,7 +176,7 @@ Component({
         that.setData({
           ka: goods,
         });
-      } else if(that.data.types == "优惠卷") {
+      } else if(that.data.types == "优惠券") {
         const index = e.currentTarget.dataset.item; 
         var goods = that.data.juan; 
         let newList = goods.map((item, i) => ({
@@ -231,7 +232,7 @@ Component({
     // },
     clickyouhui() {
       this.setData({
-        types: '优惠卷'
+        types: '优惠券'
       })
     },
     clickcika() {

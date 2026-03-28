@@ -16,6 +16,7 @@ Page({
     rangfenceMapList:[],//超范围列表
     price:"",//总价
     initialPrice: '', //初始票价
+    baseUrl:'',
     version: 0,
     carType: 0, //车型选中下标
     textareaValue:"",//备注信息
@@ -41,7 +42,9 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    this.setData({
+      baseUrl:baseUrl
+    })
   },
   //手机号
   person_phone: debounce(function (res) {
@@ -69,7 +72,9 @@ Page({
   },
   //获取车辆列表
   getCarList() {
+    console.log('????????????')
     let that = this
+    var userinfo = wx.getStorageSync('userInfo');
     let starInfo2 = wx.getStorageSync('starInfo2')
     let endInfo2 = wx.getStorageSync('endInfo2')
     var storageSync = wx.getStorageSync('storageSync')
@@ -78,28 +83,33 @@ Page({
     let starTime = pcTimeSync.StartTime.split(':')[0] + ':59:00'
     let ArrivalTime = startDate + ' ' + starTime
     var data = {
-      "IsExclusive": '100004-0000010001',
-      "Id": storageSync.lineId,
-      "StartLat": starInfo2.startLait,
-      "StartLng": starInfo2.startLont,
-      "EndLat": endInfo2.endLait,
-      "EndLng": endInfo2.endLont,
-      "ArrivalTime": ArrivalTime
+      IsExclusive: '100004-0000010001',
+      Id: storageSync.lineId,
+      StartLat: starInfo2.startLait,
+      StartLng: starInfo2.startLont,
+      EndLat: endInfo2.endLait,
+      EndLng: endInfo2.endLont,
+      ArrivalTime: ArrivalTime,
+      MemberId: userinfo.Id,
+      AdultNumber: 1,
     };
     if (storageSync.lineId) {
       http.postRequest('/Api/DispatchMobile/getPriceListForLineId', data, '', (res) => {
         if (res.code == '0') {
           //这里是默认值  默认选中第一辆车
           let data = res.data[0];
-          console.log(data)
+          // if(!data.CarSeatState) {
+          //   data = res.data[1]
+          //   that.setData({
+          //     carType:1
+          //   })
+          // }
           wx.setStorageSync('pcTypeId', data.Id)
-          if (data.CarSeatState) {
+          // if (data.CarSeatState) {
             //默认价格 
             let price = 0
-              console.log(data.Price)
-              console.log(data.Version)
+          console.log(res.data)
               price = data.Price + Number(data.Version)
-            console.log(price)
             that.setData({
               rangfenceMapList: data.rangfenceMapList, //超范围列表
               carTypeList: res.data, //车型列表
@@ -107,13 +117,13 @@ Page({
               initialPrice: data.Price, //初始票价
               version: Number(data.Version)
             })
-          } else {
-            wx.showToast({
-              title: 'CarSeatState : false',
-              icon: 'error',
-              duration: 2000
-            })
-          }
+          // } else {
+          //   wx.showToast({
+          //     title: 'CarSeatState : false',
+          //     icon: 'error',
+          //     duration: 2000
+          //   })
+          // }
         }
       }, (err) => {
         console.log(err)
@@ -126,7 +136,7 @@ Page({
     let index = e.currentTarget.dataset.index;
     let data = that.data.carTypeList[index]
     wx.setStorageSync('pcTypeId', data.Id)
-    if (data.CarSeatState) {
+    // if (data.CarSeatState) {
       //默认价格 
       let price = data.Price + Number(data.Version)
       that.setData({
@@ -135,13 +145,13 @@ Page({
         carType: index, //车型选中下标
         version: Number(data.Version),
       })
-    } else {
-      wx.showToast({
-        title: 'CarSeatState : false',
-        icon: 'error',
-        duration: 2000
-      })
-    }
+    // } else {
+    //   wx.showToast({
+    //     title: 'CarSeatState : false',
+    //     icon: 'error',
+    //     duration: 2000
+    //   })
+    // }
   },
   handletel() {
     let _this = this;

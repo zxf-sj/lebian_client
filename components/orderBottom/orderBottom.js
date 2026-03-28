@@ -111,7 +111,7 @@ Component({
           price: data.value,
           price_raw: data.value,
         })
-        //只有拼车才有优惠卷
+        //只有拼车才有优惠券
         if (this.data.typeon == 'pc') {
           this.couponEvent()
         }
@@ -190,9 +190,9 @@ Component({
     agree: false,
     hasChooseId: null,
     totalPrice: null,
-    couponList: [], //优惠卷列表
+    couponList: [], //优惠券列表
     couponList2: '',
-    curCouponData: null, //被选的优惠卷
+    curCouponData: null, //被选的优惠券
     price: 0, //最终价格
     aduit_price:0,
     child_price:0,
@@ -256,7 +256,7 @@ Component({
       }
 
     },
-    //点击使用优惠卷传过来的值
+    //点击使用优惠券传过来的值
     onExchangeItem(item) {
       let that = this;
       that.setData({
@@ -342,7 +342,7 @@ Component({
       }
       return sum;
     },
-    //优惠卷个数
+    //优惠券个数
     couponEvent() {
       var userinfo = wx.getStorageSync('userInfo');
       var pcTypeId = wx.getStorageSync('pcTypeId');

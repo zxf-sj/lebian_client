@@ -1,7 +1,7 @@
 <!--pages/pingche2/pingche2.wxml-->
 <view class="page">
-  <distanceNav price="{{price}}" bind:nav_change_date="nav_change_date" bind:nav_change_line="nav_change_line"  />
-  <information typeon="pc" bind:getCarList="getCarList" bind:nav_change_date="nav_change_date"  bind:information_phone_number="information_phone_number" />
+  <distanceNav price="{{price}}" bind:nav_change_date="nav_change_date" bind:nav_change_line="nav_change_line" />
+  <information typeon="pc" bind:getCarList="getCarList" bind:nav_change_date="nav_change_date" bind:information_phone_number="information_phone_number" />
   <view class="person_box">
     <view class="car_box" wx:if="{{carTypeList.length > 0}}">
       <view class="car_nav">车型选择</view>
@@ -20,8 +20,8 @@
               </view>
               <view class="text-wrapper_1">
                 <text lines="1" class="text_3">¥{{item.OriginalPrice}}</text>
-                <text lines="1" class="text_4" wx:if="{{item.PromotionDiscountType == 9}}">¥{{item.Price}}</text>
-                <text lines="1" class="text_4" wx:if="{{item.PromotionDiscountType == 0}}">¥{{item.Price * item.PromotionDiscount}}</text>
+                <text lines="1" class="text_4" >¥{{item.NewPrice}}</text>
+                <!-- <text lines="1" class="text_4" wx:if="{{item.PromotionDiscountType == 0}}">¥{{item.Price * item.PromotionDiscount}}</text> -->
               </view>
               <view class="text-wrapper_2">
                 <text wx:if="{{item.Version!='0'}}" class="text_5">+摆渡价{{item.Version}}</text>
@@ -53,7 +53,7 @@
     <view class="person_list">
       <view class="person_item">
         <view class="person_phone_txt">联系方式</view>
-        <input class="person_phone"  style="{{phone_number?'color:#010101;':'color:#bbbbbb;'}}" value="{{phone_number}}" maxlength="11" placeholder="请输入手机号" bindinput="person_phone" />
+        <input class="person_phone" style="{{phone_number?'color:#010101;':'color:#bbbbbb;'}}" value="{{phone_number}}" maxlength="11" placeholder="请输入手机号" bindinput="person_phone" />
       </view>
     </view>
     <view class="destination">
@@ -71,7 +71,7 @@
     <view class="location">
       <view class="destination go" bindtap="showCoupon">
         <view class="juan_l">
-          <view class="box">次卡</view>
+          <view class="box">次卡/优惠券</view>
         </view>
         <view class="juan_r">
           {{couponList - use_couponList}}张可用 <text class="txt">></text>
@@ -86,17 +86,25 @@
       </view>
       <view class="zhe" wx:if="{{typeon == 'pc' && PromotionDiscountType == 0}}">活动期间享75折优惠</view>
       <view class="details">
-        <view class="detailList" wx:if="{{carTypeList.length > 0}}">
+        <view class="detailList" wx:if="{{carTypeList.length > 0 && aduit_num - couponFlag_aduit_num > 0}}">
           <view class="detailList_l">基本票价（成人）</view>
+
           <view class="detailList_r" wx:if="{{PromotionDiscountType == 9}}">
-            {{initialPrice}} X {{aduit_num}}
+            {{initialPrice}} X {{aduit_num - couponFlag_aduit_num}}
           </view>
           <view class="detailList_r" wx:if="{{PromotionDiscountType == 0}}">
-            {{initialPrice}} X {{PromotionDiscount}} X {{aduit_num}}
+            {{initialPrice}} X {{PromotionDiscount}} X {{aduit_num - couponFlag_aduit_num}}
           </view>
-          <view class="detailList_r" wx:if="{{PromotionDiscountType == 1}}">
-            {{initialPrice}} - {{PromotionDiscount}} X {{aduit_num}}
+          <view class="detailList_r" wx:if="{{PromotionDiscountType == 1 }}">
+            {{initialPrice}} - {{PromotionDiscount}} X {{aduit_num - couponFlag_aduit_num}}
           </view>
+        </view>
+        <view class="detailList" wx:if="{{carTypeList.length > 0 && couponFlag}}">
+          <view class="detailList_l">基本票价（成人）</view>
+          <view class="detailList_r" wx:if="{{couponFlag}}">
+            {{couponFlag_aduit_num}} X {{initialPrice}}
+          </view>
+
         </view>
         <view class="detailList" wx:if="{{child_num > 0}}">
           <view class="detailList_l">基本票价（儿童半价票） </view>
@@ -110,12 +118,17 @@
             {{item.Price}} X {{aduit_num + child_num}}
           </view>
         </view>
-        <view class="detailList" wx:if="{{use_couponList > 0}}">
-          <view class="detailList_l">次卡</view>
-          <view class="detailList_r">
-            <view class="additional">- {{use_couponList}} 张</view>
+        <!-- wx:if="{{use_couponList > 0}}" -->
+        <view wx:if="{{couponList_list.length > 0}}">
+          <view class="detailList" wx:for="{{couponList_list}}" wx:key="{{item}}">
+            <view class="detailList_l">{{item.Coupon_Name}}</view>
+            <view class="detailList_r">
+              <view class="additional" wx:if="{{item.CouponType == '100004-0001030002'}}"> - {{item.CouponMoney}} * {{item.Count}} 张 </view>
+              <view class="additional" wx:else>- {{item.Count}} 张</view>
+            </view>
           </view>
         </view>
+
         <view class="detailList">
           <view class="detailList_l">合计</view>
           <view class="detailList_r">
@@ -161,7 +174,7 @@
       <!-- handleCallCar -->
       <view class="btn" bind:tap="handletel" style="{{agree==true?'color:#fff;':'background:#eee;'}}">确认下单</view>
     </view>
-    <!-- 显示优惠卷 -->
+    <!-- 显示优惠券 -->
     <slideCoupon wx:if="{{showCoupon}}" class="slide-comp" params="{{slideCouponParams}}" hasChooseId="{{hasChooseId}}" showCoupon="{{showCoupon}}" bindCouponState="couponStateHandle" bindHasChooseCouponData="onHasChooseCouponData" bindExchangeItem="onExchangeItem" person_number="{{aduit_num + child_num}}"></slideCoupon>
   </view>
   <!-- 显示备注信息 -->

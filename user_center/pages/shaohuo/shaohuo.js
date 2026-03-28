@@ -102,10 +102,8 @@ Page({
     })
   },
   onRadioChange(e) {
-    console.log(e)
     console.log(this.data.sharedData)
     let items = this.data.sharedData.filter(item => item.Id == e.detail.value)
-    console.log(items)
     let mrPrice = wx.getStorageSync('mrPrice')
     let updatedData = {
       ...mrPrice,
@@ -119,15 +117,9 @@ Page({
   },
   handleFromA(e) {
     const data = e.detail;
-    console.log(data.newinformationList)
     let newinformation = data.newinformationList.filter(item => item.checked == true)
     let newremarkId = data.newremarkList.filter(item => item.checked == true)
-    console.log('newremarkId',newremarkId)
-    if(newinformation) {
-      console.log('真')
-    } else {
-      console.log('假')
-    }
+   
     this.setData({
       DeliveryType: newremarkId.length>0?newremarkId[0].Id:'',
       newinformationId: newinformation.length>0?newinformation[0].Id:'',

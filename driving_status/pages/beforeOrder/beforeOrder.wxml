@@ -120,9 +120,9 @@
           <view class='info_prefix_text info_left'>
           <view class="personIcon">
             <image src="/assets/images/juan.png" class="personImg"></image></view>
-          优惠劵:</view> 
+          优惠券:</view> 
           <view class='info_right' bindtap="showCoupon">
-            <input name="personNum" type="number" disabled="true" value="{{couponName}}" placeholder="点击选择优惠劵"></input>
+            <input name="personNum" type="number" disabled="true" value="{{couponName}}" placeholder="点击选择优惠券"></input>
           </view>
         </view>
         <block>
@@ -157,7 +157,7 @@
   <view class="btnBox">
     <button style="{{agree==true?'color:#fff;':'background:#eee;'}}" class="next-step" bindtap="callCar" disabled="{{!agree}}">确认下单</button>
   </view>
-  <!-- 显示优惠卷 -->
+  <!-- 显示优惠券 -->
   <slideCoupon wx:if="{{showCoupon}}" class="slide-comp" fromIcon="{{isFromIcon}}"  params="{{slideCouponParams}}"
     hasChooseId="{{hasChooseId}}" showCoupon="{{showCoupon}}" bindCouponState="couponStateHandle"
     bindHasChooseCouponData="onHasChooseCouponData" bindExchangeItem="onExchangeItem"></slideCoupon>

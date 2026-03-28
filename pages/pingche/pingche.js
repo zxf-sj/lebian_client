@@ -428,7 +428,7 @@ Page({
       SeatNumber:0,
       DispatchListId:"",
       IsReservation:"100004-0000010002",
-      CouponDetailsId:this.data.hasChooseId?this.data.hasChooseId:"",//优惠卷id
+      CouponDetailsId:this.data.hasChooseId?this.data.hasChooseId:"",//优惠券id
       PersonalIds:personStr,
       Note:note,
       IsExclusive:"100004-0000010002",

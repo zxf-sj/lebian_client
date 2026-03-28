@@ -413,14 +413,16 @@ Page({
             wx.showToast({
               title: '支付成功',
               icon: 'success',
-              duration: 2000,
+              duration: 300,
               success: function () {
+                console.log('111')
+                setTimeout(function () {
+                  console.log('222')
+                  wx.reLaunch({
+                    url: '/user_center/pages/payDetail/payDetail?orderId=' + orderId + "&from=orderList"
+                  })
+                }, 1000)
                 that.setSubscribeMessage();
-                // setTimeout(function () {
-                //   wx.reLaunch({
-                //     url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
-                //   })
-                // }, 1000)
               }
             })
           },
@@ -596,6 +598,8 @@ Page({
       "origin": str1 + "," + str2,
       "destination": end1 + "," + end2
     }
+    console.log(data.origin)
+    console.log(data.destination)
     http.postRequest('/Api/MapWebApi/GetBaiduDrivingTotalLine?origin=' + data.origin + "&destination=" + data.destination, "", "", res => {
       if (res.code == 0) {
         var datas = res.data.result.routes[0];

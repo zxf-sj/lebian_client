@@ -127,3 +127,11 @@
   color: #fb0101;
   padding-bottom: 10rpx;
 }
+.imgBox {
+  padding: 10rpx;
+  width: 100%;
+  box-sizing: border-box;
+ }
+ .imgBox image {
+   width: 100%;
+ }

@@ -48,7 +48,7 @@
               <image src="../../assets/images/icon-qianbao.png" style="width: 20px; height: 20px; margin-right: 16px; display: block;"></image>
             </view>
             <view class="weui-cell__bd weui-cell_primary">
-              <view class="font-28">次卡列表</view>
+              <view class="font-28">次卡/优惠券列表</view>
             </view>
             <text class="weui-cell__ft"></text>
           </a>
@@ -58,6 +58,24 @@
             </view>
             <view class="weui-cell__bd weui-cell_primary">
               <view class="font-28">次卡购买</view>
+            </view>
+            <text class="weui-cell__ft"></text>
+          </a>
+          <!-- <a class="weui-cell weui-cell_active weui-cell_access weui-cell_example" bindtap="goCika">
+            <view class="weui-cell__hd">
+              <image src="../../assets/images/icon-qianbao.png" style="width: 20px; height: 20px; margin-right: 16px; display: block;"></image>
+            </view>
+            <view class="weui-cell__bd weui-cell_primary">
+              <view class="font-28">优惠券列表</view>
+            </view>
+            <text class="weui-cell__ft"></text>
+          </a> -->
+          <a class="weui-cell weui-cell_active weui-cell_access weui-cell_example" bindtap="checkWallet">
+            <view class="weui-cell__hd">
+              <image src="../../assets/images/icon-qianbao.png" style="width: 20px; height: 20px; margin-right: 16px; display: block;"></image>
+            </view>
+            <view class="weui-cell__bd weui-cell_primary">
+              <view class="font-28">优惠券领取</view>
             </view>
             <text class="weui-cell__ft"></text>
           </a>

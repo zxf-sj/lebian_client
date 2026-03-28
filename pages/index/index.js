@@ -41,8 +41,8 @@ Page({
   },
   onLoad: async function (opt) {
     //发布之前改时间 推迟几个小时
-    var time = "2026-02-07 14:00:00";
-    // var time = "2026-02-07 14:00:00";
+    var time = "2026-03-28 18:00:00";
+    //var time = "2026-03-28 14:00:00";
     var t = util.formatTime(new Date());
     this.setData({
       ischeck: t < time ? true : false
@@ -183,7 +183,9 @@ Page({
     })
   },
   getLunBo() {
-    http.getRequest("/api/CarPromotion/GetCompanyInfoImgList?Id=300007-fa5b6d0d40594f02ad91425ef44141eb", '', '', res => {
+    var userinfo = wx.getStorageSync('userInfo') || {Id:''};
+    console.log(userinfo)
+    http.getRequest("/api/CarPromotion/GetCompanyInfoImgList?Id=300007-fa5b6d0d40594f02ad91425ef44141eb&MemberId=" + userinfo.Id, '', '', res => {
       console.log('轮播图',res)
       if (res.code == 0) {
           this.setData({
@@ -499,7 +501,10 @@ Page({
     })
   },
   hezuo() {
-    wx.navigateTo({
+    // wx.navigateTo({
+    //   url: "/user_center/pages/coupon/coupon",
+    // })
+     wx.navigateTo({
       url: "/driving_status/pages/payCard/payCard",
     })
     // wx.showModal({

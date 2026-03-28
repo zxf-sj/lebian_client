@@ -1,11 +1,15 @@
 import http from '../../../utils/http'
+const BASE_URL = require("../../../utils/BASE_URL");
+var baseUrl = BASE_URL.BASE_URL //配置基础url
 const app = getApp();
 
 Page({
   data: {
     listData: null,
+    
   },
   onLoad: function (options) {
+    
     var userinfo = wx.getStorageSync('userInfo');
     if(!userinfo){
       wx.navigateTo({
@@ -15,16 +19,12 @@ Page({
     this.getList();
   },
   getList(){
-    var userinfo = wx.getStorageSync('userInfo');
-    http.getRequest("/Api/NewMobile/LoginCoupon?MemberId="+userinfo.Id+"&page=1&limit=10",'',wx.getStorageSync('header'),res=>{
-      if(res.code === 0){
-        let data = res.data;
-        const newList = data.map(item => ({
-          ...item,
-          LineName: item.LineName.replace(/===>/g, '>')
-        }));
-        this.setData({
-          listData:newList  
+    let _this = this;
+    http.getRequest("/api/CarPromotion/CouponList",'',wx.getStorageSync('header'),res=>{
+      console.log(res)
+      if(res.code == 0) {
+        _this.setData({
+          listData:res.data
         })
       }
     },err=>{
@@ -33,27 +33,46 @@ Page({
   },
   lingQu(e){
     let that = this;
-    var ids = e.currentTarget.dataset.ids;
+    console.log(e.currentTarget.dataset.item)
     var userinfo = wx.getStorageSync('userInfo');
-    http.getRequest("/Api/NewMobile/MemberGetCoupon?MemberInfoId="+userinfo.Id+"&CouponId="+ids,'',wx.getStorageSync('header'),res=>{
-      if(res.code === 0){
-        console.log('领取成功1')
-        wx.showToast({
-          title: '领取成功',
-          icon:'success',
-          duration:2000
-        })
-        setTimeout(function(){
-          that.getList();
-        },2000)
-      }else{
+    if(!userinfo){
+      wx.navigateTo({
+        url: '/user_center/pages/login/login',
+      })
+    }
+    wx.showLoading({
+      title: '加载中',
+    })
+    let params = {
+      MemberId:userinfo.Id,
+      productId:e.currentTarget.dataset.item.Id
+    }
+    
+    http.postRequest("/api/CarPromotion/CreatCouponDetails",params,'',res=>{
+      console.log(res)
+      if(res.code == 0) {
+        wx.hideLoading()
         wx.showToast({
           title: res.msg,
-          icon:'error',
-          duration:2000
+          icon: 'success',
+          duration: 2000
+        })
+      } else if(res.code == 430) {
+        wx.hideLoading()
+        wx.showToast({
+          title: '领取优惠券上限',
+          icon: 'error',
+          duration: 2000
         })
       }
     },err=>{
+      
+      wx.hideLoading()
+      wx.showToast({
+        title: res.msg,
+        icon: 'success',
+        duration: 2000
+      })
       console.log(err)
     })
   }

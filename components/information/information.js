@@ -456,10 +456,11 @@ Component({
     //是否在运营范围内
     getPriceListForLineId() {
       console.log('是否在运营范围内')
-      wx.showLoading({
-        title: "",
-      });
+      // wx.showLoading({
+      //   title: "",
+      // });
       let that = this;
+      var userinfo = wx.getStorageSync('userInfo');
       let starInfo2 = wx.getStorageSync("starInfo2");
       let endInfo2 = wx.getStorageSync("endInfo2");
       let IsExclusive = null;
@@ -475,7 +476,8 @@ Component({
         StartLng: starInfo2.startLont,
         EndLat: endInfo2.endLait,
         EndLng: endInfo2.endLont,
-
+        MemberId:userinfo.Id,
+        AdultNumber:1,
       };
       console.log('data',data)
       http.postRequest(

@@ -1,7 +1,7 @@
 {
   "backgroundTextStyle": "dark",
   "navigationBarBackgroundColor": "#fff",
-  "navigationBarTitleText": "我的次卡",
+  "navigationBarTitleText": "次卡/优惠券列表",
   "navigationBarTextStyle": "black",
   "usingComponents": {
     "daohang":"/components/daohang/daohang"

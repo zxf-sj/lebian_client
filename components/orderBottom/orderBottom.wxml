@@ -47,7 +47,7 @@
         </view> -->
       </view>
       <view class="detailList" wx:if="{{curCouponData != null}}">
-        <view class="detailList_l" wx:if="{{sessionCard.length == 0}}">优惠卷</view>
+        <view class="detailList_l" wx:if="{{sessionCard.length == 0}}">优惠券</view>
         <view class="detailList_l" wx:else>次卡</view>
         <view class="detailList_r">
           <view class="additional">- {{CouponList}} 张</view>
@@ -113,7 +113,7 @@
     <!-- 确认支付并下单 -->
     <view class="btn" bind:tap="callCar" style="{{agree==true?'color:#fff;':'background:#eee;'}}">确认下单</view>
   </view>
-  <!-- 显示优惠卷 -->
+  <!-- 显示优惠券 -->
   <slideCoupon wx:if="{{showCoupon}}" class="slide-comp" fromIcon="{{isFromIcon}}" params="{{slideCouponParams}}"
     hasChooseId="{{hasChooseId}}" showCoupon="{{showCoupon}}" bindCouponState="couponStateHandle"
     bindHasChooseCouponData="onHasChooseCouponData" bindExchangeItem="onExchangeItem"></slideCoupon>

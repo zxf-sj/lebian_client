@@ -32,6 +32,8 @@ Page({
         wx.setStorageSync('systemInfo', res1);
         if (e.detail.errMsg == "getPhoneNumber:ok") { //授权
             let code;
+            wx.removeStorageSync('userInfo');
+            wx.removeStorageSync('openid'); 
             wx.login({
               success(res) {
                 code = res.code;

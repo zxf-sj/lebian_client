@@ -114,7 +114,7 @@ Page({
     })
   },
   kefu(){
-    var tel = '15135845534';
+    var tel = '13133387813';
     wx.showModal({
       title: '联系电话',
       content: '联系电话 张经理：'+tel,

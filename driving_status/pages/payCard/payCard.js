@@ -1,7 +1,8 @@
 // driving_status/pages/payCard/payCard.js
 const BASE_URL = require("../../../utils/BASE_URL");
-const debounce = require('../../../utils/debounce');
 var baseUrl = BASE_URL.BASE_URL //配置基础url
+const debounce = require('../../../utils/debounce');
+
 Page({
 
   /**
@@ -105,9 +106,9 @@ Page({
                           success: function () {
                             wx.hideLoading()
                             _this.getList()
-                            // wx.navigateTo({
-                            //   url: '/pages/index/index',
-                            // })
+                            wx.navigateTo({
+                              url: '/pages/index/index',
+                            })
                           }
                         })
                       },
