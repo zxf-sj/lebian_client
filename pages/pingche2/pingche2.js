@@ -530,9 +530,9 @@ Page({
       MemberId: userinfo.Id,
       AdultNumber: that.data.aduit_num,
     };
-    if (storageSync.lineId) {
+    if (storageSync.lineId && pcTimeSync.StartTime) {
+      console.log("1111.0.0.0",data)
       http.postRequest('/Api/DispatchMobile/getPriceListForLineId', data, '', (res) => {
-        console.log(res)
         wx.hideLoading();
         if (res.code == '0') {
           //这里是默认值  默认选中第一辆车
@@ -675,7 +675,8 @@ Page({
       MemberId: userinfo.Id,
       AdultNumber: _this.data.aduit_num,
     };
-    if (storageSync.lineId) {
+    if (storageSync.lineId && pcTimeSync.StartTime) {
+      console.log("2222",data)
       http.postRequest('/Api/DispatchMobile/getPriceListForLineId', data, '', (res) => {
         if (res.code == '0') {
           let data = res.data[_this.data.carType];

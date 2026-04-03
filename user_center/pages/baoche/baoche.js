@@ -93,7 +93,8 @@ Page({
       MemberId: userinfo.Id,
       AdultNumber: 1,
     };
-    if (storageSync.lineId) {
+    console.log("shijin",pcTimeSync.StartTime)
+    if (storageSync.lineId && pcTimeSync.StartTime) {
       http.postRequest('/Api/DispatchMobile/getPriceListForLineId', data, '', (res) => {
         if (res.code == '0') {
           //这里是默认值  默认选中第一辆车
