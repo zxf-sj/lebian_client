@@ -404,6 +404,14 @@ Page({
                 }
                 let that = this;
                 console.log('去下单',reqData)
+                if (!pcTimeSync.StartTime) {
+                  wx.showToast({
+                    title: '请选择出发时间',
+                    icon: 'none',
+                    duration: 2000
+                  })
+                  return false;
+                }
                 wx.request({
                   url: baseUrl + '/Api/DispatchMobile/CreatePersonTicketOrder',
                   data:reqData,

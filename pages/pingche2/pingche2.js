@@ -166,7 +166,13 @@ Page({
       })
       return false;
     }
-
+    if(pcTimeSync.StartTime == '') {
+      wx.showToast({
+        title: '请选择出行时间',
+        icon: 'none',
+        duration: 2000
+      })
+    }
     let starTime = pcTimeSync.StartTime.split(':')[0] + ':59:00'
     let ArrivalTime = startDate + ' ' + starTime
     let lineId = wx.getStorageSync('lineId')

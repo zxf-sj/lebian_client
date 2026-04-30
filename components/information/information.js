@@ -215,6 +215,7 @@ Component({
           success: (res) => {
             if (res.data.code == 0) {
               let data = res.data.data
+              console.log('报错',data)
               if (that.data.typeon == "sh") {
                 let informationList = data.LinePriceList.filter(item => item.DeliveryTimeState == '')
                 let newinformationList = informationList.map(item => ({
@@ -485,6 +486,7 @@ Component({
         data,
         "",
         (res) => {
+          console.log(res)
           if (res.code == "0") {
             if (res.msg == '有摆渡价') {
               getApp().eventCenter.emit('Version', res.data[0].Version)
@@ -629,7 +631,7 @@ Component({
       // var seatnumber = that.data.SeatNumber;
       if (line_id && startDate) {
         http.getRequest(
-          "/Api/DispatchMobile/getTimeListForDate?time=" +
+          "/api/DispatchMobile/GetCharterTimeListForDate?time=" +
           that.data.startDate +
           "&lineId=" +
           line_id,
