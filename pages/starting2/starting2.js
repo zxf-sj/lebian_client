@@ -24,7 +24,7 @@ Page({
     city: "",
     endInfo2: '',
     starInfo2: '',
-    keyboard:false,
+    keyboard: false,
     polygons: [], // 多边形覆盖物
     circles: [], //圆形覆盖物
     fencePoints: [] // 存储围栏顶点
@@ -82,7 +82,8 @@ Page({
       success: function (res) {
         let adRes = res.originalData.result;
         var data = res.wxMarkerData[0];
-        if (adRes.addressComponent.city == that.data.city) {
+        console.log('that.data.direction', that.data.direction)
+        if (adRes.addressComponent.city == that.data.city && that.data.type != 'ly') {
           that.setData({
             longitude: data.longitude,
             latitude: data.latitude,
@@ -99,13 +100,15 @@ Page({
                   "lng": item.point.x
                 }
               }))
+              console.log('arrar', arrar)
               that.setData({
                 address: arrar,
               })
             },
             fail: function () {
+
               wx.showToast({
-                title: '请检查位置服务是否开启',
+                title: '1请检查位置服务是否开启',
               })
             },
           });
@@ -131,8 +134,9 @@ Page({
               endInfo2: endInfo2
             })
           }
-        } else {
+        } else if (adRes.addressComponent.city != that.data.city && that.data.type != 'ly') {
           let item = wx.getStorageSync('storageSync')
+          console.log('item', item)
           if (that.data.direction == 'starting') {
             that.setData({
               longitude: item.StatingLocation_Longitude,
@@ -144,6 +148,8 @@ Page({
               latitude: item.EndLocation_Latitude,
             })
           }
+          console.log(that.data.latitude)
+          console.log(that.data.longitude)
           BMap.regeocoding({
             location: that.data.latitude + ',' + that.data.longitude,
             success: function (res1) {
@@ -162,15 +168,60 @@ Page({
             },
             fail: function () {
               wx.showToast({
-                title: '请检查位置服务是否开启',
+                title: '2请检查位置服务是否开启',
               })
             },
           });
+        } else if (that.data.type == 'ly') {
+          wx.getLocation({
+            type: "gcj02",
+            success(res) {
+              console.log(res)
+
+              BMap.regeocoding({
+                location: res.latitude + ',' + res.longitude,
+                success: function (res1) {
+                  console.log()
+                  let city = res1.originalData.result.addressComponent.city
+                  let adRes = res1.originalData.result.pois;
+                  let arrar = adRes.map(item => ({
+                    ...item,
+                    'address': item.addr,
+                    "location": {
+                      "lat": item.point.y,
+                      "lng": item.point.x
+                    }
+                  }))
+                  console.log(arrar)
+                  that.setData({
+                    address: arrar,
+                    city: city
+                  })
+                },
+                fail: function () {
+                  wx.showToast({
+                    title: '2请检查位置服务是否开启',
+                  })
+                },
+              });
+              that.setData({
+                latitude: res.latitude,
+                longitude: res.longitude
+              })
+            },
+            fail(err) {
+              console.log(err);
+            }
+          })
+          // that.setData({
+          //   longitude: item.EndLocation_Longitude,
+          //   latitude: item.EndLocation_Latitude,
+          // })
         }
       },
       fail: function (res) {
         wx.showToast({
-          title: '请检查位置服务是否开启',
+          title: '3请检查位置服务是否开启',
         })
       },
     });
@@ -180,19 +231,20 @@ Page({
   onInputFocus(e) {
     console.log('键盘弹出', e);
     this.setData({
-      keyboard:true
+      keyboard: true
     })
   },
   // 此时键盘正在收起或已收起
   onInputBlur(e) {
     console.log('键盘收起', e);
     this.setData({
-      keyboard:false
+      keyboard: false
     })
-    
+
   },
   // 输入框防抖处理（延迟执行）
   searchInputend: debounce(function (e) {
+    console.log('e', e)
     var _this = this;
     var value = e.detail.value;
     if (value) {
@@ -214,6 +266,7 @@ Page({
                 ['chectout']: false
               };
             });
+            console.log('updatedUsers', updatedUsers)
             _this.setData({
               address: updatedUsers,
             })
@@ -279,7 +332,7 @@ Page({
                   starInfo2.startLait = adRes.location.lat;
                   starInfo2.startLont = adRes.location.lng;
                   // wx.setStorageSync('starInfo2',starInfo2);
-                  console.log('starInfo2',starInfo2)
+                  console.log('starInfo2', starInfo2)
                   that.setData({
                     starInfo2: starInfo2
                   })
@@ -320,7 +373,7 @@ Page({
             },
             fail: function () {
               wx.showToast({
-                title: '请检查位置服务是否开启',
+                title: '4请检查位置服务是否开启',
               })
             },
           });
@@ -465,6 +518,45 @@ Page({
           wx.reLaunch({
             url: '/user_center/pages/shaohuo/shaohuo',
           })
+        } else if (that.data.type == 'ly') {
+          if (that.data.direction == 'starting') {
+            var BMap = new bmap.BMapWX({
+              ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+            });
+            BMap.regeocoding({
+              location: newStarInfo.startLait + ',' + newStarInfo.startLont,
+              success: function (res_e) {
+                let start_city = res_e.originalData.result.addressComponent.city
+                if (start_city == "太原市" || start_city == "孝义市") {
+                  wx.setStorageSync('start_city', start_city)
+                  wx.reLaunch({
+                    url: '/driving_status/pages/lvyouList/lvyouList',
+                  })
+                } else {
+                  wx.showModal({
+                    title: '提示',
+                    content: '请选择出发地为太原、孝义',
+                    complete: (res) => {
+
+                    }
+                  })
+                }
+              },
+              fail: function () {
+
+                wx.showToast({
+                  title: '1请检查位置服务是否开启',
+                })
+              },
+            });
+          } else {
+            wx.reLaunch({
+              url: '/driving_status/pages/lvyouList/lvyouList',
+            })
+          }
+
+
+
         }
       },
       fail(err) {

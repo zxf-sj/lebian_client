@@ -1294,7 +1294,20 @@ page {
 .monry {
   font-size: 48rpx;
 }
-
+.bum_phone2 {
+  width: 100%;
+  height: 100rpx;
+  position: absolute;
+  z-index: 999;
+  align-self: start;
+  margin-bottom: env(safe-area-inset-bottom);
+  color: #101010;
+  font-size: 28rpx;
+  bottom: 40rpx;
+  left: 0;
+  line-height: 100rpx;
+  text-align: center;
+}
 .bum_phone {
   width: 100%;
   height: 100rpx;

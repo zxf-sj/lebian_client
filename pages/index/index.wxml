@@ -33,17 +33,18 @@
         <image src="/assets/images/duxiang.png" mode="widthFix" class="grid-itemImg"></image>
         <text class="gridtxt">乐遍包车</text>
       </view> -->
-      <view class="grid-item" bindtap="zuche">
-        <image src="/assets/images/zuche.png" mode="widthFix" class="grid-itemImg"></image>
-        <text class="gridtxt">乐遍租车</text>
+      
+      <view class="grid-item" bindtap="lvyou">
+        <image src="/assets/images/lvyou.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">乐遍旅游</text>
       </view>
       <view class="grid-item" bindtap="peizhen">
         <image src="/assets/images/peizhen.png" mode="widthFix" class="grid-itemImg"></image>
         <text class="gridtxt">乐遍安心陪诊</text>
       </view>
-      <view class="grid-item" bindtap="lvyou">
-        <image src="/assets/images/lvyou.png" mode="widthFix" class="grid-itemImg"></image>
-        <text class="gridtxt">乐遍旅游</text>
+      <view class="grid-item" bindtap="zuche">
+        <image src="/assets/images/zuche.png" mode="widthFix" class="grid-itemImg"></image>
+        <text class="gridtxt">乐遍租车</text>
       </view>
       <view class="grid-item {{hasNewOrder?'jiaobiao1':''}} " bindtap="order">
         <image src="/assets/images/order.png" mode="widthFix" class="grid-itemImg"></image>
@@ -142,6 +143,10 @@
 			</view>
 		</block>
   </view>
-  <view class="bum_phone" bind:tap="callPhone">
+  
+  <view class="bum_phone2" bind:tap="callPhone">
     客服咨询：0351-6078977
+  </view>
+  <view class="bum_phone" bind:tap="callPhone">
+    投诉电话：0351-5622596
   </view>

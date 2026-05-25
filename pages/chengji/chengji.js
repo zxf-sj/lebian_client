@@ -416,7 +416,6 @@ Page({
       console.log(err)
     })
   },
-
   run1: function () {
     var that = this;
     var mytime = setInterval(function () {
@@ -433,6 +432,7 @@ Page({
       }
     }, 30)
   },
+ 
   getNews() {
     var data = {
       "FormTypeId": app.globalData.formIdType,

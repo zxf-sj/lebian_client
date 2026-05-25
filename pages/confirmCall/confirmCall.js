@@ -438,44 +438,50 @@ Page({
     })
   },
   setSubscribeMessage:function(){
-    wx.requestSubscribeMessage({
-      tmplIds: ['KTpvCyKYlbKhqP5btmb7828pYDXzI0t7KxJdPgGpdFg'],
-      //tmplIds: ['GngPGFn3ww7p4x9AzVQV8bmAO_l0skf7Lg1L-3BGQd8'],
-      success(res) {
-        if (res['KTpvCyKYlbKhqP5btmb7828pYDXzI0t7KxJdPgGpdFg'] === 'accept') {
-        //if (res['GngPGFn3ww7p4x9AzVQV8bmAO_l0skf7Lg1L-3BGQd8'] === 'accept') {  
-          console.log('用户同意接收订阅消息');
-        } else {
-          wx.showModal({
-            title: '订阅消息',
-            content: '您当前拒绝接受消息通知，是否去开启',
-            confirmText: '开启授权',
-            confirmColor: '#345391',
-            cancelText: '仍然拒绝',
-            cancelColor: '#999999',
+    wx.showModal({
+      title: '提示',
+      content: '即将为您开启消息提醒',
+      complete: (res) => {
+        if (res.confirm) {
+          wx.requestSubscribeMessage({
+            tmplIds: ['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA',"LhKVmpSKt-FGzwYVDHB6UQpVrdZmMklLzcFJ6Ln_oJU"],
             success(res) {
-              if (res.confirm) {
-                console.log('用户点击确定');
-                wx.openSetting({
+              if (res['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA'] === 'accept') {
+                console.log('用户同意接收订阅消息');
+              } else {
+                wx.showModal({
+                  title: '订阅消息',
+                  content: '您当前拒绝接受消息通知，是否去开启',
+                  confirmText: '开启授权',
+                  confirmColor: '#345391',
+                  cancelText: '仍然拒绝',
+                  cancelColor: '#999999',
                   success(res) {
-                    console.log(res.authSetting);
-                  },
-                  fail(err) {
-                    //失败
-                    console.log(err);
+                    if (res.confirm) {
+                      wx.openSetting({
+                        success(res) {
+                          console.log(res.authSetting);
+                        },
+                        fail(err) {
+                          //失败
+                          console.log(err);
+                        }
+                      });
+                    } else if (res.cancel) {
+                      console.log('用户点击取消');
+                    }
                   }
                 });
-              } else if (res.cancel) {
-                console.log('用户点击取消');
               }
+            },
+            fail(err) {
+              console.log('请求订阅消息权限失败：', err);
             }
           });
         }
-      },
-      fail(err) {
-        console.log('请求订阅消息权限失败：', err);
+       
       }
-    });
+    })
   },
   //重新修改
   modalCancel: function () {

@@ -55,8 +55,8 @@ Component({
                   checked: item.Selected,
                   Selected: undefined
                 }));
-                newremarkList =  that.ensureAtLeastOneChecked(newremarkList)
-                newinformationList =  that.ensureAtLeastOneChecked(newinformationList)
+                newremarkList = that.ensureAtLeastOneChecked(newremarkList)
+                newinformationList = that.ensureAtLeastOneChecked(newinformationList)
                 let takeData = {
                   newremarkList,
                   newinformationList
@@ -102,8 +102,8 @@ Component({
                   checked: item.Selected,
                   Selected: undefined
                 }));
-                newremarkList =  that.ensureAtLeastOneChecked(newremarkList)
-                newinformationList =  that.ensureAtLeastOneChecked(newinformationList)
+                newremarkList = that.ensureAtLeastOneChecked(newremarkList)
+                newinformationList = that.ensureAtLeastOneChecked(newinformationList)
                 let takeData = {
                   newremarkList,
                   newinformationList
@@ -148,8 +148,8 @@ Component({
                   checked: item.Selected,
                   Selected: undefined
                 }));
-                newremarkList =  that.ensureAtLeastOneChecked(newremarkList)
-                newinformationList =  that.ensureAtLeastOneChecked(newinformationList)
+                newremarkList = that.ensureAtLeastOneChecked(newremarkList)
+                newinformationList = that.ensureAtLeastOneChecked(newinformationList)
                 let takeData = {
                   newremarkList,
                   newinformationList
@@ -215,7 +215,7 @@ Component({
           success: (res) => {
             if (res.data.code == 0) {
               let data = res.data.data
-              console.log('报错',data)
+              console.log('报错', data)
               if (that.data.typeon == "sh") {
                 let informationList = data.LinePriceList.filter(item => item.DeliveryTimeState == '')
                 let newinformationList = informationList.map(item => ({
@@ -229,9 +229,9 @@ Component({
                   checked: item.Selected,
                   Selected: undefined
                 }));
-                newremarkList =  that.ensureAtLeastOneChecked(newremarkList)
-                newinformationList =  that.ensureAtLeastOneChecked(newinformationList)
-                
+                newremarkList = that.ensureAtLeastOneChecked(newremarkList)
+                newinformationList = that.ensureAtLeastOneChecked(newinformationList)
+
                 let takeData = {
                   newremarkList,
                   newinformationList,
@@ -372,7 +372,12 @@ Component({
       if (that.data.typeon == "bc" || that.data.typeon == "sh") {
         // 设置起始日期为今天
         let date = new Date();
-        let today = date.toISOString().split("T")[0]; // 获取今天的日期（格式：YYYY-MM-DD）
+        const year = date.getFullYear();
+        // (date.getMonth() + 1) 是因为月份是从 0 开始的
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        const today = `${year}-${month}-${day}`;
+        console.log('获取今天的日期', today)
         let storedData = wx.getStorageSync("pcTimeSync") || {};
         let updatedData = {
           ...storedData,
@@ -380,6 +385,7 @@ Component({
           propsTxt: "今天",
         };
         wx.setStorageSync("pcTimeSync", updatedData);
+        console.log('today', today)
         that.setData({
           startDate: today,
           date: today, // 初始选择也为今天
@@ -394,7 +400,11 @@ Component({
         // 设置结束日期为今天之后三天
         let endDate = new Date();
         endDate.setDate(endDate.getDate() + 3); // 增加三天
-        let endDateString = endDate.toISOString().split("T")[0]; // 获取格式化后的日期字符串
+        console.log('endDate', endDate)
+        const year1 = endDate.getFullYear();
+        const month1 = (endDate.getMonth() + 1).toString().padStart(2, '0');
+        const day1 = endDate.getDate().toString().padStart(2, '0');
+        const endDateString = `${year1}-${month1}-${day1}`;
         that.setData({
           endTime: endDateString,
         });
@@ -477,10 +487,10 @@ Component({
         StartLng: starInfo2.startLont,
         EndLat: endInfo2.endLait,
         EndLng: endInfo2.endLont,
-        MemberId:userinfo.Id,
-        AdultNumber:1,
+        MemberId: userinfo.Id,
+        AdultNumber: 1,
       };
-      console.log('data',data)
+      console.log('data', data)
       http.postRequest(
         "/Api/DispatchMobile/getPriceListForLineId",
         data,
@@ -639,8 +649,13 @@ Component({
           "",
           (res) => {
             if (res.code == "0") {
+              console.log('出行时间', res)
               that.setData({
                 timeArr: res.data,
+              });
+            } else if (res.code == "400") {
+              that.setData({
+                timeArr: [],
               });
             }
           },
@@ -653,17 +668,17 @@ Component({
     ensureAtLeastOneChecked(list, key = 'checked') {
       // 判断是否所有项的 checked 都是 false（或不存在）
       const allUnchecked = list.every(item => !item[key]);
-    
+
       if (allUnchecked && list.length > 0) {
         // 默认选中第一个（你也可以改成其他逻辑，比如指定 id）
         list[0][key] = true;
       }
-    
+
       return list; // 可选：返回修改后的数组（原地修改）
     },
     //点击选择时间
     handleTap() {
-      console.log('进来了',this.data.timeArr)
+      console.log('进来了', this.data.timeArr)
       let that = this;
       if (that.data.timeArr == "" && that.data.lineId == "") {
         wx.showToast({

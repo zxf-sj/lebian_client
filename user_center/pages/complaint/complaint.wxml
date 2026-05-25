@@ -20,5 +20,8 @@
         <text class="currentWordNumber">{{currentWordNumber|0}}/{{max}}</text>
     </textarea>
 </view>
+<view class="bum_phone" bind:tap="callPhone">
+    投诉电话：0351-5622596
+  </view>
 <!--提交评价-->
 <button class='btn' bindtap='handleBtn'>提交评价</button>

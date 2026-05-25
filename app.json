@@ -90,7 +90,8 @@
         "pages/lvyou/lvyou",
         "pages/lvyouList/lvyouList",
         "pages/peizhenList/peizhenList",
-        "pages/payCard/payCard"
+        "pages/payCard/payCard",
+        "pages/touristCarRental/touristCarRental"
       ],
       "independent": false
     }

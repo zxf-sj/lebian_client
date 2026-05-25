@@ -194,7 +194,7 @@ Page({
   setSubscribeMessage:function(){
     let that = this;
     wx.requestSubscribeMessage({
-      tmplIds: ['AT2i9ujhwrXi7YEwn3ap67AgShLhvtADRyiHgtT0FQI'],
+      tmplIds: ['AT2i9ujhwrXi7YEwn3ap67AgShLhvtADRyiHgtT0FQI',"UaTNW8OXfZWCQiH0Da6Z2lE7J9nY6B-XD2_GvXoUnh8"],
       success(res) {
         if (res['AT2i9ujhwrXi7YEwn3ap67AgShLhvtADRyiHgtT0FQI'] === 'accept') {
           if(that.data.destination==""){

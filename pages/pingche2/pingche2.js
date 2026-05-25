@@ -257,6 +257,7 @@ Page({
                             icon: 'success',
                             duration: 2000,
                             success: function () {
+                              console.log('支付成功')
                               that.setSubscribeMessage();
                               setTimeout(function () {
                                 wx.reLaunch({
@@ -290,6 +291,7 @@ Page({
                         icon: 'success',
                         duration: 2000,
                         success: function () {
+                          console.log('支付成功2')
                           that.setSubscribeMessage();
                           setTimeout(function () {
                             wx.reLaunch({
@@ -398,6 +400,7 @@ Page({
                                 icon: 'success',
                                 duration: 2000,
                                 success: function () {
+                                  console.log('支付成功3')
                                   that.setSubscribeMessage();
                                   setTimeout(function () {
                                     wx.reLaunch({
@@ -431,6 +434,7 @@ Page({
                             icon: 'success',
                             duration: 2000,
                             success: function () {
+                              console.log('支付成功4')
                               that.setSubscribeMessage();
                               setTimeout(function () {
                                 wx.reLaunch({
@@ -475,41 +479,52 @@ Page({
     }, err => {})
   }, 3000),
   setSubscribeMessage: function () {
-    wx.requestSubscribeMessage({
-      tmplIds: ['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA'],
-      success(res) {
-        if (res['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA'] === 'accept') {
-          console.log('用户同意接收订阅消息');
-        } else {
-          wx.showModal({
-            title: '订阅消息',
-            content: '您当前拒绝接受消息通知，是否去开启',
-            confirmText: '开启授权',
-            confirmColor: '#345391',
-            cancelText: '仍然拒绝',
-            cancelColor: '#999999',
+    console.log('调用通知')
+    wx.showModal({
+      title: '提示',
+      content: '即将为您开启消息提醒',
+      complete: (res) => {
+        if (res.confirm) {
+          wx.requestSubscribeMessage({
+            tmplIds: ['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA',"LhKVmpSKt-FGzwYVDHB6UQpVrdZmMklLzcFJ6Ln_oJU"],
             success(res) {
-              if (res.confirm) {
-                wx.openSetting({
+              if (res['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA'] === 'accept') {
+                console.log('用户同意接收订阅消息');
+              } else {
+                wx.showModal({
+                  title: '订阅消息',
+                  content: '您当前拒绝接受消息通知，是否去开启',
+                  confirmText: '开启授权',
+                  confirmColor: '#345391',
+                  cancelText: '仍然拒绝',
+                  cancelColor: '#999999',
                   success(res) {
-                    console.log(res.authSetting);
-                  },
-                  fail(err) {
-                    //失败
-                    console.log(err);
+                    if (res.confirm) {
+                      wx.openSetting({
+                        success(res) {
+                          console.log(res.authSetting);
+                        },
+                        fail(err) {
+                          //失败
+                          console.log(err);
+                        }
+                      });
+                    } else if (res.cancel) {
+                      console.log('用户点击取消');
+                    }
                   }
                 });
-              } else if (res.cancel) {
-                console.log('用户点击取消');
               }
+            },
+            fail(err) {
+              console.log('请求订阅消息权限失败：', err);
             }
           });
         }
-      },
-      fail(err) {
-        console.log('请求订阅消息权限失败：', err);
+       
       }
-    });
+    })
+    
   },
   //获取车辆列表
   getCarList() {
