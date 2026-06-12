@@ -689,7 +689,7 @@ page {
   width: 500rpx;
   height: 848rpx;
   position: absolute;
-  top: 110rpx;
+  top: 200rpx;
   left: 50%;
   transform: translateX(-50%);
 }

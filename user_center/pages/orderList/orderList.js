@@ -8,8 +8,6 @@ let weekday = ["星期日", "星期一", "星期二", "星期三", "星期四", 
 let currentHours = date.getHours();
 let currentMinute = date.getMinutes();
 let toUserTimer = null;
-const BASE_URL = require("../../../utils/BASE_URL");
-var baseUrl = BASE_URL.BASE_URL //配置基础url
 Page({
   data: {
     loadingFailed: false,
@@ -39,15 +37,7 @@ Page({
     modalShow: false, //弹框数据
     modalValue: '', //弹框数据
     prompt: '',
-    isLoging: false,
-    TimeList:[],
-    change_time_item:'',
-    showPicker:false,
-    pickerList: [],
-    tempIndex: 0, // 临时选中的索引
-    selectedValue: '',
-    StartDay:'',
-    EndDay:''
+    isLoging: false
   },
   onLoad: function (options) {
     if (options.menuTapCurrent == 1) {
@@ -58,176 +48,11 @@ Page({
   },
   onShow() {
     this.getFormTypeId();
-    const _this = this;
-    let date = new Date();
-    let today = date.toISOString().split("T")[0]; // 获取今天的日期（格式：YYYY-MM-DD）
-    // 设置结束日期为今天之后三天
-    let endDate = new Date();
-    endDate.setDate(endDate.getDate() + 3); // 增加三天
-    let endDateString = endDate.toISOString().split("T")[0]; // 获取格式化后的日期字符串
-    _this.setData({
-      StartDay: today,
-      EndDay: endDateString
-    })
   },
   onUnload() {
     // app.globalData.client = null;
   },
-  handleChangeDate(item) {
-    let _this = this;
-    let data = item.target.dataset.item
-    _this.setData({
-      change_time_item:data
-    })
-  },
-  bindDateChange(res) {
-    console.log(res)
-    
-    let _this = this;
-    console.log(_this.data.change_time_item)
-    let dat = res.detail.value
-    let time = _this.data.change_time_item.ArrivalTime.split(' ')[1]
-  
-    let newTime = time.split('-')[0].split(':')[0] + ":59:00"
-    let userInfo = wx.getStorageSync('userInfo')
-    wx.request({
-      url: baseUrl + '/api/CarPromotion/UpdateOrderArrivalTime',
-      data: {
-        Id: _this.data.change_time_item.Id,
-        ArrivalTime: dat + ' ' + newTime,
-        MemberId:userInfo.Id,
-      },
-      method: "POST",
-      success: (res) => {
-        console.log(res)
-        if (res.data.code == 0) {
-          wx.showToast({
-            title: res.data.msg,
-            icon: 'success',
-            duration: 2000
-          })
-          _this.getOrderList()
-        } else {
-          wx.showToast({
-            title: res.data.msg,
-            icon: "error"
-          })
-        }
-      },
-      fail(res) {
-        wx.hideLoading()
-      },
-      complete(res) {
-        wx.hideLoading()
-      }
-    })
-  },
-  //点击修改时间
-  handleTime(item) {
-    console.log(item)
-    let _this = this;
-    let data = item.target.dataset.item
-    _this.setData({
-      change_time_item:data
-    })
-    let dateArr = data.CreateDate.split(' ')
-    let day = dateArr[0]
-    wx.showLoading({
-      title: '加载中',
-    })
-    wx.request({
-      url: baseUrl + '/api/DispatchMobile/GetLineEmptySeatNumAndPrice',
-      data: {
-        lineId: data.PassengerLineId,
-        today: day,
-        IsExclusive: '100004-0000010002',
-      },
-      method: "GET",
-      success: (res) => {
-        if (res.data.code == 0) {
-          let data = res.data.data
-          const dataList = data.SeatData[0].SeatList;
-          const newList = dataList.filter(item => item.SeatNum != 0)
-          const pickerList = newList.map(item => {
-            return `${item.StartTime} ~ ${item.EndTime}`;
-          });
-          console.log(pickerList)
-          _this.setData({
-            pickerList:pickerList,
-            showPicker: true, // 此时弹窗才会真正弹出来
-            tempIndex: 0
-          })
-          
-        } else {
-          wx.showToast({
-            title: res.data.msg,
-            icon: "error"
-          })
-        }
-      },
-      fail(res) {
-        wx.hideLoading()
-      },
-      complete(res) {
-        wx.hideLoading()
-      }
-    })
-  },
-  closeCustomPicker() {
-    console.log('触发了')
-    this.setData({ showPicker: false });
-  },
-  // 3. 用户在弹窗内滑动/点击选择
-  selectItem(e) {
-    const index = e.currentTarget.dataset.index;
-    console.log(index)
-    this.setData({ tempIndex: index });
-  },
-   // 4. 点击确定
-   confirmSelect() {
-    let _this = this;
-    const selectedItem = this.data.pickerList[this.data.tempIndex];
-    console.log(selectedItem)
-    let time =selectedItem.split('~')[0].split(':')[0]
-    let data = _this.data.change_time_item
-    let day = _this.data.change_time_item.ArrivalTime.split(' ')[0]
-    let userInfo = wx.getStorageSync('userInfo')
-    wx.request({
-      url: baseUrl + '/api/CarPromotion/UpdateOrderArrivalTime',
-      data: {
-        Id: data.Id,
-        ArrivalTime: day + ' ' + time + ':59:00',
-        MemberId:userInfo.Id,
-      },
-      method: "POST",
-      success: (res) => {
-        console.log(res)
-        if (res.data.code == 0) {
-          wx.showToast({
-            title: res.data.msg,
-            icon: 'success',
-            duration: 2000
-          })
-          this.setData({
-            showPicker: false // 关闭弹窗
-          });
-          _this.getOrderList()
-        } else {
-          wx.showToast({
-            title: res.data.msg,
-            icon: "error"
-          })
-        }
-      },
-      fail(res) {
-        wx.hideLoading()
-      },
-      complete(res) {
-        wx.hideLoading()
-      }
-    })
-  },
- 
+
   //到达底部
   scrollToLower: function (e) {
     if (!this.data.loading && !this.data.noMore) {
@@ -257,7 +82,8 @@ Page({
     })
   },
   // 查询订单
-  getOrderList(isPage, FormTypeId) {
+  getOrderList(isPage) {
+    console.log(isPage)
     wx.showLoading({
       title: '加载中',
     })
@@ -276,116 +102,31 @@ Page({
       let reqData = {
         limit: 10,
         page: that.data.pageNo,
-        Personal: usreinfo.Id,
-        FormTypeId: FormTypeId,
-        Where: that.data.menuTapCurrent == 0 ? "IsPickGoods = '100004-0000010002'" : "IsPickGoods = '100004-0000010001'"
+        MemberId: usreinfo.Id,
       }
-      http.postRequest("/Api/DispatchMobile/GetRideTicket", reqData, wx.getStorageSync('header'), res => {
+      http.postRequest("/api/DriverApp/GetMemberRentCarList", reqData, wx.getStorageSync('header'), res => {
         wx.hideLoading()
         that.setData({
           loading: false
         })
-
         if (isPage) {
-          if (res.code == 0) {
-            if (isPage) {
-              var listData = res.data
-              console.log(listData)
-              listData.forEach(function (item, index) {
-                if (item.IsReservation == '100004-0000010001') {
-                  var arrtime = new Date(item.ArrivalTime.replace(/-/g, '/')).getTime();
-                  var nowtime = new Date().getTime();
-                  var stime = arrtime - nowtime;
-                  if (stime > 3600 * 1000) {
-                    item['is_gai'] = 1;
-                  } else {
-                    item['is_gai'] = 0;
-                  }
-                } else {
-                  item['is_gai'] = 0;
-                }
-                listData[index].ArrivalTime = that.getNewtime(item.ArrivalTime)
-              });
-              that.setData({
-                listData: this.data.listData.concat(listData)
-              })
-              console.log(listData)
-            } else {
-              var listDdata = res.data;
-              console.log(listData)
-              listData.forEach(function (item, index) {
-                if (item.IsReservation == '100004-0000010001') {
-                  var arrtime = new Date(item.ArrivalTime.replace(/-/g, '/')).getTime();
-                  var nowtime = new Date().getTime();
-                  var stime = arrtime - nowtime;
-                  if (stime > 3600 * 1000) {
-                    item['is_gai'] = 1;
-                  } else {
-                    item['is_gai'] = 0;
-                  }
-                } else {
-                  item['is_gai'] = 0;
-                }
-                listData[index].ArrivalTime = that.getNewtime(item.ArrivalTime)
-              });
-              console.log(listData)
-              that.setData({
-                listData: listDdata
-              })
-            }
-          }
-        } else {
-          if (res.code == 0) {
-            if (isPage) {
-              var listData = res.data
-              console.log(listData)
-              listData.forEach(function (item, index) {
-                if (item.IsReservation == '100004-0000010001') {
-
-                  var arrtime = new Date(item.ArrivalTime.replace(/-/g, '/')).getTime();
-                  var nowtime = new Date().getTime();
-                  var stime = arrtime - nowtime;
-                  if (stime > 3600 * 1000) {
-                    item['is_gai'] = 1;
-                  } else {
-                    item['is_gai'] = 0;
-                  }
-                } else {
-                  item['is_gai'] = 0;
-                }
-                listData[index].ArrivalTime = that.getNewtime(item.ArrivalTime)
-              });
-              console.log(listData)
-              that.setData({
-                listData: this.data.listData.concat(listData)
-              })
-            } else {
-              var listData = res.data
-              console.log(listData)
-              listData.forEach(function (item, index) {
-                if (item.IsReservation == '100004-0000010001') {
-                  var arrtime = new Date(item.ArrivalTime.replace(/-/g, '/')).getTime();
-                  var nowtime = new Date().getTime();
-                  var stime = arrtime - nowtime;
-                  if (stime > 3600 * 1000) {
-                    item['is_gai'] = 1;
-                  } else {
-                    item['is_gai'] = 0;
-                  }
-                } else {
-                  item['is_gai'] = 0;
-                }
-                listData[index].ArrivalTime = that.getNewtime(item.ArrivalTime)
-              });
-              that.setData({
-                listData: listData
-              })
-            }
+          var listData = res.data
+          if(res.code == 0) {
+            that.setData({
+              listData: this.data.listData.concat(listData)
+            })
           } else {
             that.setData({
-              noOrder: true
+              noMore:true
             })
           }
+        } else {
+          var listDdata = res.data;
+          console.log(listData)
+         
+          that.setData({
+            listData: listDdata
+          })
         }
       }, err => {
         wx.hideLoading()
@@ -442,7 +183,7 @@ Page({
     })
   },
   //付款
-  gotopay: throttle(function(e) {
+  gotopay: throttle(function (e) {
     let that = this;
     var orderId = e.currentTarget.dataset.ids;
     var user = wx.getStorageSync('userInfo');
@@ -516,15 +257,15 @@ Page({
     }, (LayerOrderRrr) => {
       console.log('请求失败', LayerOrderRrr)
     })
-  },3000),
-  setSubscribeMessage:function(){
+  }, 3000),
+  setSubscribeMessage: function () {
     wx.showModal({
       title: '提示',
       content: '即将为您开启消息提醒',
       complete: (res) => {
         if (res.confirm) {
           wx.requestSubscribeMessage({
-            tmplIds: ['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA',"LhKVmpSKt-FGzwYVDHB6UQpVrdZmMklLzcFJ6Ln_oJU"],
+            tmplIds: ['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA', "LhKVmpSKt-FGzwYVDHB6UQpVrdZmMklLzcFJ6Ln_oJU"],
             success(res) {
               if (res['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA'] === 'accept') {
                 console.log('用户同意接收订阅消息');
@@ -559,7 +300,7 @@ Page({
             }
           });
         }
-       
+
       }
     })
   },
@@ -611,11 +352,11 @@ Page({
             url: '/user_center/pages/travelList/travelList',
           })
         }, 3000)
-      } else if(res.code == 430) {
+      } else if (res.code == 430) {
         wx.showModal({
           title: '提示',
           content: res.msg,
-          success (res) {
+          success(res) {
             if (res.confirm) {
               console.log('用户点击确定')
             } else if (res.cancel) {

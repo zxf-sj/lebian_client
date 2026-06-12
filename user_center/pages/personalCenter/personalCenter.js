@@ -46,6 +46,11 @@ Page({
       url: '/user_center/pages/integral/integral',
     })
   },
+  checkOrderList() {
+    wx.navigateTo({
+      url: '/user_center/pages/orderList/orderList',
+    })
+  },
   goCika() {
     wx.navigateTo({
       url: '/driving_status/pages/payCard/payCard',

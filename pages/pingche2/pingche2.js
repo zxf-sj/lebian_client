@@ -38,7 +38,9 @@ Page({
     PromotionDiscountType: '', //9 正常 0 折扣 1 减
     PromotionDiscount: "", // 折扣值
     version: 0, //超范围
-    baseUrl: ''
+    baseUrl: '',
+    ChildPrice:'',
+    actualAdultCountdata:1,//计算最终需要按【成人票价】结算的总人数
   },
   /**
    * 生命周期函数--监听页面加载
@@ -65,7 +67,6 @@ Page({
   },
   //nav 切换时间
   nav_change_date() {
-    console.log('nav_change_date')
     this.setData({
       aduit_num: 1,
       child_num: 0,
@@ -79,7 +80,6 @@ Page({
     this.getCarList()
   },
   information_phone_number(e) {
-    console.log(e.detail)
     this.setData({
       phone_number: e.detail
     })
@@ -122,8 +122,28 @@ Page({
           content: '请确认手机号:' + _this.data.phone_number,
           success(res) {
             if (res.confirm) {
-              console.log('用户单击确定');
-              _this.handleCallCar()
+              const now = new Date();
+              const hours = String(now.getHours()).padStart(2, '0'); // 获取小时并补零
+              const minutes = String(now.getMinutes()).padStart(2, '0'); // 获取分钟并补零
+              const formattedTime = `${hours}:${minutes}`;
+              let pcTimeSync = wx.getStorageSync('pcTimeSync')
+              let timeNode =  _this.isTimeInRange(formattedTime,pcTimeSync.StartTime)
+              if(timeNode) {
+                _this.handleCallCar()
+              } else {
+                wx.showModal({
+                  title: '提示',
+                  content: '尊敬的乘客：距离发车时间较近，车辆调度资源紧张，为保证乘车体验，发车时间将最优安排至下单1个小时内的最快发车时段，请知悉。咨询热线：0351-6078977 感谢您的理解与耐心等候！',
+                  success (res) {
+                    if (res.confirm) {
+                      _this.handleCallCar()
+                    } else if (res.cancel) {
+                      console.log('用户点击取消')
+                    }
+                  }
+                })
+              }
+              
             } else if (res.cancel) {
               console.log('用户单击取消');
             }
@@ -214,7 +234,6 @@ Page({
           //   })
           // }
           let that = this;
-          console.log('去下单', reqData)
           wx.request({
             // CreateRideTicketOrder 旧
             url: baseUrl + '/Api/DispatchMobile/CreatePersonTicketOrder',
@@ -552,30 +571,27 @@ Page({
       AdultNumber: that.data.aduit_num,
     };
     if (storageSync.lineId && pcTimeSync.StartTime) {
-      console.log("1111.0.0.0",data)
       http.postRequest('/Api/DispatchMobile/getPriceListForLineId', data, '', (res) => {
         wx.hideLoading();
         if (res.code == '0') {
           //这里是默认值  默认选中第一辆车
+          console.log(res)
           let data = res.data[0];
-          console.log(data)
           if (!data.CarSeatState) {
-            console.log('!data.CarSeatState')
             data = res.data[1]
             that.setData({
               carType: 1
             })
           }
-          console.log('data', data)
           wx.setStorageSync('pcTypeId', data.Id)
           if (data.CarSeatState) {
-            console.log(data.CarSeatState)
             //默认座位数
-            let seatNumber = data.SeatNumber + 1
+            let seatNumber = data.SeatNumber
             //默认价格 
             let price = 0
             if (data.CouponFlag) {
               price = data.Price - data.CouponMoneyTotal
+             
               that.setData({
                 couponList_list: data.CouponList,
                 couponFlag:true,
@@ -594,7 +610,6 @@ Page({
             if (data.Version) {
               price = price + Number(data.Version)
             }
-            console.log(res.data)
             // let dataArr = []
             // res.data.forEach(item => {
             //   if(item.CarType == '300251-a84bfd75d45d44c8beff6a6fe3f0e051' &&  (item.PassengerLineId == '300213-7bc4de5562764200a0610b630859d384' || item.PassengerLineId == '300213-96f23d82cea647168541241650c39790')    ) {
@@ -606,13 +621,12 @@ Page({
             //   }
               
             // })
-             console.log(res.data)
-            
+            console.log(data.rangfenceMapList)
             that.setData({
               rangfenceMapList: data.rangfenceMapList, //超范围列表
               carTypeList: res.data, //车型列表
               seatNumber, //座位数
-              price, //总价
+              price:price.toFixed(2), //总价
               initialPrice: data.Price, //初始票价
               PromotionDiscountType: data.PromotionDiscountType,
               PromotionDiscount: data.PromotionDiscount,
@@ -634,6 +648,16 @@ Page({
       })
     }
   },
+
+ isTimeInRange(currentTime, selectedTime) {
+  const [curH, curM] = currentTime.split(':').map(Number);
+  const [selH, selM] = selectedTime.split(':').map(Number);
+  if (curH === selH && curM >= 30) {
+    return false; 
+  }
+  // 其他所有情况都返回 true
+  return true; 
+},
   //点击车型
   chooseCarType(e) {
     let that = this;
@@ -666,7 +690,6 @@ Page({
   },
   //计算总价
   total_Price: debounce(function() {
-    console.log('计算总价')
     let _this = this;
     // wx.showLoading({
     //   title: '加载中',
@@ -697,10 +720,11 @@ Page({
       AdultNumber: _this.data.aduit_num,
     };
     if (storageSync.lineId && pcTimeSync.StartTime) {
-      console.log("2222",data)
       http.postRequest('/Api/DispatchMobile/getPriceListForLineId', data, '', (res) => {
         if (res.code == '0') {
           let data = res.data[_this.data.carType];
+          //优惠卷
+          console.log(data)
           if (data.CouponFlag) {
             const total = data.CouponList.reduce((sum, item) => {
               return sum + item.Count;
@@ -738,13 +762,21 @@ Page({
               aduit_price = data.Price * _this.data.aduit_num
             }
           }
-          child_price = (data.Price / 2) * _this.data.child_num
+         
+          if( _this.data.aduit_num >= _this.data.child_num) {
+            child_price = data.ChildPrice * _this.data.child_num
+          } else { 
+            let cha =  _this.data.child_num - _this.data.aduit_num
+            child_price = data.ChildPrice * _this.data.aduit_num + cha * data.Price
+          }
           if (_this.data.version > 0) {
             version_price = (_this.data.aduit_num + _this.data.child_num) * Number(_this.data.version)
           }
+          console.log(aduit_price, child_price , version_price)
           let all_price = aduit_price + child_price + version_price;
           _this.setData({
-            price: all_price
+            price: all_price.toFixed(2),
+            ChildPrice:data.ChildPrice
           })
           wx.hideLoading();
         }
@@ -762,8 +794,15 @@ Page({
     if (aduit_num > 1) {
       aduit_num -= 1
     }
+    let actualAdultCount = ''
+      if(aduit_num >= _this.data.child_num) {
+       actualAdultCount = aduit_num + _this.data.child_num
+      } else {
+       actualAdultCount = aduit_num * 2
+      }
     _this.setData({
       aduit_num,
+      actualAdultCountdata:actualAdultCount,
       use_couponList: 0
     })
     _this.total_Price()
@@ -780,8 +819,15 @@ Page({
     let aduit_num = _this.data.aduit_num;
     if (_this.data.child_num + aduit_num < _this.data.seatNumber) {
       aduit_num += 1
+      let actualAdultCount = ''
+      if(aduit_num >= _this.data.child_num) {
+       actualAdultCount = aduit_num + _this.data.child_num
+      } else {
+       actualAdultCount = aduit_num * 2
+      }
       _this.setData({
         aduit_num,
+        actualAdultCountdata:actualAdultCount,
         use_couponList: 0
       })
       _this.total_Price()
@@ -803,12 +849,20 @@ Page({
   chind_reduce() {
     let _this = this
     let child_num = _this.data.child_num;
-    console.log(child_num)
     if (child_num > 0) {
       child_num -= 1
     }
+   
+     let actualAdultCount = ''
+     if(_this.data.aduit_num >= child_num) {
+      actualAdultCount = _this.data.aduit_num + child_num
+     } else {
+      actualAdultCount = _this.data.aduit_num * 2
+     }
+     
     _this.setData({
       child_num,
+      actualAdultCountdata:actualAdultCount,
       use_couponList: 0
     })
     _this.reqChooseListData()
@@ -825,8 +879,15 @@ Page({
     let child_num = _this.data.child_num;
     if (_this.data.aduit_num + child_num < _this.data.seatNumber) {
       child_num += 1
+      let actualAdultCount = ''
+      if(_this.data.aduit_num >= child_num) {
+       actualAdultCount = _this.data.aduit_num + child_num
+      } else {
+       actualAdultCount = _this.data.aduit_num * 2
+      }
       _this.setData({
         child_num,
+        actualAdultCountdata:actualAdultCount,
         use_couponList: 0
       })
       _this.total_Price()
@@ -940,7 +1001,6 @@ Page({
   getNews() {
     let that = this;
     http.postRequest("/Api/DispatchMobile/NewGetXcx?ShortCode=Car", "", wx.getStorageSync('header'), res => {
-      console.log(res)
       if (res.code == 0) {
         let content = res.data.Content;
         const WxParses = require('../wxParse/wxParse');
@@ -955,6 +1015,9 @@ Page({
   onExchangeItem(item) {
     console.log(item)
     let _this = this;
+    _this.setData({
+      couponList_list:item.detail
+    })
     let price = ''
     if (_this.data.copy_price != 0) {
       price = _this.data.copy_price
@@ -968,27 +1031,21 @@ Page({
       use_couponList: item.detail.length,
     })
     if (item.detail.length > 0) {
-      let aduit_price = []
-      for (let i = 0; i < _this.data.aduit_num; i++) {
+      let coupon_price = ''
         if (_this.data.PromotionDiscountType == 0) {
-          aduit_price.push(_this.data.initialPrice * _this.data.PromotionDiscount)
+          coupon_price = _this.data.initialPrice * _this.data.PromotionDiscount
         } else if (_this.data.PromotionDiscountType == 1) {
-          aduit_price.push(_this.data.initialPrice - _this.data.PromotionDiscount)
+          coupon_price = _this.data.initialPrice - _this.data.PromotionDiscount
         } else if (_this.data.PromotionDiscountType == 9) {
-          aduit_price.push(_this.data.initialPrice)
+          coupon_price = _this.data.initialPrice
         }
-      }
-      let child_price = []
-      if (_this.data.child_num > 0) {
-        for (let i = 0; i < _this.data.child_num; i++) {
-          child_price.push(_this.data.initialPrice / 2)
-        }
-      }
-      let priceList = [...aduit_price, ...child_price]
+    
       let Jlength = item.detail.length //几张次卡
-      let allPrice = this.getRemainingSum(priceList, Jlength)
+     console.log(this.data.aduit_num,_this.data.child_num,coupon_price,_this.data.ChildPrice,Jlength)
+     let calculateTotal_data =   _this.calculateTotal(_this.data.aduit_num,_this.data.child_num,coupon_price,_this.data.ChildPrice,Jlength)
+      // let allPrice = this.getRemainingSum(priceList, Jlength)
       this.setData({
-        price: price - allPrice
+        price: calculateTotal_data
       })
       const ids = item.detail.map(item => item.Id).join(',');
       let pcTimeSync = wx.getStorageSync('pcTimeSync')
@@ -999,6 +1056,36 @@ Page({
       wx.setStorageSync('pcTimeSync', updatedData);
     }
   },
+  /**
+ * @param {number} trueAdultCount - 真实的大人数量 (本例为 2)
+ * @param {number} childCount - 小孩数量 (本例为 3)
+ * @param {number} adultPrice - 动态获取的成人票价 (本例为 49.9)
+ * @param {number} childPrice - 动态获取的儿童票价 (本例为 40)
+ * @param {number} cardCount - 用户选择使用的次卡数量 (1, 2, 3, 4...)
+ */
+
+ calculateTotal(trueAdultCount, childCount, adultPrice, childPrice, cardCount) {
+  // 1. 计算有多少个小孩超出了大人的携带能力，必须按成人票计费
+  const extraChildAsAdult = Math.max(0, childCount - trueAdultCount);
+  
+  // 2. 计算最终需要按【成人票价】结算的总人数
+  const actualAdultCount = trueAdultCount + extraChildAsAdult;
+  this.setData({
+    actualAdultCountdata:actualAdultCount
+  })
+  // 3. 计算最终需要按【儿童票价】结算的总人数
+  const actualChildCount = childCount - extraChildAsAdult;
+  
+  // 4. 计算实际能抵扣的次卡数量（不能超过实际成人数）
+  const validCardCount = Math.min(cardCount, actualAdultCount);
+  
+  // 5. 扣除次卡后，剩余需要付现金的成人票数量
+  const remainingAdultCount = actualAdultCount - validCardCount;
+  
+  // 6. 计算最终总价并保留两位小数
+  const total = (remainingAdultCount * adultPrice) + (actualChildCount * childPrice);
+  return parseFloat(total.toFixed(2)); 
+},
   getRemainingSum(arr, a) {
     if (a <= 0) return arr.reduce((sum, x) => sum + x, 0);
     // 创建副本并降序排序（大数在前）

@@ -1,61 +1,41 @@
 <view class="map_container">
-  <view class="lunbo">
-    <swiper indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" class="swipers">
-      <block wx:for="{{lunBoImg}}" wx:key="index">
-        <swiper-item>
-          <image src="{{imgUrl+item.ShowPicUrl}}" mode="widthFix" class="lunimg" />
-        </swiper-item>
-      </block>
-    </swiper>
-  </view>
-  <view class="warn">
-    <image src="/assets/images/laba2.png" style="width:40rpx;height:40rpx"></image>
-    <view class='marquee' style='width:{{marqueeWidth}}rpx;'>
-      <view class='marqueeTitle' style="width:{{length}}rpx;margin-left:{{marqueeMargin}}px;transform:translateX( {{marqueeDistance}}rpx);font-size: {{size}}rpx;">{{title}}</view>
-    </view>
-  </view>
-  <!-- 这是九宫格 -->
-  <view class="titleView">
-    <image mode="aspectFit" src="/assets/images/letonglogo.png" />
-  </view>
-  <!-- pages/index/index.wxml -->
+  <wxs module="filters">
+  function formatPrice(price) {
+    return Number(price || 0).toFixed(2);
+  }
+  module.exports = {
+    formatPrice: formatPrice
+  }
+</wxs>
   <view class="container">
-    <!-- 顶部 Tab 切换 -->
     <view class="tab-bar">
       <block wx:for="{{tabs}}" wx:key="index">
         <view class="tab-item {{activeTab === index ? 'active' : ''}}" bindtap="switchTab" data-index="{{index}}">
           {{item}}
-          <!-- 底部激活线条 -->
           <view class="line" wx:if="{{activeTab === index}}"></view>
         </view>
       </block>
     </view>
-
-    <!-- 滚动内容区域 -->
     <scroll-view scroll-y class="main-content">
-
       <!-- 旅游包车表单 (Tab 1) -->
       <view wx:if="{{activeTab === 0 || activeTab === 2}}">
-
         <!-- 基础信息输入 -->
         <view class="form-group">
-          <view class="input-item" bind:tap="startingPoint" ><text class="label">起点</text>{{starting_point?starting_point:'请选择起点'}}</view>
+          <view class="input-item" bind:tap="startingPoint"><text class="label">起点</text>{{starting_point?starting_point:'请选择起点'}}</view>
           <view class="input-item" bind:tap="endting_point"><text class="label">终点</text>{{endting_point?endting_point:'请选择终点'}}</view>
           <view class="input-item"><text class="label">电话</text><input bindinput="searchInputend" type="number" value="{{lvyouTel}}" placeholder="请输入联系电话" maxlength="11" /></view>
-          <view class="phoneError" wx:if="{{lvyouTel_phoneError != ''}}" >{{lvyouTel_phoneError}}</view>
+          <view class="phoneError" wx:if="{{lvyouTel_phoneError != ''}}">{{lvyouTel_phoneError}}</view>
           <view class="input-item"><text class="label">出发日期</text>
             <!-- start="2026-01-01" end="2017-09-01"  -->
-            <picker  range="{{timeArr}}" range-key="RunTime" bindchange="lvyou_bindDateChange">
+            <picker range="{{timeArr}}" range-key="RunTime" bindchange="lvyou_bindDateChange">
               <view class="picker">
                 {{lvyou_date}}
               </view>
             </picker>
           </view>
         </view>
-
         <!-- 车型选择标题 -->
         <view class="section-title">车型选择</view>
-
         <!-- 车型列表 (横向滚动) -->
         <scroll-view scroll-x class="car-list" show-scrollbar="false">
           <block wx:for="{{carList}}" wx:key="id">
@@ -65,14 +45,13 @@
                 <text class="car-name">{{item.CarType_Name}}</text>
                 <text class="car-seat">👤 {{item.SeatNumber}}座</text>
                 <view class="price-box">
-                  <!-- <text class="original-price">¥{{item.originPrice}}</text> -->
-                  <text class="current-price">¥{{roundTrip?item.Price:item.OriginalPrice}}/公里</text>
+                  <text class="current-price">约¥{{ filters.formatPrice(item.CouponMoneyTotal) }}</text>
                 </view>
               </view>
             </view>
           </block>
         </scroll-view>
-
+        <view class="txt">预订成功后，金额大于500元，0.99元抵88元优惠。</view>
         <!-- 单程/往返 单选框 -->
         <view class="section-title">行程类型</view>
         <radio-group class="radio-group" bindchange="radioChange">
@@ -80,9 +59,23 @@
             <radio value="{{item.value}}" checked="{{item.checked}}" color="#007AFF" /> {{item.name}}
           </label>
         </radio-group>
-
         <!-- 底部按钮 (模拟) -->
-        <view class="submit-btn" bind:tap="submit">立即预订</view>
+        <view class="submit-btn" bind:tap="submit">0.99元预定</view>
+        <view class="txt">
+             此单价为系统计算价格，联系13133387813可咨询更多优惠。
+        </view>
+        <view class="section-title">热门路线</view>
+        <view class="imgs">
+        <view class="hot_box" wx:for="{{hotLintList}}" wx:key="index" bind:tap="handleHotLine" data-item="{{item}}">
+          <view class="hot_left">
+            <view class="hot_img">
+              <image src="{{baseUrl + item.ImagePath}}" mode=""/>
+            </view>
+            <view class="hot_line">{{item.Start}} --> {{item.End}}</view>
+          </view>
+          <view class="hot_right">￥{{item.DiscountPrice}}</view>
+        </view>
+        </view>
       </view>
 
       <!-- 其他 Tab 占位 -->
@@ -99,22 +92,20 @@
             </block>
           </view>
           <view wx:if="{{activeTab2 === 0 || activeTab2 === 1 }}">
+          <view style="margin-top: 10rpx;" wx:if="{{activeTab2 === 0  }}">主打太原-孝义跨城出行，提供5公里内免费取还车服务，适合商务、自驾、探亲。</view>
+          <view style="margin-top: 10rpx;" wx:if="{{activeTab2 === 1  }}">主打本地用车，随租随用、无固定租期，适合通勤、出游、临时用车。</view>
             <view class="placeholder" style="margin-top: 0;">
               <!-- 车型选择标题 -->
               <view class="section-title" style="text-align: left;">车型选择</view>
 
               <!-- 车型列表 (横向滚动) -->
               <scroll-view scroll-x class="car-list" show-scrollbar="false">
-                <block wx:for="{{carList}}" wx:key="id">
-                  <view class="car-card {{selectedCarId === item.id ? 'active' : ''}}" bindtap="selectCar" data-id="{{item.id}}">
-                    <image src="{{item.image}}" mode="aspectFill"></image>
+                <block wx:for="{{rentCarList}}" wx:key="Id">
+                  <view class="car-card {{hcyz_carId === item.Id ? 'car_active' : ''}}" bindtap="hcyz_car" data-id="{{item.Id}}" data-deposit="{{item.Deposit}}" data-state="{{item.CarSeatState}}">
+                    <image src="{{baseUrl + item.ImagePath}}" mode="aspectFill"></image>
                     <view class="car-info">
-                      <text class="car-name">{{item.name}}</text>
-                      <text class="car-seat">👤 {{item.seat}}座</text>
-                      <view class="price-box">
-                        <text class="original-price">¥{{item.originPrice}}</text>
-                        <text class="current-price">¥{{item.price}}</text>
-                      </view>
+                      <text class="car-name">{{item.Name}}</text>
+                      <text class="car-seat">👤 {{item.SeatNum}}座</text>
                     </view>
                   </view>
                 </block>
@@ -124,40 +115,66 @@
 
                 <!-- 基础信息输入 -->
                 <view class="form-group">
-                  <view class="input-item"><text class="label">车型选择</text><input placeholder="请输入起点" /></view>
-                  <view class="input-item"><text class="label">使用时间段</text><input placeholder="请输入终点" /></view>
-                  <view class="input-item"><text class="label">押金及价格</text><input placeholder="请输入联系电话" /></view>
-                  <view class="input-item"><text class="label">备注</text><input placeholder="请选择日期" disabled="true" bindtap="showDatePicker" /></view>
+                  <view class="input-item"><text class="label">租用日期</text>
+                    <!-- start="2026-01-01" end="2017-09-01"  -->
+                    <picker range="{{timeArr}}" range-key="RunTime" bindchange="yizu_zuche">
+                      <view class="picker">
+                        {{yizu_zucheDay}}
+                      </view>
+                    </picker>
+                  </view>
+                  <view class="input-item"><text class="label">还车日期</text>
+                    <!-- start="2026-01-01" end="2017-09-01"  -->
+                    <picker range="{{timeArr}}" range-key="RunTime" bindchange="yizu_huanche">
+                      <view class="picker">
+                        {{yizu_huancheDay}}
+                      </view>
+                    </picker>
+                  </view>
+                  <view class="input-item"><text class="label">电话</text><input bindinput="hcyz_tel" type="number" value="{{hcyzTel}}" placeholder="请输入联系电话" maxlength="11" /></view>
+                  <view class="phoneError" wx:if="{{hcyzTel_phoneError != ''}}">{{hcyzTel_phoneError}}</view>
+                  <view class="input-item"><text class="label">押金</text>￥{{deposit}}</view>
+                  <view class="input-item"><text class="label">备注</text><input placeholder="请填写备注" value="{{hcyz_remake}}" bindinput="handleRemark" /></view>
                 </view>
                 <!-- 底部按钮 (模拟) -->
-                <view class="submit-btn">立即预订</view>
+                <view class="submit-btn" bind:tap="hcyz_submit">立即预订</view>
               </view>
             </view>
           </view>
-          <view wx:if="{{activeTab2 === 1 }}">
+          <!-- <view wx:if="{{activeTab2 === 1 }}">
             <view class="placeholder">这里是【悦驾易租】的内容</view>
-          </view>
+          </view> -->
           <view wx:if="{{activeTab2 === 2 }}">
-            <view class="placeholder"  style="margin-top: 0;">
+          <view style="margin: 10rpx 0;">城际间专业送车、载人代驾服务。</view>
+            <view class="placeholder" style="margin-top: 0;">
               <view wx:if="{{activeTab2 === 2}}">
 
                 <!-- 基础信息输入 -->
                 <view class="form-group">
-                  <view class="input-item"><text class="label">电话</text><input placeholder="请输入起点" /></view>
-                  <view class="input-item"><text class="label">方向</text><input placeholder="请输入终点" /></view>
-                  <view class="input-item"><text class="label">位置</text><input placeholder="请输入联系电话" /></view>
-                  <view class="input-item"><text class="label">备注</text><input placeholder="请选择日期" disabled="true" bindtap="showDatePicker" /></view>
+                  <view class="input-item" bind:tap="hxyj_getqi"><text class="label">起点</text>{{hcyj_qidian?hcyj_qidian:'请选择位置'}}</view>
+                  <view class="input-item" bind:tap="hxyj_getzhong"><text class="label">终点</text>{{hcyj_zhongdian?hcyj_zhongdian:'请选择位置'}}</view>
+                  <view class="input-item"><text class="label">电话</text><input type="number" bindinput="hcyj_tel" value="{{hcyjTel}}" placeholder="请输入电话" /></view>
+                  <view class="phoneError" wx:if="{{hcyjTel_phoneError != ''}}">{{hcyjTel_phoneError}}</view>
+                  <!-- <view class="input-item"><text class="label">方向</text>
+                    <picker range="{{daijia_list}}" range-key="LineName" bindchange="hcyj_direction">
+                      <view class="picker">
+                        {{daijia_direction?daijia_direction:'请选择方向'}}
+                      </view>
+                    </picker>
+                  </view> -->
+                  <view class="input-item"><text class="label">费用</text>{{hcyjPrice}}</view>
+                  <view class="input-item"><text class="label">备注</text><input placeholder="请输入备注" value="{{hcyj_remake}}" bindinput="handlehcyjRemark" /></view>
                 </view>
                 <!-- 底部按钮 (模拟) -->
-                <view class="submit-btn">立即预订</view>
+                <view class="submit-btn" bind:tap="handle_hcyj">立即预订</view>
               </view>
             </view>
           </view>
         </view>
       </view>
-      <view wx:else>
+      <!-- <view wx:else>
         <view class="placeholder">这里是【协议客户】的内容</view>
-      </view>
+      </view> -->
 
     </scroll-view>
   </view>

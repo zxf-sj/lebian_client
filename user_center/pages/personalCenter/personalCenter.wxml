@@ -70,12 +70,21 @@
             </view>
             <text class="weui-cell__ft"></text>
           </a> -->
-          <a class="weui-cell weui-cell_active weui-cell_access weui-cell_example" bindtap="checkWallet">
+          <!-- <a class="weui-cell weui-cell_active weui-cell_access weui-cell_example" bindtap="checkWallet">
             <view class="weui-cell__hd">
               <image src="../../assets/images/icon-qianbao.png" style="width: 20px; height: 20px; margin-right: 16px; display: block;"></image>
             </view>
             <view class="weui-cell__bd weui-cell_primary">
               <view class="font-28">优惠券领取</view>
+            </view>
+            <text class="weui-cell__ft"></text>
+          </a> -->
+          <a class="weui-cell weui-cell_active weui-cell_access weui-cell_example" bindtap="checkOrderList">
+            <view class="weui-cell__hd">
+              <image src="../../assets/images/icon-qianbao.png" style="width: 20px; height: 20px; margin-right: 16px; display: block;"></image>
+            </view>
+            <view class="weui-cell__bd weui-cell_primary">
+              <view class="font-28">旅游订单</view>
             </view>
             <text class="weui-cell__ft"></text>
           </a>

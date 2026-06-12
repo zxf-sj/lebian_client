@@ -33,6 +33,7 @@
       "root": "user_center",
       "name": "user_center",
       "pages": [
+        "pages/orderList/orderList",
         "pages/personalCenter/personalCenter",
         "pages/coupon/coupon",
         "pages/setting/setting",
@@ -91,7 +92,8 @@
         "pages/lvyouList/lvyouList",
         "pages/peizhenList/peizhenList",
         "pages/payCard/payCard",
-        "pages/touristCarRental/touristCarRental"
+        "pages/touristCarRental/touristCarRental",
+        "pages/hotLine/hotLine"
       ],
       "independent": false
     }

@@ -40,8 +40,9 @@
 .prompt {
   font-size: 12px;
   color: #FF0000;
-  text-align: right;
   margin: 20rpx;
+  padding: 0 36rpx;
+  box-sizing: border-box;
 }
 
 .destination .juan_l {

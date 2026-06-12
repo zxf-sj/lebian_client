@@ -35,7 +35,7 @@
               </view>
             </view>
             <label class="radio">
-              <!-- <radio checked="{{item.selected}}" catchtap="handleRadio" data-item="{{index}}" /> -->
+              <radio checked="{{item.selected}}" catchtap="handleRadio" data-item="{{index}}" />
             </label>
             <view class="tag" catchtap="handleRadio" data-item="{{index}}">
               <image src="../../user_center/assets/images/youhuiquan_biaoqian01.png"></image>

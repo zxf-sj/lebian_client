@@ -134,9 +134,9 @@
             </view>
           </view>
 				</view> -->
-				<view class="cou_btn" bindtap="couponCheck">
+				<!-- <view class="cou_btn" bindtap="couponCheck">
 					<view class="cou_check">立即领取</view>
-				</view>
+				</view> -->
 				<view class="close_cou" catchtap="handleClose">
 					<image src="/assets/images/close.png" class="close_couImg"></image>
 				</view>

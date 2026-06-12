@@ -27,13 +27,18 @@ Page({
     keyboard: false,
     polygons: [], // 多边形覆盖物
     circles: [], //圆形覆盖物
-    fencePoints: [] // 存储围栏顶点
+    fencePoints: [], // 存储围栏顶点,
+    xianzhi: ''
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+    console.log(options)
+    this.setData({
+      xianzhi: options.xianzhi
+    })
     let storageSync = wx.getStorageSync('storageSync');
     if (options) {
       if (options.direction == "starting") {
@@ -134,7 +139,7 @@ Page({
               endInfo2: endInfo2
             })
           }
-        } else if (adRes.addressComponent.city != that.data.city && that.data.type != 'ly') {
+        } else if (adRes.addressComponent.city != that.data.city && that.data.type != 'ly' && that.data.type != 'hcyj' && that.data.type != 'hot') {
           let item = wx.getStorageSync('storageSync')
           console.log('item', item)
           if (that.data.direction == 'starting') {
@@ -172,7 +177,7 @@ Page({
               })
             },
           });
-        } else if (that.data.type == 'ly') {
+        } else if (that.data.type == 'ly' || that.data.type == 'hcyj' || that.data.type == 'hot') {
           wx.getLocation({
             type: "gcj02",
             success(res) {
@@ -213,10 +218,6 @@ Page({
               console.log(err);
             }
           })
-          // that.setData({
-          //   longitude: item.EndLocation_Longitude,
-          //   latitude: item.EndLocation_Latitude,
-          // })
         }
       },
       fail: function (res) {
@@ -526,8 +527,10 @@ Page({
             BMap.regeocoding({
               location: newStarInfo.startLait + ',' + newStarInfo.startLont,
               success: function (res_e) {
+                console.log(res_e)
                 let start_city = res_e.originalData.result.addressComponent.city
-                if (start_city == "太原市" || start_city == "孝义市") {
+                let district = res_e.originalData.result.addressComponent.district
+                if (start_city == "太原市" || start_city == "孝义市" || district == "孝义市") {
                   wx.setStorageSync('start_city', start_city)
                   wx.reLaunch({
                     url: '/driving_status/pages/lvyouList/lvyouList',
@@ -537,7 +540,8 @@ Page({
                     title: '提示',
                     content: '请选择出发地为太原、孝义',
                     complete: (res) => {
-
+                      wx.removeStorageSync('starInfo2')
+                      wx.removeStorageSync('start_city')
                     }
                   })
                 }
@@ -554,9 +558,36 @@ Page({
               url: '/driving_status/pages/lvyouList/lvyouList',
             })
           }
-
-
-
+        } else if (that.data.type == 'hcyj') {
+          wx.reLaunch({
+            url: '/driving_status/pages/lvyouList/lvyouList?type=hcyj',
+          })
+        } else if (that.data.type == 'hot') {
+          if (that.data.direction == 'starting') {
+            var BMap = new bmap.BMapWX({
+              ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+            });
+            BMap.regeocoding({
+              location: newStarInfo.startLait + ',' + newStarInfo.startLont,
+              success: function (res_e) {
+                console.log(res_e)
+                let start_city = res_e.originalData.result.addressComponent.city
+                wx.setStorageSync('start_city', start_city)
+                wx.reLaunch({
+                  url: '/driving_status/pages/hotLine/hotLine',
+                })
+              },
+              fail: function () {
+                wx.showToast({
+                  title: '1请检查位置服务是否开启',
+                })
+              },
+            });
+          } else {
+            wx.reLaunch({
+              url: '/driving_status/pages/lvyouList/lvyouList',
+            })
+          }
         }
       },
       fail(err) {

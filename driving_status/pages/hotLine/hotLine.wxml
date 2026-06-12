@@ -1,0 +1,67 @@
+<!--driving_status/pages/hotLine/hotLine.wxml-->
+<view class="page">
+  <wxs module="filters">
+  function formatPrice(price) {
+    return Number(price || 0).toFixed(2);
+  }
+  module.exports = {
+    formatPrice: formatPrice
+  }
+</wxs>
+<view class="imgs">
+        <view class="hot_box">
+          <view class="hot_left">
+            <view class="hot_img">
+              <image src="{{baseUrl + dataItem.ImagePath}}" mode=""/>
+            </view>
+            <view class="hot_line">{{dataItem.Start}} --> {{dataItem.End}}</view>
+          </view>
+          <view class="hot_right">￥{{dataItem.DiscountPrice}}</view>
+        </view>
+        </view>
+  <!-- 基础信息输入 -->
+  <view class="form-group">
+    <view class="input-item" bind:tap="startingPoint"><text class="label">起点</text>{{starting_point?starting_point:'请选择起点'}}</view>
+    <view class="input-item" bind:tap="endting_point"><text class="label">终点</text>{{endting_point?endting_point:'请选择终点'}}</view>
+    <view class="input-item"><text class="label">电话</text><input bindinput="searchInputend" type="number" value="{{lvyouTel}}" placeholder="请输入联系电话" maxlength="11" /></view>
+    <view class="phoneError" wx:if="{{lvyouTel_phoneError != ''}}">{{lvyouTel_phoneError}}</view>
+    <view class="input-item"><text class="label">出发日期</text>
+      <!-- start="2026-01-01" end="2017-09-01"  -->
+      <picker range="{{timeArr}}" range-key="RunTime" bindchange="lvyou_bindDateChange">
+        <view class="picker">
+          {{lvyou_date}}
+        </view>
+      </picker>
+    </view>
+  </view>
+  <!-- 车型选择标题 -->
+  <view class="section-title">车型选择</view>
+  <!-- 车型列表 (横向滚动) -->
+  <scroll-view scroll-x class="car-list" show-scrollbar="false">
+    <block wx:for="{{carList}}" wx:key="id">
+      <view class="car-card {{selectedCarId === item.Id ? 'car_active' : ''}}" bindtap="selectCar" data-id="{{item.Id}}">
+        <image src="{{baseUrl + item.Note}}" mode="aspectFill"></image>
+        <view class="car-info">
+          <text class="car-name">{{item.CarType_Name}}</text>
+          <text class="car-seat">👤 {{item.SeatNumber}}座</text>
+          <!-- <view class="price-box">
+            <text class="current-price">约¥{{ filters.formatPrice(item.CouponMoneyTotal) }}</text>
+          </view> -->
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+  <view class="txt">预订成功后，金额大于500元，0.99元抵88元优惠。</view>
+  <!-- 单程/往返 单选框 -->
+  <view class="section-title">行程类型</view>
+  <radio-group class="radio-group" bindchange="radioChange">
+    <label class="radio-item" wx:for="{{tripTypes}}" wx:key="value">
+      <radio value="{{item.value}}" checked="{{item.checked}}" color="#007AFF" /> {{item.name}}
+    </label>
+  </radio-group>
+  <!-- 底部按钮 (模拟) -->
+  <view class="submit-btn" bind:tap="submit">0.99元预定</view>
+  <view class="txt">
+    此单价为系统计算价格，联系13133387813可咨询更多优惠。
+  </view>
+</view>

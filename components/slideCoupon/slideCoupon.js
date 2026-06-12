@@ -124,14 +124,14 @@ Component({
           let pcTimeSync = wx.getStorageSync('pcTimeSync') || {}
           if(pcTimeSync.hasChooseId) {
             let hasChooseIdList = pcTimeSync.hasChooseId.split(',');
-            console.log('hasChooseIdList',hasChooseIdList)
             ka.forEach(item => {
               if (hasChooseIdList.includes(item.Id)) {
                 item.selected = true;
               }
             });
           }
-          console.log(juan,ka)
+
+          console.log(ka)
           this.setData({
             juan,
             ka,
@@ -150,6 +150,7 @@ Component({
       let that = this;
       if (that.data.types == "次卡") {
         let rollArr = that.data.ka.filter(item => item.selected)
+        console.log(rollArr)
         if (rollArr.length > that.data.person_number) {
           wx.showToast({
             title: '次卡不可超过乘车人数',
@@ -173,6 +174,17 @@ Component({
         var goods = that.data.ka; 
         const selected = goods[index].selected;
         goods[index].selected = !selected;
+        console.log(goods)
+        let pcTimeSync = wx.getStorageSync('pcTimeSync');
+        const result  = goods
+        .filter(item => item.selected === true) // 1. 筛选出 selected 为 true 的对象
+        .map(item => item.id)                   // 2. 提取这些对象的 id
+        .join(',');
+        let updatedData = {
+          ...pcTimeSync,
+          hasChooseId: result
+        };
+        wx.setStorageSync('pcTimeSync', updatedData);
         that.setData({
           ka: goods,
         });

@@ -1,0 +1,53 @@
+<view class="container">
+  <view class="menu_box">
+    <text class='menu1 {{menuTapCurrent=="0"&&"borders"}}' data-current="0" catchtap="menuTap">行程订单</text>
+  </view>
+  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==1}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
+    <view class="listBox" wx:for="{{listData}}" wx:for-index="id" wx:for-item="item" wx:key="index">
+      
+      <view class="list-time font-28" style="display: flex;justify-content: space-between;">
+       <view>
+        <image src="/user_center/assets/images/code.png"></image>
+        <text class="time">{{item.Code}}</text>
+       </view>
+        <!-- <text class="status" bindtap="orderDetail" data-item="{{item}}">详情<text class="iconRight"></text></text> -->
+      </view>
+    
+      <view class="list-time font-28">
+        <image src="/assets/images/time.png"></image>
+        <text class="time">{{item.CreateTime}}</text>
+      </view>
+      <view class="list-time font-28" wx:if="{{item.OrderType == '3'}}">
+        <text class="yutime">起点:</text>
+        <text class="time">{{item.StartingPosition}}</text>
+      </view>
+      <view class="list-time font-28" wx:if="{{item.OrderType == '3'}}">
+        <text class="yutime">目的地:</text>
+        <text class="time">{{item.OffLocation}}</text>
+      </view>
+      
+      <view class="list-time font-28" wx:if="{{item.OrderType != '3'}}">
+        <text class="yutime">租用时间:</text>
+        <text class="time">{{item.StartTime}}</text>
+      </view>
+      <view class="list-time font-28" wx:if="{{item.OrderType != '3'}}">
+        <text class="yutime">还车时间:</text>
+        <text class="time">{{item.EndTime}}</text>
+      </view>
+    </view>
+    
+    <view style="text-align: center;margin: 10px;">
+      <view wx:if="{{loading}}">加载中...</view>
+      <view wx:if="{{noMore}}">没有更多了</view>
+      <view wx:if="{{loadingFailed}}">数据加载失败,请重试</view>
+    </view>
+  </scroll-view>
+  <view wx:if="{{!isLoging}}">
+      <button style="font-size: 30rpx;" bind:tap="goLoging">点击跳转登录，登录后拉取列表</button>
+    </view>
+  
+  <view wx:if="{{!listData && isLoging}}" class="bg">
+    <image class="bg-img" src="../../assets/images/no_list.png"></image>
+    <view class="bg-cont">近期没有订单记录~</view>
+  </view>
+</view>

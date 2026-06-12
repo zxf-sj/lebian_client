@@ -281,12 +281,12 @@ Component({
         const [hours, minutes] = startTime.split(':').map(Number);
         now.setHours(hours, minutes, 0, 0);
         let newData = now.getTime(); // 返回时间戳（毫秒）
-        if (newData + THIRTY_MINUTES_MS <= timestamp) {
-          wx.showToast({
-            title: '时间段车位已满，请重新选择',
-            icon: 'none',
-          })
-        } else {
+        // if (newData + THIRTY_MINUTES_MS <= timestamp) {
+        //   wx.showToast({
+        //     title: '时间段车位已满，请重新选择',
+        //     icon: 'none',
+        //   })
+        // } else {
           _this.setData({
             StartTime: timeList[0],
             EndTime: timeList[1]
@@ -298,7 +298,7 @@ Component({
             StartTime: timeList[0]
           };
           wx.setStorageSync('pcTimeSync', updatedData);
-        }
+        // }
       } else {
         _this.setData({
           StartTime: timeList[0],

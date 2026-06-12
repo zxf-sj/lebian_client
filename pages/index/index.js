@@ -41,8 +41,8 @@ Page({
   },
   onLoad: async function (opt) {
     //发布之前改时间 推迟几个小时
-    var time = "2026-05-09 14:00:00";
-    // var time = "2026-05-09 14:00:00";
+    var time = "2026-06-12 18:00:00";
+    // var time = "2026-06-12 18:00:00";
     var t = util.formatTime(new Date());
     this.setData({
       ischeck: t < time ? true : false
@@ -212,7 +212,7 @@ Page({
             LineName: item.LineName.replace(/===>/g, '>')
           }));
           this.setData({
-            showCoupon: true,
+            showCoupon: true,//首页弹框
             listData: newList
           })
         }
@@ -348,9 +348,10 @@ Page({
     })
   },
   closeCoupon() {
-    wx.navigateTo({
-      url: "/driving_status/pages/payCard/payCard",
-    })
+    //弹框跳转
+    // wx.navigateTo({
+    //   url: "/driving_status/pages/payCard/payCard",
+    // })
    
   },
   hideDelModal() {
@@ -382,9 +383,10 @@ Page({
   //领取
   couponCheck() {
     let that = this;
-    wx.navigateTo({
-      url: "/driving_status/pages/payCard/payCard",
-    })
+    //弹框跳转
+    // wx.navigateTo({
+    //   url: "/driving_status/pages/payCard/payCard",
+    // })
     // var userinfo = wx.getStorageSync('userInfo');
     // let ids = that.data.listData.map(item => item.Id)
     // let idStr = ids.join(',')
@@ -504,6 +506,7 @@ Page({
     // wx.navigateTo({
     //   url: "/user_center/pages/coupon/coupon",
     // })
+    
      wx.navigateTo({
       url: "/driving_status/pages/payCard/payCard",
     })

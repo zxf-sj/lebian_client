@@ -66,7 +66,7 @@
       * 如是否携带大件行李、飞机航班号、列车车次及乘坐时间、是否是孕妇或老人、是否是孩童单独乘车等，以便更好的为您服务。
     </view>
   </view>
-  <view class="prompt">* 儿童是指3岁以下的小朋友。</view>
+  <view class="prompt">* 儿童是指3岁以下的小朋友，每位成人乘客仅可享受一位儿童价优惠票</view>
   <view class="bottom">
     <view class="location">
       <view class="destination go" bindtap="showCoupon">
@@ -87,10 +87,11 @@
       <view class="zhe" wx:if="{{typeon == 'pc' && PromotionDiscountType == 0}}">活动期间享75折优惠</view>
       <view class="details">
         <view class="detailList" wx:if="{{carTypeList.length > 0 && aduit_num - couponFlag_aduit_num > 0}}">
-          <view class="detailList_l">基本票价（成人）</view>
+          <view class="detailList_l">基本票价</view>
 
           <view class="detailList_r" wx:if="{{PromotionDiscountType == 9}}">
-            {{initialPrice}} X {{aduit_num - couponFlag_aduit_num}}
+            <!-- {{initialPrice}} X {{aduit_num - couponFlag_aduit_num}} -->
+            {{initialPrice}} 
           </view>
           <view class="detailList_r" wx:if="{{PromotionDiscountType == 0}}">
             {{initialPrice}} X {{PromotionDiscount}} X {{aduit_num - couponFlag_aduit_num}}
@@ -100,16 +101,17 @@
           </view>
         </view>
         <view class="detailList" wx:if="{{carTypeList.length > 0 && couponFlag}}">
-          <view class="detailList_l">基本票价（成人）</view>
+          <view class="detailList_l">基本票价</view>
           <view class="detailList_r" wx:if="{{couponFlag}}">
             {{couponFlag_aduit_num}} X {{initialPrice}}
           </view>
 
         </view>
         <view class="detailList" wx:if="{{child_num > 0}}">
-          <view class="detailList_l">基本票价（儿童半价票） </view>
+          <view class="detailList_l">儿童优惠票价</view>
           <view class="detailList_r">
-            {{initialPrice / 2}} X {{child_num}}
+            <!-- {{initialPrice / 2}} X {{child_num}} -->
+            {{ChildPrice}} 
           </view>
         </view>
         <view class="detailList" wx:if="{{rangfenceMapList.length > 0}}" wx:for="{{rangfenceMapList}}" wx:key="index">
@@ -120,11 +122,11 @@
         </view>
         <!-- wx:if="{{use_couponList > 0}}" -->
         <view wx:if="{{couponList_list.length > 0}}">
-          <view class="detailList" wx:for="{{couponList_list}}" wx:key="{{item}}">
-            <view class="detailList_l">{{item.Coupon_Name}}</view>
+          <view class="detailList" >
+            <view class="detailList_l">{{couponList_list[0].CouponType_Name}}</view>
             <view class="detailList_r">
-              <view class="additional" wx:if="{{item.CouponType == '100004-0001030002'}}"> - {{item.CouponMoney}} * {{item.Count}} 张 </view>
-              <view class="additional" wx:else>- {{item.Count}} 张</view>
+              <!-- <view class="additional" wx:if="{{item.CouponType == '100004-0001030002'}}"> - {{item.CouponMoney}} * {{item.Count}} 张 </view> -->
+              <view class="additional" >- {{couponList_list.length}} 张</view>
             </view>
           </view>
         </view>
@@ -175,7 +177,7 @@
       <view class="btn" bind:tap="handletel" style="{{agree==true?'color:#fff;':'background:#eee;'}}">确认下单</view>
     </view>
     <!-- 显示优惠券 -->
-    <slideCoupon wx:if="{{showCoupon}}" class="slide-comp" params="{{slideCouponParams}}" hasChooseId="{{hasChooseId}}" showCoupon="{{showCoupon}}" bindCouponState="couponStateHandle" bindHasChooseCouponData="onHasChooseCouponData" bindExchangeItem="onExchangeItem" person_number="{{aduit_num + child_num}}"></slideCoupon>
+    <slideCoupon wx:if="{{showCoupon}}" class="slide-comp" params="{{slideCouponParams}}" hasChooseId="{{hasChooseId}}" showCoupon="{{showCoupon}}" bindCouponState="couponStateHandle" bindHasChooseCouponData="onHasChooseCouponData" bindExchangeItem="onExchangeItem" person_number="{{actualAdultCountdata}}"></slideCoupon>
   </view>
   <!-- 显示备注信息 -->
   <remarks bind:textareaValue="handleTextareaValue" wx:if="{{remark}}" remark="{{remark}}" />

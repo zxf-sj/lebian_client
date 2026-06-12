@@ -181,7 +181,31 @@ Page({
           success(res) {
             if (res.confirm) {
               console.log('用户单击确定');
-              _this.callCar()
+              const now = new Date();
+              const hours = String(now.getHours()).padStart(2, '0'); // 获取小时并补零
+              const minutes = String(now.getMinutes()).padStart(2, '0'); // 获取分钟并补零
+              const formattedTime = `${hours}:${minutes}`;
+              let pcTimeSync = wx.getStorageSync('pcTimeSync')
+              console.log(formattedTime,pcTimeSync.StartTime)
+              let timeNode =  _this.isTimeInRange(formattedTime,pcTimeSync.StartTime)
+              // let timeNode =  _this.isTimeInRange('10:44',"11:00")
+              console.log(timeNode)
+              if(timeNode) {
+                _this.callCar()
+              } else {
+                wx.showModal({
+                  title: '提示',
+                  content: '尊敬的乘客：距离发车时间较近，车辆调度资源紧张，为保证乘车体验，发车时间将最优安排至下单1个小时内的最快发车时段，请知悉。咨询热线：0351-6078977 感谢您的理解与耐心等候！',
+                  success (res) {
+                    if (res.confirm) {
+                      console.log('用户点击确定')
+                      _this.callCar()
+                    } else if (res.cancel) {
+                      console.log('用户点击取消')
+                    }
+                  }
+                })
+              }
             } else if (res.cancel) {
               console.log('用户单击取消');
             }
@@ -191,6 +215,16 @@ Page({
     }
 
   },
+ 
+ isTimeInRange(currentTime, selectedTime) {
+  const [curH, curM] = currentTime.split(':').map(Number);
+  const [selH, selM] = selectedTime.split(':').map(Number);
+  if (curH === selH && curM >= 45) {
+    return false; 
+  }
+  // 其他所有情况都返回 true
+  return true; 
+},
   // 叫车
   callCar:throttle(function(){
     let _this = this;

@@ -74,7 +74,7 @@
 }
 .main .main_item .item_right {
   padding: 30rpx 0;
-  width: 30%;
+  width: 34%;
  }
  .main .main_item .item_right .seat {
    width: 100%;

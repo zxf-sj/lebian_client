@@ -611,14 +611,15 @@ Page({
     console.log(data.destination)
     http.postRequest('/Api/MapWebApi/GetBaiduDrivingTotalLine?origin=' + data.origin + "&destination=" + data.destination, "", "", res => {
       if (res.code == 0) {
-        var datas = res.data.result.routes[0];
-        var arr = datas.steps;
+        console.log(res.data)
+        var datas = res.data.Result.Routes[0];
+        var arr = datas.Steps;
         var pl = [];
 
         for (var i = 0; i < arr.length; i++) {
           pl.push({
-            latitude: arr[i].start_location.lat,
-            longitude: arr[i].start_location.lng
+            latitude: arr[i].StartLocation.lat,
+            longitude: arr[i].StartLocation.lng
           })
         }
         let _points = [{

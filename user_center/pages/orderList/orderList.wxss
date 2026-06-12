@@ -310,18 +310,6 @@ button{
   border-bottom: 4rpx solid #f00;
   color: #f00;
 }
-.chenge_time {
-  display: flex;
-    justify-content: flex-end;
-    align-items: center;
-}
-.pickers {
-  background-color: #1aad19;
-  color: #fff;
-  padding: 8rpx 20rpx;
-  border-radius: 15rpx;
-  font-size: 26rpx;
-}
 /* 吸底栏样式 */
 /* .sticky-bottom-bar {
     position: fixed;
@@ -354,87 +342,3 @@ button{
    align-items: center;
    justify-content: center;
   } */
-
-  /* 1. 触发按钮样式 */
-.trigger-btn {
-  padding: 20rpx 30rpx;
-  background-color: #f7f8fa;
-  border-radius: 10rpx;
-  font-size: 28rpx;
-  color: #333;
-}
-
-/* 2. 全屏半透明黑色遮罩 */
-.custom-picker-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* 50%透明度黑底 */
-  z-index: 999; /* 确保在最顶层 */
-  display: flex;
-  align-items: flex-end; /* 让内容靠底部对齐 */
-}
-
-/* 3. 底部弹出的白色圆角容器 */
-.custom-picker-container {
-  width: 100%;
-  max-height: 40vh; /* 限制最大高度为屏幕60%，防止数据过多撑满屏幕 */
-  background-color: #fff;
-  border-radius: 24rpx 24rpx 0 0; /* 顶部左右圆角 */
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 4. 顶部操作栏 (取消/确定) */
-.picker-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24rpx 32rpx;
-  border-bottom: 1rpx solid #eee;
-}
-
-.picker-header text {
-  font-size: 30rpx;
-}
-
-.picker-header text:first-child {
-  color: #999; /* 取消按钮颜色 */
-}
-
-.picker-header text:last-child {
-  color: #07c160; /* 微信绿主题色 */
-  font-weight: bold;
-}
-
-/* 5. 核心：可滚动的列表区域 */
-.picker-list {
-  flex: 1; /* 占据剩余所有高度 */
-  height: 200rpx; /* 给一个固定的初始高度用于滚动计算 */
-  box-sizing: border-box;
-}
-
-/* 6. 单个列表项样式 */
-.picker-item {
-  padding: 24rpx 32rpx;
-  font-size: 30rpx;
-  color: #333;
-  text-align: center;
-  border-bottom: 1rpx solid #f5f5f5;
-  transition: all 0.2s ease; /* 增加点击反馈过渡效果 */
-}
-
-/* 7. 选中状态的高亮样式 */
-.picker-item.active {
-  background-color: #f7f8fa;
-  color: #07c160;
-  font-weight: bold;
-}
-
-/* 8. 按下时的触觉反馈（可选优化） */
-.picker-item:active {
-  background-color: #eaeaea;
-}

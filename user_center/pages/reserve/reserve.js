@@ -199,13 +199,13 @@ Page({
       // 2. 转换为本地时间字符串（默认格式）
       console.log(date.toString()); 
       console.log(date2.toString()); 
-      if (newData + THIRTY_MINUTES_MS <= timestamp) {
-        console.log('不能选择')
-        wx.showToast({
-          title: '时间段车位已满，请重新选择',
-          icon: 'none',
-        })
-      } else {
+      // if (newData + THIRTY_MINUTES_MS <= timestamp) {
+      //   console.log('不能选择')
+      //   wx.showToast({
+      //     title: '时间段车位已满，请重新选择',
+      //     icon: 'none',
+      //   })
+      // } else {
         console.log('能选择')
         if (data.SeatNum != 0) {
           _this.setData({
@@ -225,7 +225,7 @@ Page({
             url: '/pages/pingche2/pingche2',
           })
         }
-      }
+      // }
     } else {
       if (data.SeatNum != 0) {
         _this.setData({
