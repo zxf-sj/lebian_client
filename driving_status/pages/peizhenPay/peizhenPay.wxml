@@ -1,0 +1,67 @@
+<!--driving_status/pages/peizhenPay/peizhenPay.wxml-->
+<!-- pages/index/index.wxml -->
+<view class="container">
+
+  <!-- 顶部 Banner 区域 -->
+  <view class="banner-section">
+    <view class="banner-bg"></view>
+    <view class="banner-content">
+      <text class="main-title">乐遍 · 安心陪诊</text>
+      <text class="sub-title">乐遍出行 健康无忧</text>
+
+      <!-- 服务标签栏 -->
+      <view class="service-tags">
+        <view class="tag-item">陪同就医</view>
+        <view class="divider"></view>
+        <view class="tag-item">代替问诊</view>
+        <view class="divider"></view>
+        <view class="tag-item">代买药</view>
+        <view class="divider"></view>
+        <view class="tag-item">取结果</view>
+      </view>
+      <view class="service-tags row-2">
+        <view class="tag-item">手续办理</view>
+        <view class="divider"></view>
+        <view class="tag-item">人工排队</view>
+        <view class="divider"></view>
+        <view class="tag-item">约检查</view>
+      </view>
+    </view>
+    <!-- 模拟右侧医生插图占位 -->
+    <image class="doctor-img" src="/images/doctor-placeholder.png" mode="aspectFit"></image>
+  </view>
+  <form bindsubmit="handleSubmit">
+    <view class="form-table">
+      <!-- 咨询医院 -->
+      <view class="form-row">
+        <view class="form-label">咨询医院</view>
+        <view class="form-input-wrap">
+          <input name="hospital" model:value="{{hospital}}" placeholder="请输入咨询医院" />
+        </view>
+      </view>
+
+      <!-- 咨询类型 (底部弹框选择) -->
+      <view class="form-row">
+        <view class="form-label">咨询类型</view>
+        <view class="form-input-wrap">
+          <picker mode="selector" range="{{consultTypes}}" range-key="Text" value="{{typeIndex}}" bindchange="onTypeChange">
+            <view class="picker-text {{consultType ? '' : 'placeholder'}}">
+              {{consultType || '请选择咨询类型'}}
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <!-- 电话 -->
+      <view class="form-row">
+        <view class="form-label">电话</view>
+        <view class="form-input-wrap">
+          <input name="phone" model:value="{{phone}}" type="number" maxlength="11" placeholder="请输入手机号码" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <button class="submit-btn" type="primary" formType="submit">报名留资</button>
+  </form>
+</view>

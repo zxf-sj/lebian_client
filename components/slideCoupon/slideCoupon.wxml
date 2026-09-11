@@ -30,7 +30,7 @@
                   <view>{{item.CardName}}</view>
                 </view>
 
-                <view class="btm">{{item.CouponType == '100004-0001030002'?'当天有效':'长期有效'}} {{item.CouponType == '100004-0001030002'?item.CouponType_Name:item.CouponType_Name}}</view>
+                <view class="btm">长期有效 {{item.CouponType == '100004-0001030002'?item.CouponType_Name:item.CouponType_Name}}</view>
                 <!--  -->
               </view>
             </view>

@@ -1,4 +1,4 @@
- import http from '../../../utils/http';
+import http from '../../../utils/http';
 Page({
   /**
    * 页面的初始数据
@@ -122,15 +122,16 @@ Page({
   wechatPay(){
     let that = this;
     var userinfo = wx.getStorageSync('userInfo');
-    http.getRequest('/Api/DispatchMobile/GoPay?LayerOrder=1&Id='+that.data.orderDetail.Id+'&MemberInfoId='+userinfo.Id,"", wx.getStorageSync('header'), (res) => {
+    let appid = wx.getStorageSync('appId')
+    http.getRequest('/Api/DispatchMobile/GoUnionPay?appid=' + appid + '&Id='+that.data.orderDetail.Id+'&MemberInfoId='+userinfo.Id,"", wx.getStorageSync('header'), (res) => {
       if (res.code == 0) {
-        var data = JSON.parse(res.data);
+        const payData = res.data
         wx.requestPayment({
-          timeStamp: data.timeStamp,
-          nonceStr: data.nonceStr,
-          package: data.package,
-          signType: 'MD5',
-          paySign: data.paySign,
+          timeStamp: payData.TimeStamp,
+          nonceStr: payData.NonceStr,
+          package: payData.Package,
+          signType: payData.SignType,
+          paySign: payData.PaySign,
           success (res) { 
               wx.showToast({
                 title: '支付成功',

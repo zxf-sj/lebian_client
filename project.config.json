@@ -32,7 +32,7 @@
     "packNpmRelationList": [],
     "minifyWXSS": true,
     "ignoreUploadUnusedFiles": true,
-    "condition": false,
+    "condition": true,
     "compileWorklet": false,
     "minifyWXML": true,
     "localPlugins": false,
@@ -44,7 +44,9 @@
   "compileType": "miniprogram",
   "appid": "wx32762e377aa4adf6",
   "simulatorType": "wechat",
-  "simulatorPluginLibVersion": {},
+  "simulatorPluginLibVersion": {
+    "wxext14566970e7e9f62": "2.27.3"
+  },
   "condition": {
     "miniprogram": {
       "list": [
@@ -65,5 +67,6 @@
     "ignore": [],
     "include": []
   },
-  "libVersion": "3.3.5"
+  "libVersion": "3.3.5",
+  "projectArchitecture": "multiPlatform"
 }

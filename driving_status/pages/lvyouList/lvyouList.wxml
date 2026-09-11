@@ -18,7 +18,7 @@
     </view>
     <scroll-view scroll-y class="main-content">
       <!-- 旅游包车表单 (Tab 1) -->
-      <view wx:if="{{activeTab === 0 || activeTab === 2}}">
+      <view wx:if="{{activeTab === 0 }}">
         <!-- 基础信息输入 -->
         <view class="form-group">
           <view class="input-item" bind:tap="startingPoint"><text class="label">起点</text>{{starting_point?starting_point:'请选择起点'}}</view>
@@ -51,7 +51,6 @@
             </view>
           </block>
         </scroll-view>
-        <view class="txt">预订成功后，金额大于500元，0.99元抵88元优惠。</view>
         <!-- 单程/往返 单选框 -->
         <view class="section-title">行程类型</view>
         <radio-group class="radio-group" bindchange="radioChange">
@@ -60,7 +59,7 @@
           </label>
         </radio-group>
         <!-- 底部按钮 (模拟) -->
-        <view class="submit-btn" bind:tap="submit">0.99元预定</view>
+        <view class="submit-btn" bind:tap="submit">预定下单</view>
         <view class="txt">
              此单价为系统计算价格，联系13133387813可咨询更多优惠。
         </view>
@@ -77,7 +76,33 @@
         </view>
         </view>
       </view>
-
+      <view wx:if="{{ activeTab === 2}}">
+        <!-- 基础信息输入 -->
+        <view class="form-group">
+          <view class="input-item" bind:tap="startingPoint2"><text class="label">起点</text>{{starting_point?starting_point:'请选择起点'}}</view>
+          <view class="input-item" bind:tap="endting_point2"><text class="label">终点</text>{{endting_point?endting_point:'请选择终点'}}</view>
+          <view class="input-item"><text class="label">电话</text><input bindinput="searchInputend" type="number" value="{{lvyouTel}}" placeholder="请输入联系电话" maxlength="11" /></view>
+          <view class="phoneError" wx:if="{{lvyouTel_phoneError != ''}}">{{lvyouTel_phoneError}}</view>
+          <view class="input-item"><text class="label">出发日期</text>
+            <!-- start="2026-01-01" end="2017-09-01"  -->
+            <picker range="{{timeArr}}" range-key="RunTime" bindchange="lvyou_bindDateChange">
+              <view class="picker">
+                {{lvyou_date}}
+              </view>
+            </picker>
+          </view>
+          <view class="input-item" >
+            <text class="label">价格</text>
+            <input class="weui-input" type="number" bindinput="onPrice" placeholder="请输入价格" />
+          </view>
+        </view>
+        <!-- 底部按钮 (模拟) -->
+        <view class="submit-btn" bind:tap="submit2">预定下单</view>
+        <view class="txt">
+             此单价为系统计算价格，联系13133387813可咨询更多优惠。
+        </view>
+        
+      </view>
       <!-- 其他 Tab 占位 -->
       <view wx:elif="{{activeTab === 1}}">
         <view class="placeholder" style="margin-top: 0;">
@@ -172,9 +197,9 @@
           </view>
         </view>
       </view>
-      <!-- <view wx:else>
+      <view wx:else>
         <view class="placeholder">这里是【协议客户】的内容</view>
-      </view> -->
+      </view>
 
     </scroll-view>
   </view>

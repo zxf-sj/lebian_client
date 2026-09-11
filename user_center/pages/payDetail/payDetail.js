@@ -1,6 +1,8 @@
 // pages/payDetail/payDetail.js
 import http from '../../../utils/http';
 import qqmapsdk from '../../../libs/qqMap';
+const BASE_URL = require("../../../utils/BASE_URL");
+var baseUrl = BASE_URL.BASE_URL //配置基础url
 var app = getApp();
 Page({
   data: {
@@ -396,24 +398,27 @@ Page({
     // })
     // console.log('去拿支付所需信息')
     var user = wx.getStorageSync('userInfo');
-    http.getRequest('/Api/DispatchMobile/GoPay?LayerOrder=1&Id=' + orderId + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
-      console.log('请求成功')
+    let appid = wx.getStorageSync('appId')
+    http.getRequest('/Api/DispatchMobile/GoUnionPayOrderRide?appid=' + appid + '&Id=' + orderId + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
+      console.log('请求成功',LayerOrderRes)
       if (LayerOrderRes.code == 0) {
         console.log('获取支付所需信息成功')
-        var data = JSON.parse(LayerOrderRes.data);
+        var payData = LayerOrderRes.data
         console.log('拉起支+付')
         wx.requestPayment({
-          timeStamp: data.timeStamp,
-          nonceStr: data.nonceStr,
-          package: data.package,
-          signType: 'MD5',
-          paySign: data.paySign,
+          timeStamp: payData.TimeStamp,
+            nonceStr: payData.NonceStr,
+            package: payData.Package,
+            signType: payData.SignType,
+            paySign: payData.PaySign,
           success(paymentRes) {
             console.log('支付成功')
-            wx.showToast({
-              title: '支付成功',
-              icon: 'success',
-              duration: 300,
+            wx.showModal({
+              title: '预约成功',
+              content: '订单已预约成功，司机将会在您出发前一小时联系你',
+              showCancel: false, // 隐藏取消按钮，强制用户点击确认
+              confirmText: '我知道了',
+            
               success: function () {
                 console.log('111')
                 setTimeout(function () {
@@ -527,7 +532,7 @@ Page({
       "Id": that.data.orderId,
       "Mark": value
     }
-    http.postRequest("/Api/DispatchMobile/RefundOrder", request, '', (res) => {
+    http.postRequest("/Api/DispatchMobile/UnionPayRefundOrder", request, '', (res) => {
       console.log('申请退款', res)
       if (res.code == 0) {
         wx.showToast({
@@ -602,52 +607,60 @@ Page({
     this.driving(data.srcLat, data.srcLng, data.desLat, data.desLng);
   },
   driving(str1, str2, end1, end2) {
+    console.log('进来了没')
     var _this = this;
-    var data = {
-      "origin": str1 + "," + str2,
-      "destination": end1 + "," + end2
+    let userInfo = wx.getStorageSync('userInfo')
+    let reqData = {
+      CreateUserId:userInfo.Id,
+      Id:_this.data.orderId
     }
-    console.log(data.origin)
-    console.log(data.destination)
-    http.postRequest('/Api/MapWebApi/GetBaiduDrivingTotalLine?origin=' + data.origin + "&destination=" + data.destination, "", "", res => {
-      if (res.code == 0) {
-        console.log(res.data)
-        var datas = res.data.Result.Routes[0];
-        var arr = datas.Steps;
-        var pl = [];
-
-        for (var i = 0; i < arr.length; i++) {
-          pl.push({
-            latitude: arr[i].StartLocation.lat,
-            longitude: arr[i].StartLocation.lng
+    wx.request({
+      url: baseUrl + '/api/MapWebApi/GetDriverCarline',
+      data:reqData,
+      method:"POST",
+      success(res) {
+        if (res.data.code == 0) {
+          var datas = res.data.data.Result.Routes[0];
+          var arr = datas.Steps;
+          var pl = [];
+          console.log(arr)
+          for (var i = 0; i < arr.length; i++) {
+            pl.push({
+              latitude: arr[i].StartLocation.lat,
+              longitude: arr[i].StartLocation.lng
+            })
+          }
+          let _points = [{
+            latitude: parseFloat(str1),
+            longitude: parseFloat(str2)
+          }, {
+            latitude: parseFloat(end1),
+            longitude: parseFloat(end2)
+          }];
+          _this.setData({
+            polyline: [{
+              points: pl,
+              color: '#4dd08b',
+              width: 4,
+              arrowLine: true
+            }],
+            yjTimes: (datas.duration / 60).toFixed(2),
+            countLen: (datas.distance / 1000).toFixed(2)
+          })
+          console.log(_points)
+          _this.mapCtx.includePoints({
+            padding: [120],
+            points: _points,
           })
         }
-        let _points = [{
-          latitude: parseFloat(str1),
-          longitude: parseFloat(str2)
-        }, {
-          latitude: parseFloat(end1),
-          longitude: parseFloat(end2)
-        }];
-        _this.setData({
-          polyline: [{
-            points: pl,
-            color: '#4dd08b',
-            width: 4,
-            arrowLine: true
-          }],
-          yjTimes: (datas.duration / 60).toFixed(2),
-          countLen: (datas.distance / 1000).toFixed(2)
-        })
-
-        _this.mapCtx.includePoints({
-          padding: [120],
-          points: _points,
-        })
-      }
-    }, err => {
-      console.log(1111, err)
+        
+      },
     })
+    // http.postRequest('/api/MapWebApi/GetDriverCarline?CreateUserId=' + userInfo.Id + "&Id=" + _this.data.orderId, "", "", res => {
+      
+    // }, err => {
+    //   console.log(1111, err)
+    // })
  
   },
   moveCar(latitude, longitude) {
@@ -660,6 +673,25 @@ Page({
       autoRotate: true,
       rotate: -90,
       moveWithRotate: true
+    })
+  },
+  handlePhone(e) {
+    console.log(e.currentTarget.dataset.phone)
+    wx.showModal({
+      title: '拨打电话',
+      content: '是否跳转联系司机？',
+      success(res) {
+          if (res.confirm) {
+            wx.makePhoneCall({
+              phoneNumber: e.currentTarget.dataset.phone // 你要拨打的电话号码
+            })
+          } else if (res.cancel) {
+            wx.showToast({
+              title: '取消拨打客服电话',
+              icon:"error"
+            })
+          }
+      }
     })
   },
   getSijiLocation() {

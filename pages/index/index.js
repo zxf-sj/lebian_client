@@ -41,8 +41,8 @@ Page({
   },
   onLoad: async function (opt) {
     //发布之前改时间 推迟几个小时
-    var time = "2026-06-12 18:00:00";
-    // var time = "2026-06-12 18:00:00";
+    var time = "2026-09-08 14:00:00";
+    // var time = "2026-09-09 14:00:00";
     var t = util.formatTime(new Date());
     this.setData({
       ischeck: t < time ? true : false
@@ -125,6 +125,10 @@ Page({
     this.setData({
       imgbaseUrl:baseUrl
     })
+    const accountInfo = wx.getAccountInfoSync();
+const appId = accountInfo.miniProgram.appId;
+console.log(`当前小程序的 AppID 是: ${appId}`);
+wx.setStorageSync('appId', appId)
   //   let syncData = {
   //     "Birthday": "",
   //     "City": "Vip202506260800042232",
@@ -182,11 +186,16 @@ Page({
       url: '/user_center/pages/ceshi/ceshi'
     })
   },
+  initUmsPay(e){
+    this.setData({
+      umsDevPay: e.detail
+    })
+  },
   getLunBo() {
     var userinfo = wx.getStorageSync('userInfo') || {Id:''};
-    console.log(userinfo)
+
     http.getRequest("/api/CarPromotion/GetCompanyInfoImgList?Id=300007-fa5b6d0d40594f02ad91425ef44141eb&MemberId=" + userinfo.Id, '', '', res => {
-      console.log('轮播图',res)
+
       if (res.code == 0) {
           this.setData({
             lunBoImg: res.data,
@@ -252,7 +261,7 @@ Page({
   },
   // 转发
   onShareAppMessage(e) {
-    console.log(e)
+
     return {
       title: '乐遍出行',
       imageUrl: "/assets/images/indexFX.jpg",
@@ -349,9 +358,9 @@ Page({
   },
   closeCoupon() {
     //弹框跳转
-    // wx.navigateTo({
-    //   url: "/driving_status/pages/payCard/payCard",
-    // })
+    wx.navigateTo({
+      url: "/driving_status/pages/payCard/payCard",
+    })
    
   },
   hideDelModal() {
@@ -359,14 +368,7 @@ Page({
       showDel: null
     })
   },
-  callPhone(e) {
-    wx.makePhoneCall({
-      phoneNumber: '0351-6078977',
-      success() {
-        console.log('拨打成功')
-      }
-    })
-  },
+ 
   getNotice() {
     let that = this;
     that.setData({
@@ -384,9 +386,9 @@ Page({
   couponCheck() {
     let that = this;
     //弹框跳转
-    // wx.navigateTo({
-    //   url: "/driving_status/pages/payCard/payCard",
-    // })
+    wx.navigateTo({
+      url: "/driving_status/pages/payCard/payCard",
+    })
     // var userinfo = wx.getStorageSync('userInfo');
     // let ids = that.data.listData.map(item => item.Id)
     // let idStr = ids.join(',')
@@ -600,5 +602,24 @@ Page({
       title: '乐遍出行',
       imageUrl: '/assets/images/share.jpg' // 自定义图片（建议尺寸 1080*1920）
     }
+  },
+  callPhone: function () {
+    wx.showModal({
+      title: "提示",
+      content: "是否跳转拨打电话？",
+      confirmText: "确定",
+      cancelText: "关闭",
+      success(res) {
+        if (res.confirm) {
+          wx.makePhoneCall({
+            phoneNumber: '0351-6078977', 
+            fail: function (err) {
+              console.log('用户取消了拨号');
+            }
+          })
+        }
+      },
+    });
+    
   }
 })

@@ -16,9 +16,10 @@
         <picker  value="{{index}}" range-key="Name" range="{{addArr}}"  bindchange="bindPickerLine">
           {{startingCity}} —— {{endingCity}}
           </picker>
-          <picker value="{{index}}"  range="{{TimeList}}"  bindchange="bindPickerTime">
+          <picker value="{{index}}"  range="{{TimeList}}"  bindchange="bindPickerTime" wx:if="{{time_seatNum == 1}}">
             {{StartTime}} ~ {{EndTime}}
           </picker>
+          <view wx:else class="timeSeatNum">车辆已满</view>
       </view>
       <view class="money">￥ {{Price}}</view>
     </view>

@@ -1,0 +1,98 @@
+<!--user_center/pages/busList/busList.wxml-->
+<!-- pages/bus-list/bus-list.wxml -->
+<view class="container">
+
+  <!-- 1. 顶部日期栏 (固定不动) -->
+  <scroll-view class="date-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+    <view class="date-item {{currentDateIndex === index ? 'active' : ''}}" wx:for="{{dateList}}" wx:key="id" bindtap="selectDate" data-index="{{index}}">
+      <view class="date-num">{{item.date}}</view>
+      <view class="date-week">{{item.week}}</view>
+      <!-- 选中时的蓝色小三角 -->
+      <view class="triangle" wx:if="{{currentDateIndex === index}}"></view>
+    </view>
+  </scroll-view>
+
+  <!-- 2. 车次列表 (可滑动区域) -->
+  <!-- scroll-y: 允许纵向滚动 -->
+  <!-- refresher-enabled: 开启下拉刷新（可选） -->
+  <!-- bindscrolltolower: 滚动到底部触发加载更多 -->
+  <scroll-view class="list-container" scroll-y bindscrolltolower="loadMore" lower-threshold="50">
+
+    <view class="bus-list">
+      <view class="bus-card" wx:for="{{busList}}" wx:key="id" wx:for-index="dIndex">
+
+        <!-- 卡片头部：路线与价格 -->
+        <view class="card-header">
+          <view class="route-title">
+            <text class="icon">🚌</text>
+            <text>{{item.LineId_Name}} </text>
+          </view>
+          <view class="price">¥{{item.TicketPrice}}<text class="unit">起</text></view>
+        </view>
+
+        <!-- 卡片中部：时间与上下车点 -->
+        <view class="card-body">
+          <view class="time-col">
+            <text class="time-range">{{item.Time}}</text>
+            <text class="time-label">接驾时段</text>
+          </view>
+
+          <view class="route-col">
+            <!-- 起点 -->
+            <view class="point-row start">
+              <view class="dot green"></view>
+              <text class="text">{{item.StartSiteList[0].LocationName}}</text>
+            </view>
+
+            <!-- 途经站点 (折叠/展开逻辑) -->
+            <view class="via-section">
+              <view class="via-toggle" bindtap="toggleVia" data-id="{{item.Id}}">
+                <view class="line-dashed"></view>
+                <view class="toggle-text">
+                  {{item.showVia ? '∧ 隐藏途经站点' : '∨ 途经站点'}}
+                </view>
+              </view>
+
+              <!-- 展开的内容 -->
+              <view class="via-list" wx:if="{{item.showVia}}">
+                <view class="title_bus">选择起点</view>
+                <view class="point-row via" wx:for="{{item.StartSiteList}}" wx:for-index="sIndex" wx:key="index" wx:for-item="station">
+                  <view class="dot orange"></view>
+                  <text class="text {{station.type ? 'start_active' : ''}}" data-dindex="{{dIndex}}" data-sindex="{{sIndex}}" bind:tap="handleStart">{{station.LocationName}} </text>
+                  <text wx:if="{{station.type}}" class="activeTxt">起点</text>
+                </view>
+                <view class="title_bus">选择终点</view>
+                <view class="point-row via" wx:for="{{item.EndSiteList}}" wx:for-index="eIndex" wx:key="index" wx:for-item="station">
+                  <view class="dot orange"></view>
+                  <text class="text {{station.type ? 'end_active' : ''}}" data-dindex="{{dIndex}}" data-eindex="{{eIndex}}" bind:tap="handleEnd">{{station.LocationName}} </text>
+                   <text wx:if="{{station.type}}" class="activeTxt">终点</text>
+                </view>
+              </view>
+            </view>
+
+            <!-- 终点 -->
+            <view class="point-row end">
+              <view class="dot orange"></view>
+              <text class="text">{{item.EndSiteList[item.EndSiteList.length - 1].LocationName}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 卡片底部：余票与按钮 -->
+        <view class="card-footer">
+          <view class="seats-info">
+            <!-- <text class="count">余 {{item.seats}}</text> -->
+            <text class="desc">🔔 {{item.notice}}</text>
+          </view>
+          <button class="book-btn" bind:tap="handleReservation" data-id="{{item.Id}}" data-time="{{item.Time}}">预订</button>
+        </view>
+
+      </view>
+
+      <!-- 到底提示 -->
+      <view class="loading-tip" wx:if="{{isLoading}}">加载中...</view>
+      <view class="loading-tip" wx:if="{{!hasMore && busList.length > 0}}">没有更多了</view>
+    </view>
+
+  </scroll-view>
+</view>

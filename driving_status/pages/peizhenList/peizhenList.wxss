@@ -1,78 +1,219 @@
+/* pages/index/index.wxss */
+page {
+  background-color: #f7f8fa;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+}
+
 .container {
-  padding: 20rpx;
-  background-color: #eee;
+  padding-bottom: 40rpx;
 }
- 
-.car-card {
-  background: #fefefe;
-  border-radius: 16rpx;
-  margin-bottom: 30rpx;
+
+/* --- 顶部 Banner --- */
+.banner-section {
   position: relative;
+  height: 360rpx;
+  background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%); /* 浅绿色背景 */
   overflow: hidden;
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+  padding: 40rpx 30rpx;
+  box-sizing: border-box;
 }
- 
-.car-image {
-  width: 100%;
-  height: 400rpx;
+
+.banner-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
 }
- 
-.info-box {
-  padding: 30rpx;
-}
- 
-.car-type {
-  font-size: 36rpx;
+
+.main-title {
+  font-size: 44rpx;
   font-weight: bold;
   color: #333;
+  margin-bottom: 10rpx;
+}
+
+.sub-title {
+  font-size: 24rpx;
+  color: #555;
+  margin-bottom: 30rpx;
+  letter-spacing: 2rpx;
+}
+
+.service-tags {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.tag-item {
+  font-weight: 500;
+}
+
+.divider {
+  width: 1rpx;
+  height: 24rpx;
+  background-color: #999;
+  margin: 0 15rpx;
+}
+
+.doctor-img {
+  position: absolute;
+  right: -20rpx;
+  bottom: 0;
+  width: 260rpx;
+  height: 300rpx;
+  z-index: 1;
+  opacity: 0.9;
+}
+
+/* --- 核心卖点栏 --- */
+
+.notice-bar {
+  display: flex;
+  align-items: center;
+  background-color: #fff8e6;
+  padding: 0 20rpx;
+  height: 70rpx;
+  border-radius: 8rpx;
+  margin: 20rpx;
+}
+
+.notice-icon {
+  font-size: 32rpx;
+  margin-right: 15rpx;
+  flex-shrink: 0;
+}
+
+.notice-swiper {
+  flex: 1;
+  height: 70rpx; /* 高度必须与父容器一致 */
+}
+
+.notice-item {
+  height: 70rpx;
+  line-height: 70rpx;
+  font-size: 28rpx;
+  color: #ff9900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- 金刚区 Grid --- */
+.grid-menu {
+  padding: 0 24rpx;
+}
+
+.grid-row {
+  display: flex;
+  height: 320rpx;
+  margin-bottom: 20rpx;
+}
+
+.card {
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-sizing: border-box;
+  position: relative;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* 左侧大卡片 */
+.card-large {
+  flex: 1.8; /* 占比宽一点 */
+  margin-right: 20rpx;
+  background: linear-gradient(180deg, #6dd5ed 0%, #2193b0 100%); /* 蓝色渐变 */
+}
+
+/* 右侧列容器 */
+.grid-col-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-small {
+  height: 150rpx; /* 大概一半高度减去间距 */
+  background: linear-gradient(135deg, #ff7878 0%, #78ffd6 100%); /* 默认绿色 */
+}
+
+.card-small.orange-gradient {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); /* 橙色 */
+}
+
+.card-title {
+  font-size: 34rpx;
+  font-weight: bold;
   display: block;
   margin-bottom: 10rpx;
 }
- 
-.car-detail {
-  font-size: 28rpx;
-  color: #666;
-  display: block;
-  margin-bottom: 20rpx;
+
+.card-desc {
+  font-size: 22rpx;
+  opacity: 0.9;
+  white-space: pre-line; /* 支持换行 */
 }
- 
-.price {
-  font-size: 44rpx;
-  font-weight: bold;
-  color: #FF4444;
-  display: block;
-  margin-bottom: 30rpx;
+
+.card-desc-sm {
+  font-size: 20rpx;
+  opacity: 0.9;
 }
- 
-.book-btn {
+
+.card-icon-placeholder {
   position: absolute;
-  right: 30rpx;
-  bottom: 30rpx;
-  width: 200rpx;
-  height: 70rpx;
-  line-height: 70rpx;
-  border-radius: 35rpx;
-  font-size: 28rpx;
-  background: linear-gradient(45deg, #007AFF, #0055CC);
+  right: 20rpx;
+  bottom: 20rpx;
+  font-size: 80rpx;
+  opacity: 0.3;
 }
- 
-.book-btn::after {
-  border: none;
-}
-.bg{
-  padding: 0 50rpx;
-  margin:100rpx auto 0;
-  text-align: center;
-  color: #9A9A9A;
-  font-size: 28rpx;
+.card-icon-placeholder.small {
+  font-size: 50rpx;
 }
 
-.bg-img{
-  width: 324rpx;
-  height: 317rpx;
-  margin-bottom: 21rpx;
+/* --- 下方列表 --- */
+.grid-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
-.bg-cont{
-  color: #FF8008;
+.list-item {
+  width: 48.5%; /* 两列布局 */
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 30rpx 20rpx;
+  box-sizing: border-box;
+  margin-bottom: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.02);
+}
+
+.list-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.list-desc {
+  font-size: 20rpx;
+  color: #999;
+}
+
+.list-icon {
+  font-size: 50rpx;
+  color: #e0e0e0; /* 浅灰色图标背景感 */
 }

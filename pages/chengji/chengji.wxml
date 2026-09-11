@@ -1,4 +1,5 @@
 <view class="map_container">
+
   <view class="lunbo">
     <swiper indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" class="swipers">
       <block wx:for="{{lunBoImg}}" wx:key="index">
@@ -24,11 +25,11 @@
       <view class="chengji {{car_type == 1 ? 'zhong' : ''}}" bindtap="car_type" data-item="1">城际包车</view>
       <view class="chengji  {{car_type == 3 ? 'zhong' : ''}}" bindtap="car_type" data-item="3">
         <view class="sh jiaobiao"></view>
-      城际巴士
+        城际巴士
       </view>
       <view class="chengji  {{car_type == 2 ? 'zhong' : ''}}" bindtap="car_type" data-item="2">
-      <!-- <view class="sh jiaobiao"></view> -->
-      小件捎货
+        <!-- <view class="sh jiaobiao"></view> -->
+        小件捎货
       </view>
     </view>
     <view class="xuandi">
@@ -56,8 +57,20 @@
           </view>
         </picker>
       </view> -->
+      <view class="date-container" wx:if="{{car_type == 3}}" bind:tap="handleCalendar">
+        <!-- 左侧图标 -->
+        <text class="date-icon">🕒</text>
+        <!-- 中间主要日期 -->
+        <text class="date-main">{{mainDate}}</text>
+
+        <!-- 右侧辅助信息 -->
+        <view class="date-sub-group">
+          <text class="date-week">{{weekDay}}</text>
+          <text class="date-relative" wx:if="{{relativeDay}}">{{relativeDay}}</text>
+        </view>
+      </view>
       <!-- wx:else -->
-      <view class="times" ></view>
+      <view class="times"></view>
       <view class="bbt">
         <view class="buts">
           <button class="butt" bindtap="reserve">查 询 预 定</button>
@@ -72,11 +85,18 @@
     {{orderWarning}}
     <view class="goOrdei" bind:tap="goOrder">点击前往</view>
   </view>
-  <view class="hot_route_title">热门线路</view>
-  <view class="hot_route_main">
+  <view class="hot_route_title" wx:if="{{car_type != 3}}">热门线路</view>
+  <view class="hot_route_main" wx:if="{{car_type != 3}}">
     <view class="hot_route_item" wx:for="addArr" wx:key="index" data-index="{{index}}" bind:tap="bindHotRoute">
       <view>{{addArr[index].StatingLocation_Name}}-->{{addArr[index].EndLocation_Name}}</view>
     </view>
-
   </view>
+  <view class="hot_route_main" wx:if="{{car_type == 3}}">
+    <view class="hot_route_item" wx:for="{{busList}}" wx:key="index" data-lineId="{{item.Id}}" data-start="{{item.start}}" data-end="{{item.end}}"  bind:tap="bindHotRoute2">
+      <view>{{item.LineName}}</view>
+    </view>
+   
+  </view>
+  <!-- <daohang></daohang> -->
+  <!-- <calendar></calendar> -->
 </view>

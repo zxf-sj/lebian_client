@@ -71,7 +71,12 @@
         "pages/invoiceTemplate/invoiceTemplate",
         "pages/invoiceTitle/invoiceTitle",
         "pages/confirm/confirm",
-        "pages/refund/refund"
+        "pages/refund/refund",
+        "pages/dateSelection/dateSelection",
+        "pages/busList/busList",
+        "pages/busOrder/busOrder",
+        "pages/booking/booking",
+        "pages/select-traveler/select-traveler"
       ],
       "independent": false
     },
@@ -91,6 +96,7 @@
         "pages/lvyou/lvyou",
         "pages/lvyouList/lvyouList",
         "pages/peizhenList/peizhenList",
+        "pages/peizhenPay/peizhenPay",
         "pages/payCard/payCard",
         "pages/touristCarRental/touristCarRental",
         "pages/hotLine/hotLine"
@@ -110,7 +116,9 @@
     "navigationBarTextStyle": "black"
   },
   "sitemapLocation": "sitemap.json",
-  "plugins": {},
+  "plugins": {
+   
+  },
   "requiredPrivateInfos": [
     "getLocation"
   ],

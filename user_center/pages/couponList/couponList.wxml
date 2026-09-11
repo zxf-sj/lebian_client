@@ -22,7 +22,7 @@
               <view>{{item.CardName}}</view>
             </view>
 
-            <view class="btm" >{{item.CouponType == '100004-0001030028'?'长期有效':'当天有效'}}</view>
+            <view class="btm" >长期有效</view>
             <view class="tag">
               <image src="../../assets/images/youhuiquan_biaoqian01.png"></image>
               <view class="num">1张</view>

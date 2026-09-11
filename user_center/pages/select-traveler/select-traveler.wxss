@@ -1,0 +1,153 @@
+/* user_center/pages/select-traveler/select-traveler.wxss */
+/* 全局容器 */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+/* 顶部导航栏 */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 30rpx;
+  background-color: #fff;
+  border-bottom: 1rpx solid #eee;
+}
+.back-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-back {
+  font-size: 40rpx;
+  color: #333;
+}
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+.header-actions {
+  display: flex;
+  gap: 20rpx;
+}
+.action-icon {
+  font-size: 30rpx;
+  color: #333;
+}
+
+/* 出行人列表 */
+.traveler-list {
+  flex: 1;
+  padding: 30rpx;
+  overflow-y: auto;
+}
+.add-traveler-btn {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+.add-icon {
+  width: 40rpx;
+  height: 40rpx;
+  background-color: #4a6cf7;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  margin-right: 20rpx;
+}
+.add-text {
+  font-size: 32rpx;
+  color: #333;
+}
+
+/* 单个出行人项 */
+.traveler-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  background-color: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+.radio {
+  margin-right: 20rpx;
+}
+.radio-circle {
+  width: 40rpx;
+  height: 40rpx;
+  border: 2rpx solid #ccc;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+.radio-circle.selected {
+  border-color: #4a6cf7;
+  background-color: #4a6cf7;
+}
+
+.traveler-info {
+  flex: 1;
+}
+.name-tag {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+.name {
+  font-size: 32rpx;
+  color: #333;
+  margin-right: 10rpx;
+}
+.tag {
+  font-size: 24rpx;
+  color: #666;
+  background-color: #f0f0f0;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+.id-card {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.edit-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.edit-icon {
+  font-size: 30rpx;
+  color: #4a6cf7;
+}
+
+/* 底部确认按钮 */
+.footer {
+  padding: 30rpx;
+  background-color: #fff;
+  border-top: 1rpx solid #eee;
+}
+.confirm-btn {
+  width: 100%;
+  height: 90rpx;
+  background-color: #4a6cf7;
+  color: #fff;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  line-height: 90rpx;
+  text-align: center;
+}

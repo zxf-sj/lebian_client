@@ -12,7 +12,9 @@ Page({
   data: {
     couponList_list: [],
     huodong_list: null,
-    use_couponList: 0, //次卡使用张数
+    coupon_num:0,//优惠卷使用张数
+    membershipCard_num:0,//次卡使用张数
+    
     isshow: false, //用户须知
     couponList: 0, //次卡张数
     showCoupon: false, //优惠券弹框
@@ -39,8 +41,8 @@ Page({
     PromotionDiscount: "", // 折扣值
     version: 0, //超范围
     baseUrl: '',
-    ChildPrice:'',
-    actualAdultCountdata:1,//计算最终需要按【成人票价】结算的总人数
+    ChildPrice: '',
+    actualAdultCountdata: 1, //计算最终需要按【成人票价】结算的总人数
   },
   /**
    * 生命周期函数--监听页面加载
@@ -71,10 +73,11 @@ Page({
       aduit_num: 1,
       child_num: 0,
       price: '',
-      use_couponList: 0,
+      coupon_num: 0,
+      membershipCard_num: 0,
       carTypeList: [],
       rangfenceMapList: [],
-      couponList_list:[],
+      couponList_list: [],
       couponList: 0
     })
     this.getCarList()
@@ -90,10 +93,11 @@ Page({
       aduit_num: 1,
       child_num: 0,
       price: '',
-      use_couponList: 0,
+      coupon_num: 0,
+      membershipCard_num:0,
       carTypeList: [],
       rangfenceMapList: [],
-      couponList_list:[],
+      couponList_list: [],
       couponList: 0
     })
   },
@@ -127,14 +131,14 @@ Page({
               const minutes = String(now.getMinutes()).padStart(2, '0'); // 获取分钟并补零
               const formattedTime = `${hours}:${minutes}`;
               let pcTimeSync = wx.getStorageSync('pcTimeSync')
-              let timeNode =  _this.isTimeInRange(formattedTime,pcTimeSync.StartTime)
-              if(timeNode) {
+              let timeNode = _this.isTimeInRange(formattedTime, pcTimeSync.StartTime)
+              if (timeNode) {
                 _this.handleCallCar()
               } else {
                 wx.showModal({
                   title: '提示',
                   content: '尊敬的乘客：距离发车时间较近，车辆调度资源紧张，为保证乘车体验，发车时间将最优安排至下单1个小时内的最快发车时段，请知悉。咨询热线：0351-6078977 感谢您的理解与耐心等候！',
-                  success (res) {
+                  success(res) {
                     if (res.confirm) {
                       _this.handleCallCar()
                     } else if (res.cancel) {
@@ -143,7 +147,7 @@ Page({
                   }
                 })
               }
-              
+
             } else if (res.cancel) {
               console.log('用户单击取消');
             }
@@ -153,50 +157,141 @@ Page({
     }
 
   },
-  // 叫车
+  // 防抖处理后的主入口函数
   handleCallCar: throttle(function () {
-   
-    const _this = this;
-    var openid = wx.getStorageSync('openid');
+    this._mainProcess();
+  }, 3000),
+  // 1. 主流程控制
+  async _mainProcess() {
+    try {
+      // 1.1 数据准备与校验
+      const sessionData = this._getSessionData();
+      if (!sessionData) return;
+
+      const {storageSync,phone_number} = sessionData;
+
+      // 1.2 检查历史订单
+      const historyOrderInfo = await this._checkHistoryOrder(phone_number, storageSync.startDate);
+      console.log(historyOrderInfo)
+      let shouldProceed = true;
+      if (historyOrderInfo) {
+        console.log('3')
+        // 使用 Promise 包装 showModal
+        const modalRes = await new Promise(resolve => {
+          wx.showModal({
+            title: '下单记录',
+            content: historyOrderInfo,
+            cancelText: "取消下单",
+            confirmText: "继续下单",
+            success: resolve
+          });
+        });
+        shouldProceed = modalRes.confirm;
+      }
+      console.log('2')
+      if (!shouldProceed) {
+        wx.navigateTo({
+          url: '/pages/index/index'
+        });
+        return;
+      }
+      console.log('1')
+      // 1.3 执行下单与支付
+      await this._processOrderAndPayment(sessionData);
+
+    } catch (error) {
+      console.error('下单流程异常:', error);
+      wx.showToast({
+        title: '系统繁忙，请稍后重试',
+        icon: 'none'
+      });
+    }
+  },
+  // 2. 获取并校验会话数据
+  _getSessionData() {
+    const openid = wx.getStorageSync('openid');
     if (!openid) {
       wx.navigateTo({
-        url: '/user_center/pages/login/login',
-      })
-      return false;
+        url: '/user_center/pages/login/login'
+      });
+      return null;
     }
-    if (!openid) {
-      wx.navigateTo({
-        url: '/user_center/pages/login/login',
-      })
-      return false;
-    }
-    var user = wx.getStorageSync('userInfo');
-    var startInfo = wx.getStorageSync('starInfo2');
-    var endInfo = wx.getStorageSync('endInfo2');
-    var storageSync = wx.getStorageSync('storageSync')
-    var pcTimeSync = wx.getStorageSync('pcTimeSync')
-    var pcTypeId = wx.getStorageSync('pcTypeId');
-    var note = wx.getStorageSync('textareaValue');
-    var startDate = storageSync.startDate;
+
+    const user = wx.getStorageSync('userInfo');
+    // 注意：原代码 key 是 starInfo2，可能是拼写错误，这里保持一致
+    const startInfo = wx.getStorageSync('starInfo2');
+    const endInfo = wx.getStorageSync('endInfo2');
+    const storageSync = wx.getStorageSync('storageSync');
+    const pcTimeSync = wx.getStorageSync('pcTimeSync');
+    const pcTypeId = wx.getStorageSync('pcTypeId');
+    const lineId = wx.getStorageSync('lineId');
+
+    // 从页面 data 中获取
+    const {
+      phone_number,
+      textareaValue,
+      aduit_num,
+      child_num
+    } = this.data;
+
     if (!startInfo.startAddress) {
       wx.showToast({
         title: '请选择出发乘车位置',
-        icon: 'none',
-        duration: 2000
-      })
-      return false;
+        icon: 'none'
+      });
+      return null;
     }
-    if(pcTimeSync.StartTime == '') {
+    if (!pcTimeSync.StartTime) {
       wx.showToast({
         title: '请选择出行时间',
-        icon: 'none',
-        duration: 2000
-      })
+        icon: 'none'
+      });
+      return null;
     }
-    let starTime = pcTimeSync.StartTime.split(':')[0] + ':59:00'
-    let ArrivalTime = startDate + ' ' + starTime
-    let lineId = wx.getStorageSync('lineId')
-    let reqData = {
+
+    return {openid,user,startInfo,endInfo,storageSync,pcTimeSync,pcTypeId,lineId,phone_number,textareaValue,aduit_num,child_num};
+  },
+
+  // 3. 检查历史订单
+  _checkHistoryOrder(phone, date) {
+    return new Promise((resolve) => {
+      // 假设 http.getRequest 是你封装的请求方法
+      console.log(phone, date)
+      http.getRequest('/Api/DispatchMobile/IsUserHaveDayOrder?phone=' + phone + '&timeDay=' + date, '', '', res => {
+        if (res.code === 0 && res.count > 0) {
+          let str = "";
+          res.data.forEach(item => {
+            str += `${item.PassengerLineId_Name}, 订单号:${item.Code}\n`;
+          });
+          resolve(str); // 返回订单信息字符串
+        } else {
+          resolve(false); // 无历史订单
+        }
+      }, () => resolve(false));
+    });
+  },
+
+  // 4. 核心下单与支付逻辑
+  async _processOrderAndPayment(data) {
+    console.log(data)
+    const {
+      user,
+      startInfo,
+      endInfo,
+      storageSync,
+      pcTimeSync,
+      pcTypeId,
+      lineId,
+      phone_number,
+      textareaValue,
+      aduit_num,
+      child_num
+    } = data;
+
+    // 构建请求参数
+    const arrivalTime = this._formatArrivalTime(storageSync.startDate, pcTimeSync.StartTime);
+
+    const reqData = {
       PassengerLineId: lineId,
       IntoLocation: startInfo.startName,
       IntoLongitude: startInfo.startLont,
@@ -205,308 +300,138 @@ Page({
       OffLongitude: endInfo.endLont,
       OffLatitude: endInfo.endLait,
       Departure: "100004-0000980001",
-      ArrivalTime: ArrivalTime,
+      ArrivalTime: arrivalTime,
       Personal: user.Id,
       SeatNumber: 0,
       DispatchListId: "",
       IsReservation: "100004-0000010002",
-      CouponDetailsId: pcTimeSync.hasChooseId ? pcTimeSync.hasChooseId : "",
-      PersonalIds: _this.data.phone_number,
-      Note: _this.data.textareaValue, //备注信息
+      CouponDetailsId: pcTimeSync.hasChooseId || "",
+      PersonalIds: phone_number,
+      Note: textareaValue,
       IsExclusive: "100004-0000010002",
       IsPickGoods: '100004-0000010002',
       SelectCarType: pcTypeId,
       OrderSource: "小程序",
       priceType: '100004-0001270001',
-      AdultNumber: _this.data.aduit_num, //成人数
-      ChildNum: _this.data.child_num, //儿童数
+      AdultNumber: aduit_num,
+      ChildNum: child_num,
     };
-    http.getRequest('/Api/DispatchMobile/IsUserHaveDayOrder?phone=' + _this.data.phone_number + '&timeDay=' + startDate, '', '', res => {
-      if (res.code == 0) {
-        if (res.count == 0) {
-          // if (this.data.dispatchListId) {
-          //   wx.showLoading({
-          //     title: '车辆调度中',
-          //   })
-          // } else {
-          //   wx.showLoading({
-          //     title: '加载中...',
-          //   })
-          // }
-          let that = this;
-          wx.request({
-            // CreateRideTicketOrder 旧
-            url: baseUrl + '/Api/DispatchMobile/CreatePersonTicketOrder',
-            data: reqData,
-            method: "POST",
-            success(orderRes) {
-              console.log('请求成功')
-              var ress = orderRes.data
-              if (ress.code == '0') {
-                console.log('下单成功', ress)
-                if (ress.data.PayAmount != 0) {
-                  wx.hideLoading();
-                  http.getRequest('/Api/DispatchMobile/GoPay?LayerOrder=1&Id=' + ress.data.Id + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
-                    console.log('请求成功', LayerOrderRes)
-                    if (LayerOrderRes.code == 0) {
-                      console.log('获取支付所需信息成功')
-                      var data = JSON.parse(LayerOrderRes.data);
-                      console.log('拉起支+付')
-                      // wx.hideLoading();
-                      // return
-                      wx.requestPayment({
-                        timeStamp: data.timeStamp,
-                        nonceStr: data.nonceStr,
-                        package: data.package,
-                        signType: 'MD5',
-                        paySign: data.paySign,
-                        success(paymentRes) {
-                          console.log('支付成功')
-                          wx.removeStorageSync('starInfo2');
-                          wx.removeStorageSync('endInfo2');
-                          wx.removeStorageSync('storageSync')
-                          wx.removeStorageSync('pcTimeSync')
-                          wx.removeStorageSync('personNum')
-                          wx.removeStorageSync('pcTypeId');
-                          wx.removeStorageSync('SeatNumber')
-                          wx.removeStorageSync('textareaValue');
-                          wx.removeStorageSync('lineId');
-                          wx.showToast({
-                            title: '支付成功',
-                            icon: 'success',
-                            duration: 2000,
-                            success: function () {
-                              console.log('支付成功')
-                              that.setSubscribeMessage();
-                              setTimeout(function () {
-                                wx.reLaunch({
-                                  url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
-                                })
-                              }, 1000)
-                            }
-                          })
-                        },
-                        fail(paymentErr) {
-                          wx.removeStorageSync('starInfo2');
-                          wx.removeStorageSync('endInfo2');
-                          wx.removeStorageSync('storageSync')
-                          wx.removeStorageSync('pcTimeSync')
-                          wx.removeStorageSync('personNum')
-                          wx.removeStorageSync('pcTypeId');
-                          wx.removeStorageSync('SeatNumber')
-                          wx.removeStorageSync('textareaValue');
-                          wx.removeStorageSync('lineId');
-                          console.log('拉起支付失败', paymentErr)
-                          setTimeout(function () {
-                            wx.reLaunch({
-                              url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
-                            })
-                          }, 1000)
-                        }
-                      })
-                    } else if (LayerOrderRes.code == 400 && LayerOrderRes.msg == "已付款") {
-                      wx.showToast({
-                        title: '支付成功',
-                        icon: 'success',
-                        duration: 2000,
-                        success: function () {
-                          console.log('支付成功2')
-                          that.setSubscribeMessage();
-                          setTimeout(function () {
-                            wx.reLaunch({
-                              url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
-                            })
-                          }, 1000)
-                        }
-                      })
-                    } else {
-                      console.log('获取支付所需信息失败')
-                      wx.showToast({
-                        title: LayerOrderRes.msg,
-                        icon: 'success',
-                        duration: 2000,
-                      })
-                    }
-                  }, (LayerOrderRrr) => {
-                    console.log('请求失败', LayerOrderRrr)
-                  })
-                } else {
-                  setTimeout(function () {
-                    wx.reLaunch({
-                      url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
-                    })
-                  }, 1000)
-                }
-              } else {
-                console.log('下单失败')
-                wx.showToast({
-                  title: ress.msg,
-                  icon: 'none',
-                  duration: 2000
-                })
-              }
-            },
-          })
-        } else {
-          console.log('res.count不为0')
-          var list = res.data;
-          var str = "";
-          list.forEach(function (item, index) {
-            str += item.PassengerLineId_Name + "," + "订单号为:" + item.Code + "\n"
-          });
-          wx.showModal({
-            title: '下单记录',
-            content: str,
-            cancelText: "取消下单",
-            confirmText: "继续下单",
-            complete: (res) => {
-              if (res.cancel) {
-                wx.navigateTo({
-                  url: '/pages/index/index',
-                })
-              }
-              if (res.confirm) {
-                // if (this.data.dispatchListId) {
-                //   wx.showLoading({
-                //     title: '车辆调度中',
-                //   })
-                // } else {
-                //   wx.showLoading({
-                //     title: '加载中...',
-                //   })
-                // }
-                let that = this;
-                // CreatePersonTicketOrder  新
-                wx.request({
-                  url: baseUrl + '/Api/DispatchMobile/CreatePersonTicketOrder',
-                  data: reqData,
-                  method: "POST",
-                  success(orderRes) {
-                    console.log('请求成功')
-                    var ress = orderRes.data
-                    if (ress.code == '0') {
-                      console.log('下单成功', ress)
-                      wx.hideLoading();
-                      // wx.navigateTo({
-                      //   url: '/driving_status/pages/gotopay/gotopay?orderId='+ress.data.Id,
-                      // })
-                      // console.log('去拿支付所需信息')
-                      http.getRequest('/Api/DispatchMobile/GoPay?LayerOrder=1&Id=' + ress.data.Id + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
-                        console.log('请求成功', LayerOrderRes)
-                        if (LayerOrderRes.code == 0) {
-                          console.log('获取支付所需信息成功')
-                          var data = JSON.parse(LayerOrderRes.data);
-                          console.log('拉起支+付')
-                          wx.requestPayment({
-                            timeStamp: data.timeStamp,
-                            nonceStr: data.nonceStr,
-                            package: data.package,
-                            signType: 'MD5',
-                            paySign: data.paySign,
-                            success(paymentRes) {
-                              console.log('支付成功')
-                              wx.removeStorageSync('starInfo2');
-                              wx.removeStorageSync('endInfo2');
-                              wx.removeStorageSync('storageSync')
-                              wx.removeStorageSync('pcTimeSync')
-                              wx.removeStorageSync('personNum')
-                              wx.removeStorageSync('pcTypeId');
-                              wx.removeStorageSync('SeatNumber')
-                              wx.removeStorageSync('textareaValue');
-                              wx.removeStorageSync('lineId');
-                              wx.showToast({
-                                title: '支付成功',
-                                icon: 'success',
-                                duration: 2000,
-                                success: function () {
-                                  console.log('支付成功3')
-                                  that.setSubscribeMessage();
-                                  setTimeout(function () {
-                                    wx.reLaunch({
-                                      url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
-                                    })
-                                  }, 1000)
-                                }
-                              })
-                            },
-                            fail(paymentErr) {
-                              wx.removeStorageSync('starInfo2');
-                              wx.removeStorageSync('endInfo2');
-                              wx.removeStorageSync('storageSync')
-                              wx.removeStorageSync('pcTimeSync')
-                              wx.removeStorageSync('personNum')
-                              wx.removeStorageSync('pcTypeId');
-                              wx.removeStorageSync('SeatNumber')
-                              wx.removeStorageSync('textareaValue');
-                              wx.removeStorageSync('lineId');
-                              console.log('拉起支付失败', paymentErr)
-                              setTimeout(function () {
-                                wx.reLaunch({
-                                  url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
-                                })
-                              }, 1000)
-                            }
-                          })
-                        } else if (LayerOrderRes.code == 400 && LayerOrderRes.msg == "已付款") {
-                          wx.showToast({
-                            title: '支付成功',
-                            icon: 'success',
-                            duration: 2000,
-                            success: function () {
-                              console.log('支付成功4')
-                              that.setSubscribeMessage();
-                              setTimeout(function () {
-                                wx.reLaunch({
-                                  url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
-                                })
-                              }, 1000)
-                            }
-                          })
-                        } else {
-                          console.log('获取支付所需信息失败')
-                          wx.showToast({
-                            title: LayerOrderRes.msg,
-                            icon: 'success',
-                            duration: 2000,
-                          })
-                        }
-                      }, (LayerOrderRrr) => {
-                        console.log('请求失败', LayerOrderRrr)
-                      })
+    console.log(reqData)
+    // 发起下单请求
+    const orderRes = await new Promise((resolve, reject) => {
+      wx.request({
+        url: baseUrl + '/Api/DispatchMobile/CreatePersonTicketOrder',
+        data: reqData,
+        method: "POST",
+        success: resolve,
+        fail: reject
+      });
+    });
+    console.log('orderRes',orderRes)
+    const orderData = orderRes.data;
+    if (orderData.code !== 0) {
+      wx.showToast({
+        title: orderData.msg || '下单失败',
+        icon: 'none'
+      });
+      return;
+    }
+    const orderId = orderData.data.Id;
+    const payAmount = orderData.data.PayAmount;
+    // 如果金额为0，直接视为成功；否则调起支付
+    if (payAmount != 0) {
+      await this._handlePayment(orderId, user.Id);
+    } else {
+      // 0元单处理逻辑
+      this._handleOrderSuccess(orderId);
+    }
+  },
 
-                    } else {
-                      console.log('下单失败')
-                      wx.showToast({
-                        title: ress.msg,
-                        icon: 'none',
-                        duration: 2000
-                      })
-                    }
-                  },
-                })
-              }
+  // 5. 处理支付逻辑
+  _handlePayment(orderId, memberInfoId) {
+    let appid = wx.getStorageSync('appId')
+    return new Promise((resolve, reject) => {
+      http.getRequest('/Api/DispatchMobile/GoUnionPay?appid=' + appid + '&Id=' + orderId + '&MemberInfoId=' + memberInfoId, "", wx.getStorageSync('header'), (payRes) => {
+        if (payRes.code === 0) {
+          const payData = payRes.data
+          wx.requestPayment({
+            timeStamp: payData.TimeStamp,
+            nonceStr: payData.NonceStr,
+            package: payData.Package,
+            signType: payData.SignType,
+            paySign: payData.PaySign,
+            success: () => {
+              this._handleOrderSuccess(orderId);
+              resolve();
+            },
+            fail: (err) => {
+              console.log('支付失败', err);
+              this._clearStorageAndRedirect(orderId);
+              resolve(); // 支付失败也结束流程，避免卡死
             }
-          })
+          });
+        } else if (payRes.code === 400 && payRes.msg === "已付款") {
+          this._handleOrderSuccess(orderId);
+          resolve();
+        } else {
+          wx.showToast({
+            title: payRes.msg,
+            icon: 'none'
+          });
+          reject(payRes);
         }
-      } else {
-        console.log('请求失败', res)
-        wx.showToast({
-          title: '数据请求失败，请稍后重试' + res.msg,
-          icon: "error"
-        })
+      }, reject);
+    });
+  },
+
+  // 6. 订单成功后的统一处理
+  _handleOrderSuccess(orderId) {
+    wx.showModal({
+      title: '预约成功',
+      content: '订单已预约成功，司机将会在您出发前一小时联系你',
+      showCancel: false, // 隐藏取消按钮，强制用户点击确认
+      confirmText: '我知道了',
+      success: () => {
+        // 用户点击确认后，再执行跳转
+        this.setSubscribeMessage(); // 调用订阅消息
+        // 跳转到订单列表页
+        wx.reLaunch({
+          url: `/user_center/pages/payDetail/payDetail?orderId=${orderId}&from=orderList`
+        });
       }
-    }, err => {})
-  }, 3000),
+    });
+  },
+
+  // 7. 清理缓存并跳转（用于支付失败等情况）
+  _clearStorageAndRedirect(orderId) {
+    const keys = ['starInfo2', 'endInfo2', 'storageSync', 'pcTimeSync', 'personNum', 'pcTypeId', 'SeatNumber', 'textareaValue', 'lineId'];
+    keys.forEach(key => wx.removeStorageSync(key));
+
+    setTimeout(() => {
+      wx.reLaunch({
+        url: `/user_center/pages/payDetail/payDetail?orderId=${orderId}&from=orderList`
+      });
+    }, 1000);
+  },
+
+  // 8. 时间格式化
+  _formatArrivalTime(date, time) {
+    // 原逻辑：取小时 + ":59:00"
+    const hour = time.split(':')[0];
+    return `${date} ${hour}:59:00`;
+  },
+
+  // 9. 订阅消息函数 (新增)
   setSubscribeMessage: function () {
-    console.log('调用通知')
+    console.log('调用通知');
     wx.showModal({
       title: '提示',
       content: '即将为您开启消息提醒',
       complete: (res) => {
         if (res.confirm) {
           wx.requestSubscribeMessage({
-            tmplIds: ['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA',"LhKVmpSKt-FGzwYVDHB6UQpVrdZmMklLzcFJ6Ln_oJU"],
-            success(res) {
+            tmplIds: ['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA', "LhKVmpSKt-FGzwYVDHB6UQpVrdZmMklLzcFJ6Ln_oJU"],
+            success: (res) => {
               if (res['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA'] === 'accept') {
                 console.log('用户同意接收订阅消息');
               } else {
@@ -517,14 +442,13 @@ Page({
                   confirmColor: '#345391',
                   cancelText: '仍然拒绝',
                   cancelColor: '#999999',
-                  success(res) {
+                  success: (res) => {
                     if (res.confirm) {
                       wx.openSetting({
                         success(res) {
                           console.log(res.authSetting);
                         },
                         fail(err) {
-                          //失败
                           console.log(err);
                         }
                       });
@@ -540,13 +464,12 @@ Page({
             }
           });
         }
-       
       }
-    })
-    
+    });
   },
   //获取车辆列表
   getCarList() {
+    console.log("获取车辆列表")
     // wx.showLoading({
     //   title: '加载中',
     // })
@@ -557,6 +480,7 @@ Page({
     var storageSync = wx.getStorageSync('storageSync')
     var startDate = storageSync.startDate;
     var pcTimeSync = wx.getStorageSync('pcTimeSync')
+    console.log(pcTimeSync)
     let starTime = pcTimeSync.StartTime.split(':')[0] + ':59:00'
     let ArrivalTime = startDate + ' ' + starTime
     var data = {
@@ -573,6 +497,7 @@ Page({
     if (storageSync.lineId && pcTimeSync.StartTime) {
       http.postRequest('/Api/DispatchMobile/getPriceListForLineId', data, '', (res) => {
         wx.hideLoading();
+        console.log(res)
         if (res.code == '0') {
           //这里是默认值  默认选中第一辆车
           console.log(res)
@@ -591,11 +516,11 @@ Page({
             let price = 0
             if (data.CouponFlag) {
               price = data.Price - data.CouponMoneyTotal
-             
+              // couponList_list: data.CouponList,
+              // couponFlag: true,
               that.setData({
-                couponList_list: data.CouponList,
-                couponFlag:true,
-                couponFlag_aduit_num:1
+               
+                couponFlag_aduit_num: 1
               })
             } else {
               // 0 折扣 1 减 9 没活动
@@ -619,14 +544,14 @@ Page({
             //   } else {
             //     dataArr.push({...item,newPrice:item.Price})
             //   }
-              
+
             // })
             console.log(data.rangfenceMapList)
             that.setData({
               rangfenceMapList: data.rangfenceMapList, //超范围列表
               carTypeList: res.data, //车型列表
               seatNumber, //座位数
-              price:price.toFixed(2), //总价
+              price: price.toFixed(2), //总价
               initialPrice: data.Price, //初始票价
               PromotionDiscountType: data.PromotionDiscountType,
               PromotionDiscount: data.PromotionDiscount,
@@ -649,22 +574,26 @@ Page({
     }
   },
 
- isTimeInRange(currentTime, selectedTime) {
-  const [curH, curM] = currentTime.split(':').map(Number);
-  const [selH, selM] = selectedTime.split(':').map(Number);
-  if (curH === selH && curM >= 30) {
-    return false; 
-  }
-  // 其他所有情况都返回 true
-  return true; 
-},
+  isTimeInRange(currentTime, selectedTime) {
+    const [curH, curM] = currentTime.split(':').map(Number);
+    const [selH, selM] = selectedTime.split(':').map(Number);
+    if (curH === selH && curM >= 30) {
+      return false;
+    }
+    // 其他所有情况都返回 true
+    return true;
+  },
   //点击车型
   chooseCarType(e) {
     let that = this;
     let index = e.currentTarget.dataset.index;
     let data = that.data.carTypeList[index]
+    console.log(data)
     that.setData({
-      couponList_list: []
+      couponList_list: [],
+      seatNumber: data.SeatNumber,
+      child_num: 0,
+      aduit_num: 1,
     })
     if (data.CarSeatState) {
       that.setData({
@@ -689,21 +618,24 @@ Page({
     }
   },
   //计算总价
-  total_Price: debounce(function() {
+  total_Price: debounce(function () {
     let _this = this;
-    // wx.showLoading({
-    //   title: '加载中',
-    // })
-    //默认价格 
-    let aduit_price = 0
-    let child_price = 0
-    let version_price = 0
-
-    //获取车辆列表
+    const realChildCount = Math.min(_this.data.aduit_num, _this.data.child_num);
+    const adultCount = (_this.data.aduit_num + _this.data.child_num) - realChildCount;
+    _this.setData({
+      actualAdultCountdata:adultCount
+    })
+    console.log("成人票",_this.data.actualAdultCountdata)
+    wx.showLoading({
+      title: '加载中',
+    })
     var userinfo = wx.getStorageSync('userInfo');
     var storageSync = wx.getStorageSync('storageSync')
     var startDate = storageSync.startDate;
     var pcTimeSync = wx.getStorageSync('pcTimeSync')
+    console.log(pcTimeSync)
+    let hasChooseId = pcTimeSync.hasChooseId
+    console.log(hasChooseId)
     let starTime = pcTimeSync.StartTime.split(':')[0] + ':59:00'
     let starInfo2 = wx.getStorageSync('starInfo2')
     let endInfo2 = wx.getStorageSync('endInfo2')
@@ -718,65 +650,18 @@ Page({
       ArrivalTime: ArrivalTime,
       MemberId: userinfo.Id,
       AdultNumber: _this.data.aduit_num,
+      ChildNum:_this.data.child_num,
+      CouponDetailsId:hasChooseId
     };
     if (storageSync.lineId && pcTimeSync.StartTime) {
       http.postRequest('/Api/DispatchMobile/getPriceListForLineId', data, '', (res) => {
         if (res.code == '0') {
+          console.log(res)
           let data = res.data[_this.data.carType];
-          //优惠卷
           console.log(data)
-          if (data.CouponFlag) {
-            const total = data.CouponList.reduce((sum, item) => {
-              return sum + item.Count;
-            }, 0);
-            _this.setData({
-              couponList_list: data.CouponList,
-              couponFlag:true,
-              couponFlag_aduit_num:total
-            })
-            if (_this.data.aduit_num == total) {
-              aduit_price = _this.data.aduit_num * data.Price - data.CouponMoneyTotal
-            } else {
-              let CouponFlag_num = total * data.Price - data.CouponMoneyTotal
-              let sheng_aduit_num = _this.data.aduit_num - total
-              if (data.PromotionDiscountType == 0) {
-                aduit_price = data.Price * data.PromotionDiscount * sheng_aduit_num
-                _this.setData({
-                  huodong_list: data.Price + 'x' + data.PromotionDiscount + 'x' + sheng_aduit_num
-                })
-              } else if (data.PromotionDiscountType == 1) {
-                aduit_price = (data.Price - _this.data.PromotionDiscount) * sheng_aduit_num
-
-              } else if (data.PromotionDiscountType == 9) {
-                aduit_price = data.Price * sheng_aduit_num
-              }
-              aduit_price = aduit_price + CouponFlag_num
-            }
-          } else {
-            // 0 折扣 1 减 9 没活动
-            if (data.PromotionDiscountType == 0) {
-              aduit_price = data.Price * data.PromotionDiscount * _this.data.aduit_num
-            } else if (data.PromotionDiscountType == 1) {
-              aduit_price = (data.Price - _this.data.PromotionDiscount) * _this.data.aduit_num
-            } else if (data.PromotionDiscountType == 9) {
-              aduit_price = data.Price * _this.data.aduit_num
-            }
-          }
-         
-          if( _this.data.aduit_num >= _this.data.child_num) {
-            child_price = data.ChildPrice * _this.data.child_num
-          } else { 
-            let cha =  _this.data.child_num - _this.data.aduit_num
-            child_price = data.ChildPrice * _this.data.aduit_num + cha * data.Price
-          }
-          if (_this.data.version > 0) {
-            version_price = (_this.data.aduit_num + _this.data.child_num) * Number(_this.data.version)
-          }
-          console.log(aduit_price, child_price , version_price)
-          let all_price = aduit_price + child_price + version_price;
           _this.setData({
-            price: all_price.toFixed(2),
-            ChildPrice:data.ChildPrice
+            price: data.TotalFare,
+            ChildPrice:data.ChildPrice,
           })
           wx.hideLoading();
         }
@@ -786,7 +671,7 @@ Page({
     }
     //获取结束
 
-  },300),
+  }, 300),
   //成人人数+++
   adult_reduce() {
     let _this = this
@@ -794,16 +679,11 @@ Page({
     if (aduit_num > 1) {
       aduit_num -= 1
     }
-    let actualAdultCount = ''
-      if(aduit_num >= _this.data.child_num) {
-       actualAdultCount = aduit_num + _this.data.child_num
-      } else {
-       actualAdultCount = aduit_num * 2
-      }
+   
     _this.setData({
       aduit_num,
-      actualAdultCountdata:actualAdultCount,
-      use_couponList: 0
+      coupon_num: 0,
+      membershipCard_num:0,
     })
     _this.total_Price()
     _this.reqChooseListData()
@@ -819,16 +699,11 @@ Page({
     let aduit_num = _this.data.aduit_num;
     if (_this.data.child_num + aduit_num < _this.data.seatNumber) {
       aduit_num += 1
-      let actualAdultCount = ''
-      if(aduit_num >= _this.data.child_num) {
-       actualAdultCount = aduit_num + _this.data.child_num
-      } else {
-       actualAdultCount = aduit_num * 2
-      }
+    
       _this.setData({
         aduit_num,
-        actualAdultCountdata:actualAdultCount,
-        use_couponList: 0
+        coupon_num: 0,
+      membershipCard_num:0,
       })
       _this.total_Price()
       _this.reqChooseListData()
@@ -852,18 +727,10 @@ Page({
     if (child_num > 0) {
       child_num -= 1
     }
-   
-     let actualAdultCount = ''
-     if(_this.data.aduit_num >= child_num) {
-      actualAdultCount = _this.data.aduit_num + child_num
-     } else {
-      actualAdultCount = _this.data.aduit_num * 2
-     }
-     
     _this.setData({
       child_num,
-      actualAdultCountdata:actualAdultCount,
-      use_couponList: 0
+      coupon_num: 0,
+      membershipCard_num:0,
     })
     _this.reqChooseListData()
     _this.total_Price()
@@ -879,16 +746,10 @@ Page({
     let child_num = _this.data.child_num;
     if (_this.data.aduit_num + child_num < _this.data.seatNumber) {
       child_num += 1
-      let actualAdultCount = ''
-      if(_this.data.aduit_num >= child_num) {
-       actualAdultCount = _this.data.aduit_num + child_num
-      } else {
-       actualAdultCount = _this.data.aduit_num * 2
-      }
       _this.setData({
         child_num,
-        actualAdultCountdata:actualAdultCount,
-        use_couponList: 0
+        coupon_num: 0,
+      membershipCard_num:0,
       })
       _this.total_Price()
       _this.reqChooseListData()
@@ -1016,37 +877,48 @@ Page({
     console.log(item)
     let _this = this;
     _this.setData({
-      couponList_list:item.detail
+      couponList_list: item.detail
     })
-    let price = ''
-    if (_this.data.copy_price != 0) {
-      price = _this.data.copy_price
-    } else {
-      price = _this.data.price
-      _this.setData({
-        copy_price: _this.data.price
-      })
-    }
+    console.log(_this.data.couponList_list[0])
+    let coupon_num = 0;
+    let membershipCard_num = 0;
+    item.detail.forEach(item => {
+      switch (item.CarType) {
+        case '300251-a84bfd75d45d44c8beff6a6fe3f0e051':
+          membershipCard_num += 1;
+          break;
+        case '':
+          console.log('优惠券'); // 修正了错别字
+          coupon_num += 1;
+          break; 
+        default:
+          // 可选：处理其他未知的 CarType
+          break;
+      }
+    })
+    console.log(coupon_num,membershipCard_num)
     _this.setData({
-      use_couponList: item.detail.length,
+      coupon_num,
+      membershipCard_num
     })
     if (item.detail.length > 0) {
       let coupon_price = ''
-        if (_this.data.PromotionDiscountType == 0) {
-          coupon_price = _this.data.initialPrice * _this.data.PromotionDiscount
-        } else if (_this.data.PromotionDiscountType == 1) {
-          coupon_price = _this.data.initialPrice - _this.data.PromotionDiscount
-        } else if (_this.data.PromotionDiscountType == 9) {
-          coupon_price = _this.data.initialPrice
-        }
-    
+      console.log(_this.data.PromotionDiscountType)
+      if (_this.data.PromotionDiscountType == 0) {
+        coupon_price = _this.data.initialPrice * _this.data.PromotionDiscount
+      } else if (_this.data.PromotionDiscountType == 1) {
+        coupon_price = _this.data.initialPrice - _this.data.PromotionDiscount
+      } else if (_this.data.PromotionDiscountType == 9) {
+        coupon_price = _this.data.initialPrice
+      }
+
       let Jlength = item.detail.length //几张次卡
-     console.log(this.data.aduit_num,_this.data.child_num,coupon_price,_this.data.ChildPrice,Jlength)
-     let calculateTotal_data =   _this.calculateTotal(_this.data.aduit_num,_this.data.child_num,coupon_price,_this.data.ChildPrice,Jlength)
-      // let allPrice = this.getRemainingSum(priceList, Jlength)
-      this.setData({
-        price: calculateTotal_data
-      })
+      console.log(this.data.aduit_num, _this.data.child_num, coupon_price, _this.data.ChildPrice, Jlength)
+      // let calculateTotal_data = _this.calculateTotal(_this.data.aduit_num, _this.data.child_num, coupon_price, _this.data.ChildPrice, Jlength)
+      // // let allPrice = this.getRemainingSum(priceList, Jlength)
+      // this.setData({
+      //   price: calculateTotal_data
+      // })
       const ids = item.detail.map(item => item.Id).join(',');
       let pcTimeSync = wx.getStorageSync('pcTimeSync')
       let updatedData = {
@@ -1054,38 +926,40 @@ Page({
         hasChooseId: ids
       };
       wx.setStorageSync('pcTimeSync', updatedData);
+     
     }
+    _this.total_Price()
   },
   /**
- * @param {number} trueAdultCount - 真实的大人数量 (本例为 2)
- * @param {number} childCount - 小孩数量 (本例为 3)
- * @param {number} adultPrice - 动态获取的成人票价 (本例为 49.9)
- * @param {number} childPrice - 动态获取的儿童票价 (本例为 40)
- * @param {number} cardCount - 用户选择使用的次卡数量 (1, 2, 3, 4...)
- */
+   * @param {number} trueAdultCount - 真实的大人数量 (本例为 2)
+   * @param {number} childCount - 小孩数量 (本例为 3)
+   * @param {number} adultPrice - 动态获取的成人票价 (本例为 49.9)
+   * @param {number} childPrice - 动态获取的儿童票价 (本例为 40)
+   * @param {number} cardCount - 用户选择使用的次卡数量 (1, 2, 3, 4...)
+   */
 
- calculateTotal(trueAdultCount, childCount, adultPrice, childPrice, cardCount) {
-  // 1. 计算有多少个小孩超出了大人的携带能力，必须按成人票计费
-  const extraChildAsAdult = Math.max(0, childCount - trueAdultCount);
-  
-  // 2. 计算最终需要按【成人票价】结算的总人数
-  const actualAdultCount = trueAdultCount + extraChildAsAdult;
-  this.setData({
-    actualAdultCountdata:actualAdultCount
-  })
-  // 3. 计算最终需要按【儿童票价】结算的总人数
-  const actualChildCount = childCount - extraChildAsAdult;
-  
-  // 4. 计算实际能抵扣的次卡数量（不能超过实际成人数）
-  const validCardCount = Math.min(cardCount, actualAdultCount);
-  
-  // 5. 扣除次卡后，剩余需要付现金的成人票数量
-  const remainingAdultCount = actualAdultCount - validCardCount;
-  
-  // 6. 计算最终总价并保留两位小数
-  const total = (remainingAdultCount * adultPrice) + (actualChildCount * childPrice);
-  return parseFloat(total.toFixed(2)); 
-},
+  calculateTotal(trueAdultCount, childCount, adultPrice, childPrice, cardCount) {
+    // 1. 计算有多少个小孩超出了大人的携带能力，必须按成人票计费
+    const extraChildAsAdult = Math.max(0, childCount - trueAdultCount);
+
+    // 2. 计算最终需要按【成人票价】结算的总人数
+    const actualAdultCount = trueAdultCount + extraChildAsAdult;
+    this.setData({
+      actualAdultCountdata: actualAdultCount
+    })
+    // 3. 计算最终需要按【儿童票价】结算的总人数
+    const actualChildCount = childCount - extraChildAsAdult;
+
+    // 4. 计算实际能抵扣的次卡数量（不能超过实际成人数）
+    const validCardCount = Math.min(cardCount, actualAdultCount);
+
+    // 5. 扣除次卡后，剩余需要付现金的成人票数量
+    const remainingAdultCount = actualAdultCount - validCardCount;
+
+    // 6. 计算最终总价并保留两位小数
+    const total = (remainingAdultCount * adultPrice) + (actualChildCount * childPrice);
+    return parseFloat(total.toFixed(2));
+  },
   getRemainingSum(arr, a) {
     if (a <= 0) return arr.reduce((sum, x) => sum + x, 0);
     // 创建副本并降序排序（大数在前）

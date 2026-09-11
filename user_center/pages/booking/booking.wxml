@@ -1,0 +1,63 @@
+<!--user_center/pages/booking/booking.wxml-->
+<view class="container">
+  <!-- 顶部信息卡片 -->
+  <view class="info-card">
+    <view class="date-row">
+      <text class="date-main">07月14日</text>
+      <text class="date-sub">（今天）出发</text>
+    </view>
+    <view class="data-source">数据来源:车盈网</view>
+    <view class="route-row">
+      <view class="route-text">机场（广州/深圳/珠海）-惠州</view>
+      <button class="consult-btn" size="mini" plain>
+        <image src="/images/phone-icon.png" class="icon-phone"></image> <!-- 需替换为电话图标 -->
+        咨询电话
+      </button>
+    </view>
+  </view>
+
+  <!-- 表单区域 -->
+  <form bindsubmit="submitForm">
+    <!-- 选择上车点 -->
+    <view class="section-card">
+      <view class="section-title">选择上车点</view>
+      <radio-group name="pickup" bindchange="onPickupChange">
+        <label class="list-item" wx:for="{{pickupList}}" wx:key="id">
+          <view class="item-content">
+            <view class="time">{{item.time}}</view>
+            <view class="address">
+              <text class="name">{{item.name}}</text>
+              <text class="desc" wx:if="{{item.desc}}">（{{item.desc}}）</text>
+            </view>
+          </view>
+          <!-- 自定义单选框样式或隐藏原生样式 -->
+          <radio value="{{item.id}}" color="#f5a623" checked="{{item.id === selectedPickupId}}" />
+        </label>
+      </radio-group>
+    </view>
+
+    <!-- 选择下车点 -->
+    <view class="section-card">
+      <view class="section-title">选择下车点</view>
+      <radio-group name="dropoff" bindchange="onDropoffChange">
+        <label class="list-item" wx:for="{{dropoffList}}" wx:key="id">
+          <view class="item-content">
+            <view class="address full-width">
+              <text class="name">{{item.name}}</text>
+              <text class="desc" wx:if="{{item.desc}}">({{item.desc}})</text>
+            </view>
+          </view>
+          <radio value="{{item.id}}" color="#4db6ac" checked="{{item.id === selectedDropoffId}}" />
+        </label>
+      </radio-group>
+    </view>
+
+    <!-- 底部占位，防止内容被按钮遮挡 -->
+    <view class="bottom-spacer"></view>
+  </form>
+
+  <!-- 底部固定按钮 -->
+  <view class="footer-bar">
+    <button class="next-btn" bindtap="goNext">确认</button>
+  </view>
+</view>

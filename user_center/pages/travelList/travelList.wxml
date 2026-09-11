@@ -1,10 +1,10 @@
 <view class="container">
   <view class="menu_box">
     <text class='menu1 {{menuTapCurrent=="0"&&"borders"}}' data-current="0" catchtap="menuTap">行程订单</text>
-    <!-- <text class='menu2 {{menuTapCurrent=="1"&&"borders"}}' data-current="1" catchtap="menuTap">寄件订单</text> -->
+    <text class='menu2 {{menuTapCurrent=="1"&&"borders"}}' data-current="1" catchtap="menuTap">旅游订单</text>
+    <text class='menu2 {{menuTapCurrent=="2"&&"borders"}}' data-current="2" catchtap="menuTap">陪诊订单</text>
   </view>
-  <!-- <button type="primary" size="mini" bind:tap="toInvoice">开票</button> -->
-  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==1}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
+  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==1 || menuTapCurrent==2}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
     <view class="listBox" wx:for="{{listData}}" wx:for-index="id" wx:for-item="item" wx:key="index">
       <view class="flex-title font-28">
         <text class="font-30">{{item.PassengerLineId_Name}}</text>
@@ -73,6 +73,9 @@
         <view class="btn-area" wx:if="{{item.BtnRefund}}">
           <button size="mini" catchtap="tuikuan" data-time="{{item.ArrivalTime}}" data-ids="{{item.Id}}" class="tuik">取消订单并申请退款</button>
         </view>
+        <view class="btn-area">
+          <button size="mini" data-ids="{{item.Id}}" class="pingjia" bind:tap="goKeFu">联系客服</button>
+        </view>
         <view class="btn-area" wx:if="{{item.FormState  == '100004-0001020004'}}">
           <button size="mini" catchtap="toComment" data-ids="{{item.Id}}" class="pingjia">评价</button>
         </view>
@@ -80,21 +83,37 @@
       <view class="chenge_time">
         <picker class="pickers" wx:if="{{item.FormState == '100004-0001020002'}}" style="margin-right: 20rpx;" mode="date" value="{{date}}" start="{{StartDay}}" end="{{EndDay}}" bindchange="bindDateChange" bind:tap="handleChangeDate" data-item="{{item}}">
           修改日期
-          </picker>
+        </picker>
         <button class="mini-btn" wx:if="{{item.FormState == '100004-0001020002'}}" type="primary" size="mini" data-item="{{item}}" bind:tap="handleTime">修改出发时间</button>
-
       </view>
     </view>
     <!-- 自定义弹窗 (利用 wx:if 控制渲染) -->
-    <view class="custom-picker-mask" wx:if="{{showPicker}}" bindtap="closeCustomPicker">
+    <!-- <view class="custom-picker-mask" wx:if="{{showPicker}}" bindtap="closeCustomPicker" @touchmove.stop.prevent="moveHandle">
       <view class="custom-picker-container" catchtap="">
-        <!-- catchtap阻止冒泡 -->
         <view class="picker-header">
           <text bindtap="closeCustomPicker">取消</text>
           <text bindtap="confirmSelect">确定</text>
         </view>
 
-        <!-- 如果数据还在加载中，可以显示 loading；加载完直接渲染列表 -->
+        
+        <scroll-view scroll-y class="picker-list">
+          <view wx:for="{{pickerList}}" wx:key="index" class="picker-item {{tempIndex === index ? 'active' : ''}}" catchtap="selectItem" data-index="{{index}}">
+            {{item}}
+          </view>
+        </scroll-view>
+      </view>
+    </view> -->
+    <!-- 1. 给遮罩层加上 @touchmove.stop.prevent 阻止滚动穿透 -->
+    <view class="custom-picker-mask" wx:if="{{showPicker}}" bindtap="closeCustomPicker" >
+
+      <!-- 2. 弹框容器，阻止点击穿透 -->
+      <view class="custom-picker-container" catchtap="">
+        <view class="picker-header">
+          <text bindtap="closeCustomPicker">取消</text>
+          <text bindtap="confirmSelect">确定</text>
+        </view>
+
+        <!-- 3. scroll-view 必须设置固定高度，如需要横向滚动请加上 enable-flex -->
         <scroll-view scroll-y class="picker-list">
           <view wx:for="{{pickerList}}" wx:key="index" class="picker-item {{tempIndex === index ? 'active' : ''}}" catchtap="selectItem" data-index="{{index}}">
             {{item}}
@@ -108,14 +127,11 @@
       <view wx:if="{{loadingFailed}}">数据加载失败,请重试</view>
     </view>
   </scroll-view>
-  <view wx:if="!isLoging">
-    <button style="font-size: 30rpx;" bind:tap="goLoging">点击跳转登录，登录后拉取列表</button>
-  </view>
-  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
+  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0 || menuTapCurrent==2}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
     <view class="listBox" wx:for="{{listData}}" wx:for-index="id" wx:for-item="item" wx:key="index" data-item="{{item}}" data-status="{{item.FormState}}" data-dispatchlistid="{{item.DispatchListId}}">
       <view class="flex-title font-28">
-        <text class="font-30">{{item.PassengerLineId_Name}}</text>
-        <text class="status">{{item.FormState_Name=='草稿'?'已取消':item.FormState_Name}}<text class="iconRight"></text></text>
+        <text class="font-30"></text>
+        <text class="status" bindtap="orderDetail" data-item="{{item}}" data-status="{{item.FormState}}" data-dispatchlistid="{{item.DispatchListId}}">{{item.FormState_Name=='草稿'?'已取消':item.FormState_Name}}<text class="iconRight"></text></text>
       </view>
       <view class="list-time font-28">
         <image src="/user_center/assets/images/code.png"></image>
@@ -130,29 +146,85 @@
         <text class="input-end">{{item.OffLocation}}</text>
       </view>
       <view class="list-time font-28">
-        <text class="yutime">发件人电话:</text>
-        <text class="time">{{item.Personal_Phone}}</text>
+        <image src="/assets/images/time.png"></image>
+        <text class="time">{{item.CreateDate}}</text>
       </view>
       <view class="list-time font-28">
-        <text class="yutime">收件人电话:</text>
-        <text class="time">{{item.TakeOverGoodsTel}}</text>
+        <text class="yutime">出发时间:</text>
+        <text class="time">{{item.ArrivalTime}}</text>
+
+      </view>
+      <view class="list-time font-28" wx:if="{{item.IsPickGoods != '100004-0000010001'}}">
+        <text class="yutime">乘车人数:</text>
+        <text class="time">{{item.PassengerNumber}}人</text>
       </view>
       <view class="list-time font-28">
-        <text class="yutime">备注:</text>
-        <text class="time">{{item.Note}}</text>
+        <text class="yutime">车型:</text>
+        <text class="time">{{item.CarType_Name}}</text>
       </view>
-      <!-- <view class="yue" wx:if="{{item.IsReservation =='100004-0000010001'}}">
-        <image class="yuimg" src="/user_center/assets/images/yyue.png"></image>
-      </view> -->
+      <view class="list-time font-28">
+        <text class="yutime">付款金额:</text>
+        <text class="time">{{item.PayAmount}}</text>
+      </view>
+      <view class="list-time font-28" wx:if="{{item.IsPickGoods != '100004-0000010001'}}">
+        <text class="yutime">乘车人信息:</text>
+        <text class="time">{{item.PersonalIds}}</text>
+      </view>
       <view class="btn-list">
-        <view class="btn-area" wx:if="{{item.FormState=='100004-0001020002' && (item.IsPayment=='100004-0000010002' || !item.IsPayment)}}">
+        <view class="btn-area" wx:if="{{item.BtnCancel}}">
           <button type="warn" size="mini" catchtap="cancel" data-ids="{{item.Id}}">取消</button>
         </view>
-        <view class="btn-area" wx:if="{{item.FormState !='100004-0001020001' &&(item.IsPayment == '100004-0000010002' || !item.IsPayment)}}">
+        <view class="btn-area" wx:if="{{item.BtnPay}}">
           <button type="primary" size="mini" catchtap="gotopay" data-ids="{{item.Id}}">支付</button>
         </view>
-        <view class="btn-area" wx:if="{{item.IsPayment  == '100004-0000010001' && item.FormState!='100004-0001020004' && item.FormState!='100004-0001020005' &&item.FormState!='100004-0001020003' && item.FormState!='100004-0001020006' && item.FormState!='100004-0001020007'}}">
-          <button size="mini" catchtap="tuikuan" data-ids="{{item.Code}}" class="tuik">退款</button>
+        <view class="btn-area" wx:if="{{item.BtnRefund}}">
+          <button size="mini" catchtap="tuikuan" data-time="{{item.ArrivalTime}}" data-ids="{{item.Id}}" class="tuik">取消订单并申请退款</button>
+        </view>
+        <view class="btn-area">
+          <button size="mini" data-ids="{{item.Id}}" class="pingjia" bind:tap="goKeFu">联系客服</button>
+        </view>
+        <view class="btn-area" wx:if="{{item.FormState  == '100004-0001020004'}}">
+          <button size="mini" catchtap="toComment" data-ids="{{item.Id}}" class="pingjia">评价</button>
+        </view>
+      </view>
+    </view>
+    <view style="text-align: center;margin: 10px;">
+      <view wx:if="{{loading}}">加载中...</view>
+      <view wx:if="{{noMore}}">没有更多了</view>
+      <view wx:if="{{loadingFailed}}">数据加载失败,请重试</view>
+    </view>
+  </scroll-view>
+  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0 || menuTapCurrent==1}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
+    <view class="listBox" wx:for="{{listData}}" wx:for-index="id" wx:for-item="item" wx:key="index" data-item="{{item}}" data-status="{{item.FormState}}" data-dispatchlistid="{{item.DispatchListId}}">
+
+      <view class="list-time font-28">
+        <image src="/user_center/assets/images/code.png"></image>
+        <text class="time">{{item.Code}}</text>
+      </view>
+
+      <view class="list-time font-28">
+        <image src="/assets/images/time.png"></image>
+        <text class="time">{{item.ModifierTime}}</text>
+      </view>
+      <view class="list-time font-28">
+        <text class="yutime">医院名称:</text>
+        <text class="time">{{item.HospitalName}}</text>
+
+      </view>
+      <view class="list-time font-28" wx:if="{{item.IsPickGoods != '100004-0000010001'}}">
+        <text class="yutime">预约类型:</text>
+        <text class="time">{{item.PatientType_Name}}</text>
+      </view>
+      <view class="list-time font-28" wx:if="{{item.IsPickGoods != '100004-0000010001'}}">
+        <text class="yutime">预约状态:</text>
+        <text class="time">{{item.FormState_Name}}</text>
+      </view>
+      <view class="btn-list">
+        <view class="btn-area">
+          <button size="mini" data-ids="{{item.Id}}" class="pingjia" bind:tap="goKeFu">联系客服</button>
+        </view>
+        <view class="btn-area" wx:if="{{item.FormState  == '100004-0001020004'}}">
+          <button size="mini" catchtap="toComment" data-ids="{{item.Id}}" class="pingjia">评价</button>
         </view>
       </view>
     </view>

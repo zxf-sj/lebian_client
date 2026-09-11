@@ -18,7 +18,6 @@ Page({
     endInfo: '',
     starting_point: '',
     hcyj_weizhi: '',
-    starInfo: '',
     lvyouTel: ''
   },
 
@@ -26,11 +25,11 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-
     let data = ''
     if (options.data) {
       data = JSON.parse(options.data)
       wx.setStorageSync('propeData', data)
+      console.log(data)
     } else {
       data = wx.getStorageSync('propeData')
     }
@@ -119,6 +118,7 @@ Page({
   },
   //获取车型
   getlvyouCar() {
+    console.log('获取车型')
     let _this = this;
     if (_this.data.arrivalTime == '') {
       return
@@ -126,10 +126,13 @@ Page({
     let openid = wx.getStorageSync('openid');
     let start_city = wx.getStorageSync('start_city')
     let line_Id = '';
+    console.log('start_city',start_city)
     if (start_city) {
       if (start_city == "太原市") {
+        console.log('太原')
         line_Id = "300213-96f23d82cea647168541241650c39790"
       } else if (start_city == "孝义市") {
+        console.log('孝义')
         line_Id = "300213-7bc4de5562764200a0610b630859d384"
       }
     }
@@ -144,7 +147,7 @@ Page({
         MemberId: openid,
         AdultNumber: "1",
         ArrivalTime: _this.data.arrivalTime,
-        IsRoundTrip: _this.data.roundTrip
+        IsRoundTrip: false
       },
       method: "POST",
       success: (res) => {
@@ -216,85 +219,20 @@ Page({
         ArrivalTime: _this.data.arrivalTime,
         MemberId: userInfo.Id,
         Phone: _this.data.lvyouTel,
-        SelectCarType: _this.data.selectedCarId,
+        SelectCarType: _this.data.dataItem.SelectCarType,
         OrderSource: "小程序",
 
       },
       method: "POST",
       success: (res) => {
         if (res.data.code == 0) {
-          http.getRequest('/api/DispatchMobile/GoHotTravelLineReservedPay?LayerOrder=1&Id=' + res.data.data.TravelReserved + '&MemberInfoId=' + userInfo.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
-            console.log('请求成功', LayerOrderRes)
-            if (LayerOrderRes.code == 0) {
-              console.log('获取支付所需信息成功')
-              var data = JSON.parse(LayerOrderRes.data);
-              console.log('拉起支+付', data)
-              // wx.hideLoading();
-              wx.requestPayment({
-                timeStamp: data.timeStamp,
-                nonceStr: data.nonceStr,
-                package: data.package,
-                signType: 'MD5',
-                paySign: data.paySign,
-                success(paymentRes) {
-                  console.log('支付成功', paymentRes)
-                  wx.showToast({
-                    title: '支付成功',
-                    icon: 'success',
-                    duration: 2000,
-                    success: function () {
-                      console.log('支付成功')
-                      wx.removeStorageSync('start_city')
-                      wx.removeStorageSync('start_city')
-                      wx.removeStorageSync('starInfo2')
-                      wx.removeStorageSync('endInfo2')
-                      _this.setSubscribeMessage();
-                      setTimeout(function () {
-                        wx.reLaunch({
-                          url: '/user_center/pages/payDetail/payDetail?orderId=' + res.data.data.Id + "&from=orderList"
-                        })
-                      }, 1000)
-                    }
-                  })
-                }
-              })
-            } else if (LayerOrderRes.code == 400 && LayerOrderRes.msg == "已付款") {
-              wx.showToast({
-                title: '支付成功',
-                icon: 'success',
-                duration: 2000,
-                success: function () {
-                  console.log('支付成功2')
-                  wx.removeStorageSync('start_city')
-                  wx.removeStorageSync('start_city')
-                  wx.removeStorageSync('starInfo2')
-                  wx.removeStorageSync('endInfo2')
-                  _this.setSubscribeMessage();
-                  setTimeout(function () {
-                    wx.reLaunch({
-                      url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
-                    })
-                  }, 1000)
-                }
-              })
-            } else {
-              console.log('获取支付所需信息失败')
-              wx.showToast({
-                title: LayerOrderRes.msg,
-                icon: 'success',
-                duration: 2000,
-              })
-            }
-          }, (LayerOrderRrr) => {
-            console.log('请求失败', LayerOrderRrr)
-          })
+          setTimeout(function () {
+            wx.reLaunch({
+              url: '/user_center/pages/payDetail/payDetail?orderId=' + res.data.data.Id + "&from=orderList"
+            })
+          }, 1000)
+         
         }
-
-
-
-
-
-
       },
     });
   }, 5000),

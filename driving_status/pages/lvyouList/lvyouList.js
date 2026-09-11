@@ -3,6 +3,7 @@ import util from "../../../utils/util";
 const BASE_URL = require("../../../utils/BASE_URL");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 const throttle = require('../../../utils/throttle').throttle;
+const debounce = require('../../../utils/throttle').debounce;
 const app = getApp();
 Page({
   data: {
@@ -74,7 +75,8 @@ Page({
     deposit: '',
     hotLintList: [],
     type:'',
-    hcyjPrice:''
+    hcyjPrice:'',
+    PayAmount:''
   },
   onLoad: async function (opt) {
     let _this = this;
@@ -83,6 +85,10 @@ Page({
       _this.setData({
         activeTab: 1,
         activeTab2: 2,
+      })
+    }else if(opt.type == 'xykh') {
+      _this.setData({
+        activeTab: 2,
       })
     }
     this.setData({
@@ -207,7 +213,7 @@ Page({
     if (start_city) {
       if (start_city == "太原市") {
         line_Id = "300213-96f23d82cea647168541241650c39790"
-      } else if (start_city == "孝义市") {
+      } else if (start_city == "孝义市" || start_city == "吕梁市") {
         line_Id = "300213-7bc4de5562764200a0610b630859d384"
       }
     }
@@ -246,6 +252,18 @@ Page({
   endting_point() {
     wx.navigateTo({
       url: "/pages/starting2/starting2?direction=ending&type=ly"
+    });
+  },
+  //选择起点
+  startingPoint2() {
+    wx.navigateTo({
+      url: "/pages/starting2/starting2?direction=starting&type=xykh"
+    });
+  },
+  //选择终点
+  endting_point2() {
+    wx.navigateTo({
+      url: "/pages/starting2/starting2?direction=ending&type=xykh"
     });
   },
   //旅游包车电话
@@ -334,19 +352,28 @@ Page({
     const formatToday = `${year}-${month}-${day}`;
     const times = `${hours}:${minutes}:${seconds}`;
     if (index == 2) {
-      wx.showModal({
-        title: '提示',
-        content: '请拨打电话咨询',
-        success(res) {
-          if (res.confirm) {
-            wx.makePhoneCall({
-              phoneNumber: '13133387813' // 你要拨打的电话号码
-            })
-          } else if (res.cancel) {
-            console.log('用户点击取消')
-          }
-        }
-      })
+      let userInfo = wx.getStorageSync('userInfo')
+      if(userInfo.Version == '1') {
+        this.setData({
+          activeTab: index,
+          starting_point: '',
+          endting_point: '',
+          lvyouTel: '',
+          lvyou_date: '请选择日期',
+          carList: [],
+          arrivalTime: '',
+          selectedCarId: '',
+          roundTrip: true,
+        });
+        _this.setData({
+          arrivalTime: formatToday + " " + times,
+          lvyou_date: formatToday
+        })
+      } else {
+        return
+      }
+      
+      
     } else if (index == 0) {
       this.setData({
         activeTab: index,
@@ -479,7 +506,7 @@ Page({
     let line_Id = '';
     if (start_city == "太原市") {
       line_Id = "300213-96f23d82cea647168541241650c39790"
-    } else if (start_city == "孝义市") {
+    } else if (start_city == "孝义市" || start_city == "吕梁市") {
       line_Id = "300213-7bc4de5562764200a0610b630859d384"
     }
     var userInfo = wx.getStorageSync('userInfo');
@@ -515,80 +542,107 @@ Page({
       success: (res) => {
         console.log(res)
         if (res.data.code == 0) {
-          http.getRequest('/api/DispatchMobile/GoHotTravelLineReservedPay?LayerOrder=1&Id=' + res.data.data.TravelReserved + '&MemberInfoId=' + userInfo.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
-            console.log('请求成功', LayerOrderRes)
-            if (LayerOrderRes.code == 0) {
-              console.log('获取支付所需信息成功')
-              var data = JSON.parse(LayerOrderRes.data);
-              console.log('拉起支+付', data)
-              // wx.hideLoading();
-              wx.requestPayment({
-                timeStamp: data.timeStamp,
-                nonceStr: data.nonceStr,
-                package: data.package,
-                signType: 'MD5',
-                paySign: data.paySign,
-                success(paymentRes) {
-                  console.log('支付成功', paymentRes)
-                  wx.showToast({
-                    title: '支付成功',
-                    icon: 'success',
-                    duration: 2000,
-                    success: function () {
-                      console.log('支付成功')
-                      wx.removeStorageSync('start_city')
-                      wx.removeStorageSync('start_city')
-                      wx.removeStorageSync('starInfo2')
-                      wx.removeStorageSync('endInfo2')
-                      // _this.setSubscribeMessage();
-                      setTimeout(function () {
-                        wx.reLaunch({
-                          url: '/user_center/pages/payDetail/payDetail?orderId=' + res.data.data.Id + "&from=orderList"
-                        })
-                      }, 1000)
-                    }
-                  })
-                }
-              })
-            } else if (LayerOrderRes.code == 400 && LayerOrderRes.msg == "已付款") {
-              wx.showToast({
-                title: '支付成功',
-                icon: 'success',
-                duration: 2000,
-                success: function () {
-                  console.log('支付成功2')
-                  wx.removeStorageSync('start_city')
-                  wx.removeStorageSync('start_city')
-                  wx.removeStorageSync('starInfo2')
-                  wx.removeStorageSync('endInfo2')
-                  // _this.setSubscribeMessage();
-                  setTimeout(function () {
-                    wx.reLaunch({
-                      url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
-                    })
-                  }, 1000)
-                }
-              })
-            } else {
-              console.log('获取支付所需信息失败')
-              wx.showToast({
-                title: LayerOrderRes.msg,
-                icon: 'success',
-                duration: 2000,
-              })
-            }
-          }, (LayerOrderRrr) => {
-            console.log('请求失败', LayerOrderRrr)
-          })
+          setTimeout(function () {
+            wx.reLaunch({
+              url: '/user_center/pages/payDetail/payDetail?orderId=' + res.data.data.Id + "&from=orderList"
+            })
+          }, 1000)
         }
-
-
-
-
-
-
-
-
+      },
+    });
+  }, 5000),
+  submit2: throttle(function () {
+    let _this = this;
+    if (_this.data.starInfo == '') {
+      wx.showToast({
+        title: '请选择起点',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    if (_this.data.endInfo == '') {
+      wx.showToast({
+        title: '请选择终点',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    if (_this.data.arrivalTime == '') {
+      wx.showToast({
+        title: '请选择出发日期',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    if (_this.data.lvyouTel == '') {
+      wx.showToast({
+        title: '请输入电话',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    if (_this.data.PayAmount == '') {
+      wx.showToast({
+        title: '请输入价格',
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    let start_city = wx.getStorageSync('start_city')
+    let line_Id = '';
+    let selectedCarId = "";
+    if (start_city == "太原市") {
+      line_Id = "300213-96f23d82cea647168541241650c39790"
+      selectedCarId = "300279-cd3939598e5a4115b161b6f998ee41c0"
+    } else if (start_city == "孝义市" || start_city == "吕梁市") {
+      line_Id = "300213-7bc4de5562764200a0610b630859d384"
+      selectedCarId = "300279-5fc46f89963e47609b0fc343e8918746"
+    }
+    var userInfo = wx.getStorageSync('userInfo');
+    wx.request({
+      url: baseUrl + "/api/DriverApp/ContractCreateTravelTicketOrder",
+      data: {
+        PassengerLineId: line_Id,
+        IntoLocation: _this.data.starInfo.startAddress,
+        IntoLongitude: _this.data.starInfo.startLont,
+        IntoLatitude: _this.data.starInfo.startLait,
+        OffLocation: _this.data.endInfo.endAddress,
+        OffLongitude: _this.data.endInfo.endLont,
+        OffLatitude: _this.data.endInfo.endLait,
+        Departure: "100004-0000980002",
+        ArrivalTime: _this.data.arrivalTime,
+        Personal: userInfo.Id,
+        DispatchListId: "",
+        IsReservation: "100004-0000010002",
+        CouponDetailsId: "",
+        PersonalIds: _this.data.lvyouTel,
+        Note: '',
+        IsExclusive: "100004-0000010001",
+        IsPickGoods: '100004-0000010002',
+        SelectCarType: selectedCarId,
+        OrderSource: "小程序",
+        priceType: '100004-0001270004',
+        AdultNumber: 1, //成人数
+        ChildNum: 0, //儿童数
+        TravelType: 1,
+        IsRoundTrip: _this.data.roundTrip,
+        PayAmount: _this.data.PayAmount
+      },
+      method: "POST",
+      success: (res) => {
+        console.log(res)
+        if (res.data.code == 0) {
+          setTimeout(function () {
+            wx.reLaunch({
+              url: '/user_center/pages/payDetail/payDetail?orderId=' + res.data.data.Id + "&from=orderList"
+            })
+          }, 1000)
+        }
       },
     });
   }, 5000),
@@ -875,6 +929,13 @@ Page({
       }
     })
   },
+  onPrice:debounce(function(res) {
+    const value = res.detail.value;
+    console.log(value)
+    this.setData({
+      PayAmount:value
+    })
+  },500),
   onUnload() {
 
   }

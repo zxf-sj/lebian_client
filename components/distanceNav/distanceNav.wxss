@@ -46,3 +46,6 @@
 	align-items: center;
 	justify-content: center;
 }
+.timeSeatNum {
+  color: red;
+}

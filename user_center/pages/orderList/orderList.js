@@ -190,18 +190,19 @@ Page({
     // wx.navigateTo({
     //   url: '/driving_status/pages/gotopay/gotopay?orderId='+orderId,
     // })
-    http.getRequest('/Api/DispatchMobile/GoPayOrderRide?LayerOrder=1&Id=' + orderId + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
+    let appid = wx.getStorageSync('appId')
+    http.getRequest('/Api/DispatchMobile/GoUnionPayOrderRide?appid=' + appid + '&Id=' + orderId + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
       console.log('请求成功', LayerOrderRes)
       if (LayerOrderRes.code == 0) {
         console.log('获取支付所需信息成功')
-        var data = JSON.parse(LayerOrderRes.data);
+        var payData = LayerOrderRes.data
         console.log('拉起支+付')
         wx.requestPayment({
-          timeStamp: data.timeStamp,
-          nonceStr: data.nonceStr,
-          package: data.package,
-          signType: 'MD5',
-          paySign: data.paySign,
+          timeStamp: payData.TimeStamp,
+          nonceStr: payData.NonceStr,
+          package: payData.Package,
+          signType: payData.SignType,
+          paySign: payData.PaySign,
           success(paymentRes) {
             console.log('支付成功')
 
@@ -339,7 +340,7 @@ Page({
       "Id": that.data.orderId,
       "Mark": value
     }
-    http.postRequest("/Api/DispatchMobile/RefundOrder", request, '', (res) => {
+    http.postRequest("/Api/DispatchMobile/UnionPayRefundOrder", request, '', (res) => {
       console.log('申请退款', res)
       if (res.code == 0) {
         wx.showToast({

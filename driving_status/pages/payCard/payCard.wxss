@@ -23,10 +23,10 @@
   width: 200rpx;
 }
 .list {
-  width: 100%;
+  width: 95%;
   box-sizing: border-box;
   position: relative;
- 
+  margin: 0 auto;
 }
 
 .list image {
@@ -42,7 +42,7 @@
   top: 0;
   display: flex;
   box-sizing: border-box;
-  border-radius: 10rpx;
+  border-radius: 30rpx;
   overflow: hidden;
 }
 .item image {
@@ -56,15 +56,16 @@
   position: absolute;
 }
 .kong {
-  height: 60rpx;
-  line-height: 60rpx;
+  height: 100rpx;
   font-size: 24rpx;
   color: #fff;
-  font-weight: 100;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
 }
 .five {
-  height: 90rpx;
+  height: 100rpx;
   color: #fff;
   font-size: 60rpx;
   text-align: center;
@@ -77,9 +78,29 @@
   box-sizing: border-box;
   line-height: 50rpx;
   text-align: center;
-  font-size: 24rpx;
+  font-size: 28rpx;
   color: #fff;
-  font-weight: 100;
+}
+.tag{
+  width: 120rpx;
+  height: 120rpx;
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: #000;
+}
+
+.tag image{
+  width: 120rpx;
+  height: 120rpx;
+}
+
+.num{
+  font-size: 24rpx;
+  position: absolute;
+  right: 6rpx;
+  top: 25rpx;
+  transform: rotate(45deg);
 }
 
 .item_l text {
@@ -120,12 +141,14 @@
   position: absolute;
   bottom: 30rpx;
   right: 30rpx;
-  background-color: #fff5f3;
-  border-radius: 10rpx;
+  background: linear-gradient(135deg, #FF6B81 0%, #FF4757 100%);
+    transition: transform 0.2s ease, opacity 0.2s ease;
   width: 180rpx;
   height: 60rpx;
   line-height: 60rpx;
   text-align: center;
+  color: #fff;
+  border-radius: 9999px;
 }
 
 .main {

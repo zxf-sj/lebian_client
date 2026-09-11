@@ -39,6 +39,7 @@ Page({
                 code = res.code;
                 let iv = e.detail.iv;
                 let encryptedData = e.detail.encryptedData;
+                let appid = wx.getStorageSync('appId')
                 let params = {
                   "LayerOrder":1,
                   "nickName" :'微信用户',
@@ -46,6 +47,7 @@ Page({
                   encryptedData,
                   iv,
                   code: code,
+                  AppID:appid
                 }
                 wx.request({
                   url: BASE_URL.BASE_URL + '/Api/DispatchMobile/LoginSignUp',
@@ -117,6 +119,7 @@ Page({
             code = res.code;
             let iv = e.detail.iv;
             let encryptedData = e.detail.encryptedData;
+            let appid = wx.getStorageSync('appId')
             let params = {
               "LayerOrder":1,
               "nickName" :'微信用户',
@@ -124,6 +127,7 @@ Page({
               encryptedData,
               iv,
               code: code,
+              AppID:appid
             }
             wx.request({
               url: BASE_URL.BASE_URL + '/Api/DispatchMobile/LoginSignUp',

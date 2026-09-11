@@ -34,4 +34,5 @@
 	</scroll-view>
 </view>
 <view class="bottom"></view>
+<daohang></daohang>
 </view>

@@ -123,7 +123,8 @@ Component({
     date: '',
     dayValue: '',
     TimeList: [],
-    addArr: []
+    addArr: [],
+    time_seatNum:1
   },
   onLoad() {
 
@@ -186,14 +187,18 @@ Component({
               console.log(data)
               const dataList = data.SeatData[0].SeatList;
               const newList = dataList.filter(item => item.SeatNum != 0)
+              console.log(newList)
               const TimeList = newList.map(item => {
                 return `${item.StartTime} ~ ${item.EndTime}`;
               });
               _this.setData({
                 TimeList
               })
+              console.log(dataList)
+              let num = 0;
               for (let item of dataList) {
                 if (item.SeatNum > 0) {
+                  num++
                   _this.setData({
                     StartTime: item.StartTime,
                     EndTime: item.EndTime
@@ -208,10 +213,26 @@ Component({
                   break;
                 }
               }
+              _this.setData({
+                time_seatNum:num
+              })
+              if(num == 0) {
+                _this.setData({
+                  StartTime: '',
+                  EndTime: ''
+                })
+                let storedData = wx.getStorageSync('pcTimeSync') || {};
+                let updatedData = {
+                  ...storedData,
+                  EndTime: '',
+                  StartTime: ''
+                };
+                wx.setStorageSync('pcTimeSync', updatedData);
+              }
               if (_this.data.update == 'pc') {
                 wx.setStorageSync('pcTypeId', data.PriceList[0].Id);
               }
-
+              _this.triggerEvent('nav_change_date');
             } else {
               wx.showToast({
                 title: res.data.msg,
@@ -228,6 +249,7 @@ Component({
           }
         })
       })
+      
     },
     //点击路线
     bindPickerLine(e) {

@@ -1,0 +1,76 @@
+/* pages/calendar/calendar.wxss */
+.calendar-container {
+  padding-bottom: 50rpx;
+}
+
+.month-block {
+  margin-bottom: 40rpx;
+}
+
+.month-title {
+  text-align: center;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin: 30rpx 0;
+}
+
+.week-header {
+  display: flex;
+  border-bottom: 1rpx solid #eee;
+  padding-bottom: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.week-item {
+  flex: 1;
+  text-align: center;
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 周末标红 */
+.week-item:nth-child(1), .week-item:nth-child(7) {
+  color: #ff5a5f;
+}
+
+.days-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.day-item {
+  width: 14.28%; /* 100% / 7 */
+  height: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10rpx;
+}
+
+.day-num {
+  font-size: 32rpx;
+  width: 80rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 50%;
+  color: #333;
+}
+
+/* 状态：今天 (蓝色背景，白色文字) */
+.day-item.is-today .day-num {
+  background-color: #007aff;
+  color: #fff;
+}
+
+/* 状态：被选中 (可选，模仿点击后的效果) */
+.day-item.is-selected .day-num {
+  background-color: #007aff;
+  color: #fff;
+}
+
+/* 状态：不可选 (灰色) */
+.day-item.is-disabled .day-num {
+  color: #ccc;
+}

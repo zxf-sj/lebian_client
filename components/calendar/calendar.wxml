@@ -1,0 +1,29 @@
+<!--components/calendar/calendar.wxml-->
+<view class="calendar-container">
+  
+  <!-- 循环渲染三个月份 -->
+  <view class="month-block" wx:for="{{monthsData}}" wx:key="uniqueMonth">
+    <!-- 月份标题 -->
+    <view class="month-title">{{item.year}}-{{item.monthStr}}</view>
+    
+    <!-- 星期表头 -->
+    <view class="week-header">
+      <text class="week-item" wx:for="{{weeks}}" wx:key="*this" wx:for-item="week">{{week}}</text>
+    </view>
+    
+    <!-- 日期网格 -->
+    <view class="days-grid">
+      <!-- 这里的 item.dayList 包含了该月所有的天数对象 -->
+      <view 
+        class="day-item {{item.status}}" 
+        wx:for="{{item.dayList}}" 
+        wx:key="fullDate"
+        bindtap="onDayTap"
+        data-date="{{item.fullDate}}"
+      >
+        <text class="day-num">{{item.day}}</text>
+      </view>
+    </view>
+  </view>
+
+</view>

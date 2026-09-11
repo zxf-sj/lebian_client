@@ -489,7 +489,7 @@ button{
       font-size: 24rpx;
   }
   .pri_r {
-      width: 140rpx;
+      width: 200rpx;
       height: 80rpx;
       display: flex;
 }

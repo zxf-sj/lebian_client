@@ -2,7 +2,8 @@ const BASE_URL = require("../../utils/BASE_URL");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 import http from '../../utils/http.js';
 import qqmapsdk from '../../libs/qqMap';
-var bmap = require('../../libs/bmap-wx.min');
+// var bmap = require('../../libs/bmap-wx.min');
+var bmap =  require("../../libs/bmap-wx");
 let SCREEN_WIDTH = 750;
 let RATE = wx.getWindowInfo().screenHeight / wx.getWindowInfo().screenWidth;
 const app = getApp();
@@ -618,7 +619,8 @@ Page({
   getMyLocation() {
     var _self = this;
     var BMap = new bmap.BMapWX({
-      ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+      // ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+      key:'FD2Wvwuq8uRaFgheLXBn13U'
     });
     BMap.regeocoding({  
       success:function(res){

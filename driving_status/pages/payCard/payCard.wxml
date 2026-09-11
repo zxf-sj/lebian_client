@@ -1,39 +1,59 @@
 <!--driving_status/pages/payCard/payCard.wxml-->
 <view class="page">
   <view class="box">
-    <!-- <view class="nav">
+    <view class="nav">
       <text class="referrer">推荐人：</text>
       <input class="weui-input" name="phone" confirm-type="send" type="number" maxlength="11" placeholder="请输入推荐人电话" bindinput="changeTel" />
-    </view> -->
+    </view>
     <view class="list" wx:for="{{dataList}}" wx:key="item.Id">
       <image src="../../../assets/images/cika.png" mode="" />
-      <view class="item" style="{{item.Id == '300350-02dbdbcf1253480c9f2a76dfa1613a9e' ? 'border: 1px dashed #f23d3d' : 'border: 1px dashed #D99F05'}}">
-      <image src="{{item.Id == '300350-02dbdbcf1253480c9f2a76dfa1613a9e' ? '/assets/images/youhuiquan_bg_small01.png' : '/assets/images/youhuiquan_bg_small_vip@2x.png'}}" mode=""/>
-        <view class="item_l">
-          <view class="kong">
+      <view class="item" style="border: 1px dashed {{index == 1 ? '#e3c048' : (index == 2 ? '#ef4e4e' : (index == 0?'#000':'#001fff'))}}">
+        <view class="item" wx:if="{{index == 3}}" ></view>
+        <image src="/assets/images/image_704358267225789.png" wx:if="{{index == 0}}" mode="" />
+        <image src="/assets/images/youhuiquan_bg_small_vip@2x.png" wx:if="{{index == 1}}" mode="" />
+        <image src="/assets/images/youhuiquan_bg_small01.png" wx:if="{{index == 2}}" mode="" />
+        <image src="/assets/images/image_568185988677864.jpg" wx:if="{{index == 3}}" mode="" />
+        <view class="item_l" style="border: {{index == 0 ? '2px solid #e3c048' : none}} ">
+          <view class="kong" style="color: {{index == 1 ? '#000' : (index == 2 ? '#000' : '#e3c048')}} ">
             {{item.Note}}
           </view>
-          <view class="five">
-            {{item.Quantity}}<text>次</text>
+
+          <view class="five" wx:if="{{index == 0}}" style="color: {{index == 1 ? '#000' : (index == 2 ? '#000' : '#e3c048')}} ">
+            {{item.CouponAmount}}<text style="color: {{index == 1 ? '#000' : (index == 2 ? '#000' : '#e3c048')}} ">元</text>
           </view>
-          <view class="remaining"> 
-            剩余{{item.Remaining}}张
+          <view class="five" wx:else style="color: {{index == 1 ? '#000' : (index == 2 ? '#000' : '#e3c048')}} ">
+            {{item.Quantity}}<text style="color: {{index == 1 ? '#000' : (index == 2 ? '#000' : '#e3c048')}} ">张</text>
+          </view>
+          <view class="tag" catchtap="handleRadio" data-item="{{index}}">
+            <image src="/user_center/assets/images/youhuiquan_biaoqian01.png"></image>
+            <view class="num">剩余{{item.Remaining}}张</view>
           </view>
         </view>
-        <view class="item_r" >
-          <view class="item_r_t" style="{{item.Id == '300350-02dbdbcf1253480c9f2a76dfa1613a9e' ? 'color:#f23d3d' : 'color:#D99F05'}}">{{item.Name}}</view>
+        <view class="item_r">
+          <view class="item_r_t" style="{{item.Id == '300350-02dbdbcf1253480c9f2a76dfa1613a9e' ? 'color:#000' : 'color:#000'}}">{{item.Name}}</view>
           <view class="item_r_b">
-            <view class="item_main" style="{{item.Id == '300350-02dbdbcf1253480c9f2a76dfa1613a9e' ? 'color:#f23d3d' : 'color:#D99F05'}}">￥<text>{{item.Amount}}</text></view>
+            <view class="item_main" style="{{item.Id == '300350-02dbdbcf1253480c9f2a76dfa1613a9e' ? 'color:#000' : 'color:#000'}}">￥<text>{{item.Amount}}</text></view>
           </view>
         </view>
       </view>
-      <view class="pay" wx:if="{{item.isPayButtonEnabled}}" style="{{item.Id == '300350-02dbdbcf1253480c9f2a76dfa1613a9e' ? 'color:#f23d3d' : 'color:#D99F05'}}"   bind:tap="payCard" data-Id="{{item.Id}}">立即购买</view>
+      <view class="pay" wx:if="{{item.isPayButtonEnabled}}" bind:tap="payCard" data-Id="{{item.Id}}">立即购买</view>
     </view>
     <view class="main">
-      使用说明:
+      <view>一、19.9元尊享礼包</view>
+      <view style="color: #f23d3d;">重磅推出19.9元尊享礼包，礼包价值300元，享六重好礼:</view>
+      <view>1、尊享会员专属特权</view>
+      <view>2、10张5元优惠券(中、高级车均可使用)</view>
+      <view>3、100元旅游优惠券(行程超过2天即可使用、单次使用)</view>
+      <view>4、生日当天免费乘坐(凭身份证、本人使用、优先安排最快接送车辆)</view>
+      <view>5、免费一次拼车车型升级（新用户才能升级）</view>
+      <view>6、赠送99元省内陪诊诊前咨询</view>
+      <view>限购五张</view>
+      <view>二、次卡使用说明:</view>
       <view>1、适用范围:仅限本人在乐遍城际小程序下单 <text class="txt">太原 ⇌ 孝义</text> 线路非溢价范围内出行服务使用。</view>
       <view>2、使用期限:本卡自购买后，生效日期为 2026年4月，有效期一年，<text style="color: #f23d3d;">暂不支持元旦、春节、清明、五一、端午、中秋、国庆等法定节假日使用，其余时间可正常使用。</text></view>
-      <view>3、使用方式:单笔订单不限使用次数，次数用尽后卡失效。本服务为定制化产品，暂不支持线上退款，如涉及相关售后问题，请咨询客服电话0351-6078977。</view>
+      <view>3、太原-离石次卡使用期限:本卡自购买后，生效日期为 2026年4月，有效期一年，</view>
+      <view>4、使用方式:单笔订单不限使用次数，次数用尽后卡失效。本服务为定制化产品，暂不支持线上退款，如涉及相关售后问题，请咨询客服电话0351-6078977。</view>
+
     </view>
     <!-- <view class="imgBox">
       <image mode="widthFix" src="{{imgbaseUrl + '/wxImg/20260130154711_464_369.jpg'}}" />

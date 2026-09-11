@@ -318,7 +318,9 @@ button{
 .pickers {
   background-color: #1aad19;
   color: #fff;
-  padding: 8rpx 20rpx;
+  padding: 0 20rpx;
+  height: 64rpx;
+  line-height: 64rpx;
   border-radius: 15rpx;
   font-size: 26rpx;
 }
@@ -415,6 +417,8 @@ button{
   flex: 1; /* 占据剩余所有高度 */
   height: 200rpx; /* 给一个固定的初始高度用于滚动计算 */
   box-sizing: border-box;
+  overflow-y: auto;
+  margin-bottom: 20rpx;
 }
 
 /* 6. 单个列表项样式 */

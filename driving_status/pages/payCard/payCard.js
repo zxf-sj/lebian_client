@@ -72,6 +72,7 @@ Page({
             Quantity: 1,
             Referrerphone: _this.data.Phone
           }
+          let appid = wx.getStorageSync('appId')
           wx.request({
             url: baseUrl + '/api/CarPromotion/CreatMemberProducts',
             data: request,
@@ -80,24 +81,23 @@ Page({
               console.log(res)
               if (res.statusCode == 200) {
                 const reqData = {
-                  LayerOrder: '1',
+                  appId: appid,
                   Id: res.data.data,
                   url: ''
                 }
                 wx.request({
-                  url: baseUrl + '/Api/DispatchMobile/ProductGoPay',
+                  url: baseUrl + '/Api/DispatchMobile/UnionProductGoPay',
                   data: reqData,
                   method: "GET",
                   success(rts) {
                     const ress = rts.data.data;
-                    const data = JSON.parse(ress);
-                    console.log(data)
+                    const payData = ress
                     wx.requestPayment({
-                      timeStamp: data.timeStamp,
-                      nonceStr: data.nonceStr,
-                      package: data.package,
-                      signType: 'MD5',
-                      paySign: data.paySign,
+                      timeStamp: payData.TimeStamp,
+          nonceStr: payData.NonceStr,
+          package: payData.Package,
+          signType: payData.SignType,
+          paySign: payData.PaySign,
                       success(paymentRes) {
                         wx.showToast({
                           title: '支付成功',

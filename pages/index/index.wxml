@@ -3,7 +3,7 @@
       <swiper indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" class="swipers">
         <block wx:for="{{lunBoImg}}" wx:key="index">
           <swiper-item>
-            <image src="{{imgUrl+item.ShowPicUrl}}" mode="widthFix" class="lunimg"/>
+            <image src="{{imgbaseUrl+item.ShowPicUrl}}"   class="lunimg"/>
           </swiper-item>
         </block>
       </swiper>
@@ -74,7 +74,7 @@
         <image src="/assets/images/kaicon.png" mode="widthFix" class="grid-itemImg"></image>
         <!-- <text class="gridtxt">乐遍合作</text> -->
         <!-- <text class="gridtxt">优惠券</text> -->
-        <text class="gridtxt">次卡</text>
+        <text class="gridtxt">优惠券</text>
       </view>
       <!-- bindtap="kaipiao" -->
        <!-- src="https://mp.weixin.qq.com/s/你的文章链接" -->
@@ -114,7 +114,7 @@
     </block> -->
 		<block>
 			<view class="coupon-wrapper">
-				<image class="bg_bg" src="{{imgbaseUrl + '/wxImg/20260327114013_792_401.jpg'}}"></image>
+				<image class="bg_bg" src="{{imgbaseUrl + '/wxImg/20260327114013_792_401.jpg?v=1'}}"></image>
 				<!-- <view class="cou_tit"></view>
 				<view class="cou_cont">
           <view class="cou_item">
@@ -150,3 +150,7 @@
   <view class="bum_phone" bind:tap="callPhone">
     投诉电话：0351-5622596
   </view>
+  <daohang></daohang>
+  <!-- <view class="customer-service" catchtap="callPhone">
+  
+</view> -->

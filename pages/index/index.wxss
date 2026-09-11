@@ -1263,7 +1263,7 @@ page {
 
 .lunbo {
   width: 100%;
-  height: 218rpx;
+  height: 368rpx;
 }
 
 .swipers {
@@ -1272,7 +1272,7 @@ page {
 
 .lunimg {
   width: 100%;
-  height: 218rpx;
+  height: 368rpx;
 }
 
 .juan {
@@ -1322,3 +1322,22 @@ page {
   line-height: 100rpx;
   text-align: center;
 }
+
+/* .customer-service {
+  position: fixed;
+  right: 30rpx;
+  bottom: 230rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  background-color: #fff;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.icon {
+  width: 50rpx;
+  height: 50rpx;
+} */

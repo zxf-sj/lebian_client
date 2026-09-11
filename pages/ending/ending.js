@@ -1,7 +1,8 @@
 //import qqmapsdk from '../../libs/qqMap';
 const BASE_URL = require("../../utils/BASE_URL");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
-var bmap = require('../../libs/bmap-wx.min');
+// var bmap = require('../../libs/bmap-wx.min');
+var bmap =  require("../../libs/bmap-wx");
 const debounce = require('../../utils/debounce');
 const app = getApp();
 Page({
@@ -21,7 +22,7 @@ Page({
   onLoad(opt) {
     this.searchNearby();
    
-    console.log("传值",opt)
+
     this.setData({
       type:opt.type,
       isyun:opt.isyun
@@ -54,7 +55,8 @@ Page({
     getMyLocation() {
       var _self = this;
       var BMap = new bmap.BMapWX({
-        ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+        // ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+        key:'FD2Wvwuq8uRaFgheLXBn13U'
       });
       BMap.regeocoding({  
         success:function(res){
@@ -79,10 +81,13 @@ Page({
       // })
     },
   getUserLocation(){
+    
     var _self = this;
     var BMap = new bmap.BMapWX({
-      ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+      // ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+      key:'FD2Wvwuq8uRaFgheLXBn13U'
     });
+    console.log('逆地理编码2',res.latitude + ',' + res.longitude)
     wx.getLocation({
       type: "BD09",
       success(res) {
@@ -122,13 +127,15 @@ Page({
   bindregionchange: function (e) {
     
     var BMap = new bmap.BMapWX({
-      ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+      // ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+      key:'FD2Wvwuq8uRaFgheLXBn13U'
     });
     if (e.type == 'end' && (e.causedBy == 'scale' || e.causedBy == 'drag')) {
       let that = this;
       var endCity = that.data.endCity;
       that.mapCtx.getCenterLocation({
         success: function (res) {
+          console.log('逆地理编码1',res.latitude + ',' + res.longitude)
           BMap.regeocoding({
             location: res.latitude + ',' + res.longitude,
             success: function (res1) {
@@ -239,10 +246,11 @@ Page({
     var value = e.detail.value;
     if (value) {
       var BMap = new bmap.BMapWX({
-        ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
-        // ak:'RlQQ4K0R29zc4SDtMUOtps9XfTrCzZ1X'
+        // ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+        key:'FD2Wvwuq8uRaFgheLXBn13U'
+   
       });
-      console.log(_this.data.endCity)
+    
       BMap.suggestion({
         "query":value,
         region: _this.data.endCity,
@@ -312,7 +320,8 @@ Page({
       //   }
       // })
       var BMap = new bmap.BMapWX({
-        ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+        // ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
+        key:'FD2Wvwuq8uRaFgheLXBn13U'
       });
       BMap.suggestion({
         "query":area,
@@ -369,9 +378,9 @@ Page({
       })
       return false;
     }
-    console.log('endInfo',endInfo)
+
     let requests = endInfo.endLont + "," + endInfo.endLait;
-    console.log('转前的坐标',requests)
+ 
     wx.request({
       url:baseUrl + '/api/MapWebApi/GeoConv',
       data:{
@@ -380,13 +389,13 @@ Page({
       },
       method:"POST",
       success:(res)=>{
-        console.log(res)
+  
         let endInfos = {}
         endInfos.endAddress = endInfo.endAddress
         endInfos.endCity = endInfo.endCity
         endInfos.endLait = res.data.data[0].Item1
         endInfos.endLont = res.data.data[0].Item2
-        console.log('转后的坐标',endInfos)
+  
         wx.setStorageSync('endInfo',endInfos);
        
         if(type=='pc'){

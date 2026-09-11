@@ -1145,8 +1145,8 @@ page{
   height:218rpx;
 }
 .yuding{
-  height:510rpx;
   padding: 0 30rpx 0;
+  margin-bottom: 20rpx;
 }
 .gneng{
   width: 100%;
@@ -1332,4 +1332,46 @@ page{
   100% {
     transform: translateX(0); /* 返回初始位置 */
   }
+}
+/* -------------------------------- */
+.date-container {
+  display: flex;
+  align-items: center; /* 垂直居中对齐 */
+  background-color: #fff;
+  padding: 20rpx 30rpx;
+  border-radius: 16rpx;
+}
+
+/* 图标样式 */
+.date-icon {
+  margin-right: 10rpx;
+}
+
+/* 主日期样式 (如 07-16) */
+.date-main {
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #000;
+  margin-right: 20rpx;
+  line-height: 1;
+}
+
+/* 右侧文字组容器 */
+.date-sub-group {
+  display: flex;
+  justify-content: center;
+}
+
+/* 星期样式 (如 周四) */
+.date-week {
+  font-size: 24rpx;
+  color: #9c9c9c;
+  margin-bottom: 6rpx;
+}
+
+/* 相对时间样式 (如 后天) */
+.date-relative {
+  font-size: 24rpx;
+  margin-left: 20rpx;
+  color: #9c9c9c;
 }

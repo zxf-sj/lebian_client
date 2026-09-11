@@ -1,98 +1,126 @@
 <!--user_center/pages/invoice/invoice.wxml-->
 <view class="container">
-<view>
+  <view>
     <view class="weui-cells weui-cells_after-title">
       <radio-group bindchange="radioChange" class="radioChange">
         <label class="weui-cell weui-check__label" wx:for="{{items}}" wx:key="{{item.value}}">
           <view class="weui-cell__hd">
-            <radio value="{{item.value}}" checked="{{item.checked}}"/>
+            <radio value="{{item.value}}" checked="{{item.checked}}" />
           </view>
           <view class="weui-cell__bd">{{item.name}}</view>
         </label>
       </radio-group>
     </view>
-</view>
-    <form bindsubmit="onSubmit" bindreset="onReset" :disabled="isSubmitting" :loading="isSubmitting">
-        <!-- 发票信息 -->
-        <view class="section" wx:if="{{INVType != 'PERPp'}}" >
-            <text class="title">发票信息</text>
-            <view class="input-item">
-                <view class="label"><text class="xingxing">*</text> 发票抬头</view>
-                <input name="Title" value="{{Title}}" placeholder="请输入发票抬头" required />
-                <view class="edit" bind:tap="handleModel">
-                    <image src="../../../assets/images/pen.png" alt="" />
-                </view>
-            </view>
-            <view class="input-item">
-                <view class="label"><text class="xingxing">*</text> 单位税号</view>
-                <input name="TaxID" value="{{TaxID}}" placeholder="请输入单位税号" required />
-            </view>
-            <view class="input-item" >
-                <text class="label"><text class="xingxing" wx:if="{{INVType == 'LtdZp'}}">*</text>开户银行</text>
-                <input name="Bank" value="{{Bank}}" placeholder="请输入开户银行" required />
-            </view>
-            <view class="input-item">
-                <text class="label"><text class="xingxing" wx:if="{{INVType == 'LtdZp'}}">*</text>银行账号</text>
-                <input name="BankAccount" value="{{BankAccount}}" placeholder="请输入银行账号" type="number" required />
-            </view>
-            <view class="input-item">
-                <text class="label"><text class="xingxing" wx:if="{{INVType == 'LtdZp'}}">*</text>单位地址</text>
-                <input name="Address" value="{{Address}}" placeholder="请输入单位地址" required />
-            </view>
-            <view class="input-item">
-                <text class="label"><text class="xingxing" wx:if="{{INVType == 'LtdZp'}}">*</text>单位电话</text>
-                <input name="Telephone" value="{{Telephone}}" placeholder="请输入单位电话" type="number" required />
-            </view>
+  </view>
+  <form bindsubmit="onSubmit" bindreset="onReset" :disabled="isSubmitting" :loading="isSubmitting">
+    <!-- 发票信息 -->
+    <view class="section" wx:if="{{INVType != 'PERPp'}}">
+      <text class="title">发票信息</text>
+      <view class="input-item">
+        <view class="label"><text class="xingxing">*</text> 发票抬头</view>
+        <input name="Title" value="{{Title}}" placeholder="请输入发票抬头" required />
+        <view class="edit" bind:tap="handleModel">
+          <image src="../../../assets/images/pen.png" alt="" />
         </view>
-
-        <!-- 出行人信息 -->
-        <view class="section">
-            <text class="title">出行人信息</text>
-            <view class="input-item">
-                <view class="label"><text class="xingxing">*</text> 出行人姓名</view>
-                <input name="PassengerName" value="{{PassengerName}}" placeholder="请输入出行人姓名" required />
-            </view>
-            <view class="input-item">
-                <view class="label"><text class="xingxing">*</text> 身份证件</view>
-                <input name="IDNumber" value="{{IDNumber}}" placeholder="请输入身份证号码" required />
-            </view>
-        </view>
-
-        <!-- 联系方式 -->
-        <view class="section">
-            <text class="title">联系方式</text>
-            <view class="input-item">
-                <view class="label"><text class="xingxing">*</text> 电子邮箱</view>
-                <input name="Email" value="{{Email}}" placeholder="请输入电子邮箱" type="text" required />
-            </view>
-            <view class="input-item textarea-item">
-                <text class="label">备注</text>
-                <textarea name="Note" value="{{Note}}" placeholder="请输入备注信息" />
-            </view>
-        </view>
-        <!-- 提交按钮 -->
-        <button form-type="submit" class="submit-btn" >提交订单</button>
-        <button form-type="reset" class="reset-btn">重置</button>
-    </form>
-    <view class="pop_up" wx:if="{{pop_show}}">
-        <view class="pop_box">
-            <view class="nav_icon2" bind:tap="pop_close">
-                <view class="btnyes">确定</view>
-            </view>
-            <scroll-view  class="scroll-box" scroll-y="true" bindscrolltolower="scrollToLower">
-                <view class="nav_icon" wx:for="{{dataList}}" wx:key="{{item.id}}" bind:tap="handleClick" data-index='{{index}}' data-Id='{{item.Id}}'>
-                    <view class="item_l">
-                        <view class="pop_title">{{item.Name}}</view>
-                        <view class="pop_num">{{item.TaxID}}</view>
-                    </view>
-                    <view class="item_r" wx:if="{{isShow == index}}">
-                        √ 
-                    </view>
-                </view>
-            </scroll-view>
-            <view class="pop_bottom" bind:tap="handeleAdd" >
-                添加常用发票抬头
-            </view>
-        </view>
+      </view>
+      <view class="input-item">
+        <view class="label"><text class="xingxing">*</text> 单位税号</view>
+        <input name="TaxID" value="{{TaxID}}" placeholder="请输入单位税号" required />
+      </view>
+      <view class="input-item">
+        <text class="label"><text class="xingxing" wx:if="{{INVType == 'LtdZp'}}">*</text>开户银行</text>
+        <input name="Bank" value="{{Bank}}" placeholder="请输入开户银行" required />
+      </view>
+      <view class="input-item">
+        <text class="label"><text class="xingxing" wx:if="{{INVType == 'LtdZp'}}">*</text>银行账号</text>
+        <input name="BankAccount" value="{{BankAccount}}" placeholder="请输入银行账号" type="number" required />
+      </view>
+      <view class="input-item">
+        <text class="label"><text class="xingxing" wx:if="{{INVType == 'LtdZp'}}">*</text>单位地址</text>
+        <input name="Address" value="{{Address}}" placeholder="请输入单位地址" required />
+      </view>
+      <view class="input-item">
+        <text class="label"><text class="xingxing" wx:if="{{INVType == 'LtdZp'}}">*</text>单位电话</text>
+        <input name="Telephone" value="{{Telephone}}" placeholder="请输入单位电话" type="number" required />
+      </view>
     </view>
+
+    <!-- 出行人信息 -->
+    <view class="section">
+      <view class="personTitle">
+        <text class="title">出行人信息</text>
+        
+        <view style="display: flex;">
+          <view style="margin-right: 20rpx;" class="add" bind:tap="handleReduce">-</view>
+        <view class="add" bind:tap="handleAdd" >+</view>
+        </view>
+
+      </view>
+      <view class="switch-item" >
+        <text>选择模式：</text>
+        <switch checked="{{isMultiSelect}}"  bindchange="toggleSelectMode" color="#07c160" />
+        <text class="switch-label">{{isMultiSelect ? '多张' : '单张'}}</text>
+      </view>
+      <view wx:for="{{personList}}" wx:key="index" class="personBox">
+        <view class="input-item">
+          <view class="label"><text class="xingxing">*</text> 出行人姓名</view>
+          <input  data-index="{{index}}" name="PassengerName" bindinput="onNameInput" value="{{personList[index].PassengerName}}" placeholder="请输入出行人姓名" required />
+        </view>
+        <view class="input-item">
+          <view class="label"><text class="xingxing">*</text> 身份证件</view>
+          <input  data-index="{{index}}"  bindinput="onIdInput" name="IDNumber" value="{{personList[index].IDNumber}}" placeholder="请输入身份证号码" required />
+        </view>
+      </view>
+    </view>
+
+    <!-- 联系方式 -->
+    <view class="section">
+      <text class="title">联系方式</text>
+      <view class="input-item">
+        <view class="label"><text class="xingxing">*</text> 电子邮箱</view>
+        <input name="Email" value="{{Email}}" placeholder="请输入电子邮箱" type="text" required />
+      </view>
+      <view class="input-item textarea-item">
+        <text class="label">备注</text>
+        <textarea name="Note" value="{{Note}}" placeholder="请输入备注信息" />
+      </view>
+    </view>
+    <view class="section">
+      <text class="title">发票格式</text>
+      <view class="weui-cells weui-cells_after-title">
+      <radio-group bindchange="InvoiceChange" class="radioChange">
+        <label class="weui-cell weui-check__label" wx:for="{{invoiceFormat}}" wx:key="{{item.value}}">
+          <view class="weui-cell__hd">
+            <radio value="{{item.value}}" checked="{{item.checked}}" />
+          </view>
+          <view class="weui-cell__bd">{{item.name}}</view>
+        </label>
+      </radio-group>
+    </view>
+    </view>
+    <!-- 提交按钮 -->
+    <button form-type="submit" class="submit-btn">提交订单</button>
+    <button form-type="reset" class="reset-btn">重置</button>
+  </form>
+  <view class="pop_up" wx:if="{{pop_show}}">
+    <view class="pop_box">
+      <view class="nav_icon2" bind:tap="pop_close">
+        <view class="btnyes">确定</view>
+      </view>
+      <scroll-view class="scroll-box" scroll-y="true" bindscrolltolower="scrollToLower">
+        <view class="nav_icon" wx:for="{{dataList}}" wx:key="{{item.id}}" bind:tap="handleClick" data-index='{{index}}' data-Id='{{item.Id}}'>
+          <view class="item_l">
+            <view class="pop_title">{{item.Name}}</view>
+            <view class="pop_num">{{item.TaxID}}</view>
+          </view>
+          <view class="item_r" wx:if="{{isShow == index}}">
+            √
+          </view>
+        </view>
+      </scroll-view>
+      <view class="pop_bottom" bind:tap="handeleAdd">
+        添加常用发票抬头
+      </view>
+    </view>
+  </view>
 </view>

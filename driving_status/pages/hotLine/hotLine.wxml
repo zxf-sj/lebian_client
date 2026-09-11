@@ -51,7 +51,6 @@
       </view>
     </block>
   </scroll-view>
-  <view class="txt">预订成功后，金额大于500元，0.99元抵88元优惠。</view>
   <!-- 单程/往返 单选框 -->
   <view class="section-title">行程类型</view>
   <radio-group class="radio-group" bindchange="radioChange">
@@ -60,7 +59,7 @@
     </label>
   </radio-group>
   <!-- 底部按钮 (模拟) -->
-  <view class="submit-btn" bind:tap="submit">0.99元预定</view>
+  <view class="submit-btn" bind:tap="submit">预定下单</view>
   <view class="txt">
     此单价为系统计算价格，联系13133387813可咨询更多优惠。
   </view>

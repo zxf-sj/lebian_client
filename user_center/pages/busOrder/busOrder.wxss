@@ -1,0 +1,335 @@
+/* user_center/pages/busOrder/busOrder.wxss */
+/* pages/order-confirm/order-confirm.wxss */
+page {
+  background-color: #f5f6f8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+}
+
+.container {
+  padding: 20rpx;
+}
+
+/* 通用卡片样式 */
+.card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.02);
+}
+
+/* 1. 行程卡片 */
+.trip-header {
+  position: relative;
+  padding-left: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.station-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  margin-right: 16rpx;
+}
+.dot.start { background-color: #07c160; } /* 绿色起点 */
+.dot.end { background-color: #fa5151; }   /* 红色终点 */
+
+.dashed-line {
+  position: absolute;
+  left: 27rpx; /* 对齐圆点中心 */
+  top: 24rpx;
+  bottom: 40rpx;
+  width: 2rpx;
+  border-left: 2rpx dashed #ddd;
+  z-index: 0;
+}
+
+.station-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.trip-details {
+  background: #f9f9f9;
+  padding: 20rpx;
+  border-radius: 12rpx;
+}
+
+.time-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16rpx;
+}
+
+.time-text {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-left: 8rpx;
+}
+
+.tip-text {
+  display: block;
+  font-size: 22rpx;
+  color: #fa5151; /* 红色提示 */
+  margin-top: 6rpx;
+  margin-left: 44rpx;
+}
+
+.ticket-count {
+  border: 1rpx solid #ddd;
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.rules-row {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+  color: #666;
+  flex-wrap: wrap;
+}
+
+.rule-item {
+  margin-right: 20rpx;
+  display: flex;
+  align-items: center;
+}
+
+.check-icon {
+  color: #07c160;
+  margin-right: 6rpx;
+  font-size: 20rpx;
+}
+
+.link-text {
+  margin-left: auto;
+  color: #999;
+}
+
+/* 2. 乘车人卡片 */
+.passenger-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20rpx;
+  margin-bottom: 20rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.p-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-right: 10rpx;
+}
+
+.p-type {
+  background: #eee;
+  color: #666;
+  font-size: 20rpx;
+  padding: 2rpx 8rpx;
+  border-radius: 4rpx;
+  margin-right: 10rpx;
+}
+
+.p-id {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.add-btn {
+  border: 1rpx dashed #ccc;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  text-align: center;
+  color: #333;
+  font-size: 28rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.plus-icon {
+  color: #0052d9; /* 蓝色加号 */
+  margin-right: 10rpx;
+  font-weight: bold;
+}
+
+/* 3. 通用列表行样式 (联系人、优惠券) */
+.row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.left .icon {
+  margin-right: 16rpx;
+  font-size: 32rpx;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.arrow {
+  margin-left: 10rpx;
+  color: #ccc;
+}
+
+.input-note {
+  text-align: right;
+  width: 400rpx;
+}
+
+.divider {
+  height: 1rpx;
+  background-color: #f0f0f0;
+}
+
+/* 4. 底部栏 */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 120rpx;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30rpx;
+  box-sizing: border-box;
+  box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.05);
+  z-index: 100;
+}
+.price-info {
+  display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.price-info .price {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #fa5151;
+  margin-bottom: 20rpx;
+}
+
+.submit-btn {
+  background: #0052d9; /* 或者是截图中的蓝色 */
+  color: #fff;
+  border-radius: 40rpx;
+  width: 240rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 30rpx;
+  padding: 0;
+  margin: 0;
+}
+.mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+.popup {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 40rpx 32rpx;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  z-index: 101;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.popup-show {
+  transform: translateY(0);
+}
+
+.popup-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.label {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.input {
+  width: 100%;
+  height: 88rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.error {
+  font-size: 24rpx;
+  color: #e74c3c;
+  margin-top: 8rpx;
+  display: block;
+}
+
+.btn-group {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+}
+
+.btn {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 30rpx;
+  border-radius: 12rpx;
+  text-align: center;
+}
+
+.btn-cancel {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.btn-confirm {
+  background: #07c160;
+  color: #fff;
+}

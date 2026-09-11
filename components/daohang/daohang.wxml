@@ -1,11 +1,12 @@
 <view class="menu-box" catchtouchmove="bottonMove" bindtouchstart="buttonStart" bindtouchend="buttonEnd" style="top:{{buttonTop}}px;left:{{buttonLeft}}px;z-index:999;">
     <view class="navbar {{ play?'active':'' }}">
       <view class="btn" bindtap="changePlay">
-        <view class="line" animation="{{ !play?line1CloseAn:line1OpenAn }}"></view>
+        <!-- <view class="line" animation="{{ !play?line1CloseAn:line1OpenAn }}"></view>
         <view class="line" animation="{{ !play?line2CloseAn:line2OpenAn }}"></view>
         <view class="title" animation="{{ !play?titleCloseAn:titleOpenAn }}">
           导航
-        </view>
+        </view> -->
+        <image class="icon" src="/assets/images/kefu.png"></image>
       </view>
     </view>
     <view class="menu">

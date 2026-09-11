@@ -56,9 +56,9 @@ App({
     exclusiveCarCityCode: '',
     exclusiveCarStartCity: '',
     hideCityNoService: true,
-    // httpsUrl:'https://www.qierchuxing.com',//线上环境
-    httpsUrl:'https://qece.lebianjia.com',//测试环境
-    // httpsUrl:'https://www.lebianjia.com',//新线上环境
+    httpsUrl:'https://www.qierchuxing.com',//线上环境
+    // httpsUrl:'https://qice.lebian.xyz',//测试环境
+  
     
     companyCode:'CP20240001',//贝壳
     //companyCode:'CP20247684',//科华

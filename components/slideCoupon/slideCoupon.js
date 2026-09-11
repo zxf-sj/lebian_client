@@ -148,12 +148,13 @@ Component({
     },
     handleSubmit() {
       let that = this;
+      console.log(that.data.ka)
+      console.log(that.data.juan)
       if (that.data.types == "次卡") {
         let rollArr = that.data.ka.filter(item => item.selected)
-        console.log(rollArr)
-        if (rollArr.length > that.data.person_number) {
+        if (rollArr.length > that.data.person_number ) {
           wx.showToast({
-            title: '次卡不可超过乘车人数',
+            title: '次卡、优惠卷使用不可超过' + that.data.person_number + "张",
             icon: 'none',
           })
           return
@@ -180,6 +181,7 @@ Component({
         .filter(item => item.selected === true) // 1. 筛选出 selected 为 true 的对象
         .map(item => item.id)                   // 2. 提取这些对象的 id
         .join(',');
+        console.log(result)
         let updatedData = {
           ...pcTimeSync,
           hasChooseId: result

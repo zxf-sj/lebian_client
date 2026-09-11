@@ -76,6 +76,29 @@
   </view>
   <view class="container">
     <view class="shadow-box">
+      <view class="shadow-box" wx:if="{{detailData.IsPickGoods != '100004-0000010001' && detailData.CarDirId_Name != ''}}">
+      <block>
+        <view class="pay-title">
+          <text class="font-30">司机信息</text>
+        </view>
+        <view class="pay-detail">
+          <block>
+            <view class="border-bottom">
+              <view class="flex-box font-28">
+                <text class="mini-pay">车牌号</text>
+                <text class="mini-pay">{{detailData.CarDirId_Name}}</text>
+              </view>
+            </view>
+            <view class="border-bottom">
+              <view class="flex-box font-28">
+                <text class="mini-pay" style="min-width: 140rpx;">司机电话</text>
+                <text class="mini-pay" style="color: blue;text-decoration: underline;" bind:tap="handlePhone" data-phone="{{detailData.DriverId_Phone}}">联系司机</text>
+              </view>
+            </view>
+          </block>
+        </view>
+      </block>
+    </view>
       <block>
         <view class="pay-title">
           <text class="font-30">订单信息</text>
@@ -170,6 +193,7 @@
         </view>
       </block>
     </view>
+    
     <view class="shadow-box">
       <block>
         <view class="pay-title">

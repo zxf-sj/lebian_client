@@ -40,14 +40,14 @@ Page({
     modalValue: '', //弹框数据
     prompt: '',
     isLoging: false,
-    TimeList:[],
-    change_time_item:'',
-    showPicker:false,
+    TimeList: [],
+    change_time_item: '',
+    showPicker: false,
     pickerList: [],
     tempIndex: 0, // 临时选中的索引
     selectedValue: '',
-    StartDay:'',
-    EndDay:''
+    StartDay: '',
+    EndDay: ''
   },
   onLoad: function (options) {
     if (options.menuTapCurrent == 1) {
@@ -77,17 +77,17 @@ Page({
     let _this = this;
     let data = item.target.dataset.item
     _this.setData({
-      change_time_item:data
+      change_time_item: data
     })
   },
   bindDateChange(res) {
     console.log(res)
-    
+
     let _this = this;
     console.log(_this.data.change_time_item)
     let dat = res.detail.value
     let time = _this.data.change_time_item.ArrivalTime.split(' ')[1]
-  
+
     let newTime = time.split('-')[0].split(':')[0] + ":59:00"
     let userInfo = wx.getStorageSync('userInfo')
     wx.request({
@@ -95,7 +95,7 @@ Page({
       data: {
         Id: _this.data.change_time_item.Id,
         ArrivalTime: dat + ' ' + newTime,
-        MemberId:userInfo.Id,
+        MemberId: userInfo.Id,
       },
       method: "POST",
       success: (res) => {
@@ -122,13 +122,31 @@ Page({
       }
     })
   },
+  goKeFu() {
+    wx.showModal({
+      title: '联系客服',
+      content: '客服电话0351-6078977',
+      success(res) {
+        if (res.confirm) {
+          wx.makePhoneCall({
+            phoneNumber: '0351-6078977'
+          })
+        } else if (res.cancel) {
+          wx.showToast({
+            title: '取消拨打客服电话',
+            icon: "error"
+          })
+        }
+      }
+    })
+  },
   //点击修改时间
   handleTime(item) {
     console.log(item)
     let _this = this;
     let data = item.target.dataset.item
     _this.setData({
-      change_time_item:data
+      change_time_item: data
     })
     let dateArr = data.CreateDate.split(' ')
     let day = dateArr[0]
@@ -153,14 +171,14 @@ Page({
           });
           console.log(pickerList)
           _this.setData({
-            pickerList:pickerList,
+            pickerList: pickerList,
             showPicker: true, // 此时弹窗才会真正弹出来
             tempIndex: 0
           })
           
         } else {
           wx.showToast({
-            title: res.data.msg,
+            title: res.msg,
             icon: "error"
           })
         }
@@ -173,22 +191,29 @@ Page({
       }
     })
   },
+  moveHandle() {
+    // 空函数，仅用于配合 @touchmove.stop.prevent 阻止底层页面滚动
+  },
   closeCustomPicker() {
     console.log('触发了')
-    this.setData({ showPicker: false });
+    this.setData({
+      showPicker: false
+    });
   },
   // 3. 用户在弹窗内滑动/点击选择
   selectItem(e) {
     const index = e.currentTarget.dataset.index;
     console.log(index)
-    this.setData({ tempIndex: index });
+    this.setData({
+      tempIndex: index
+    });
   },
-   // 4. 点击确定
-   confirmSelect() {
+  // 4. 点击确定
+  confirmSelect() {
     let _this = this;
     const selectedItem = this.data.pickerList[this.data.tempIndex];
     console.log(selectedItem)
-    let time =selectedItem.split('~')[0].split(':')[0]
+    let time = selectedItem.split('~')[0].split(':')[0]
     let data = _this.data.change_time_item
     let day = _this.data.change_time_item.ArrivalTime.split(' ')[0]
     let userInfo = wx.getStorageSync('userInfo')
@@ -197,7 +222,7 @@ Page({
       data: {
         Id: data.Id,
         ArrivalTime: day + ' ' + time + ':59:00',
-        MemberId:userInfo.Id,
+        MemberId: userInfo.Id,
       },
       method: "POST",
       success: (res) => {
@@ -227,15 +252,21 @@ Page({
       }
     })
   },
- 
+
   //到达底部
   scrollToLower: function (e) {
+    let _this = this;
     if (!this.data.loading && !this.data.noMore) {
       this.setData({
         loading: true,
         pageNo: this.data.pageNo + 1
       });
-      this.getOrderList(true, this.data.FormTypeId);
+      if(_this.data.menuTapCurrent == 2) {
+        this.getOrderList2(true, this.data.FormTypeId);
+      } else {
+        this.getOrderList(true, this.data.FormTypeId);
+      }
+      
     }
   },
   getFormTypeId() {
@@ -258,6 +289,7 @@ Page({
   },
   // 查询订单
   getOrderList(isPage, FormTypeId) {
+    console.log('查询订单', isPage, FormTypeId)
     wx.showLoading({
       title: '加载中',
     })
@@ -275,6 +307,7 @@ Page({
       var usreinfo = wx.getStorageSync('userInfo');
       let reqData = {
         limit: 10,
+        TravelType: that.data.menuTapCurrent,
         page: that.data.pageNo,
         Personal: usreinfo.Id,
         FormTypeId: FormTypeId,
@@ -396,6 +429,56 @@ Page({
       })
     }
   },
+  getOrderList2(isPage, FormTypeId) {
+    console.log('查询订单', isPage, FormTypeId)
+    wx.showLoading({
+      title: '加载中',
+    })
+    let that = this;
+    var openid = wx.getStorageSync('openid');
+    if (!openid) {
+      that.setData({
+        isLoging: false,
+      })
+      wx.hideLoading()
+    } else {
+      that.setData({
+        isLoging: true,
+      })
+      var usreinfo = wx.getStorageSync('userInfo');
+      let reqData = {
+        limit: 10,
+        page: that.data.pageNo,
+        Personal: usreinfo.Id,
+      }
+      http.postRequest("/api/DriverApp/GetMyPatientList", reqData, wx.getStorageSync('header'), res => {
+        wx.hideLoading()
+        that.setData({
+          loading: false
+        })
+        if (res.code == 0) {
+          const newData = res.data || [];
+          if (isPage) {
+            // 加载更多：拼接数据
+            that.setData({
+              listData: [...that.data.listData, ...newData]
+            });
+          } else {
+            // 刷新/首页：直接替换数据
+            that.setData({
+              listData: newData
+            });
+          }
+        }
+      }, err => {
+        wx.hideLoading()
+        this.setData({
+          loadingFailed: true
+        })
+        return false;
+      })
+    }
+  },
   getNewtime(originalDateTime) {
     var dateString = originalDateTime.replace(/-/g, '/');
     var date = new Date(dateString);
@@ -442,38 +525,32 @@ Page({
     })
   },
   //付款
-  gotopay: throttle(function(e) {
+  gotopay: throttle(function (e) {
     let that = this;
     var orderId = e.currentTarget.dataset.ids;
     var user = wx.getStorageSync('userInfo');
-    // wx.navigateTo({
-    //   url: '/driving_status/pages/gotopay/gotopay?orderId='+orderId,
-    // })
-    http.getRequest('/Api/DispatchMobile/GoPayOrderRide?LayerOrder=1&Id=' + orderId + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
+    let appid = wx.getStorageSync('appId')
+    http.getRequest('/Api/DispatchMobile/GoUnionPayOrderRide?appid=' + appid + '&Id=' + orderId + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
       console.log('请求成功', LayerOrderRes)
       if (LayerOrderRes.code == 0) {
         console.log('获取支付所需信息成功')
-        var data = JSON.parse(LayerOrderRes.data);
+        var payData = LayerOrderRes.data
         console.log('拉起支+付')
         wx.requestPayment({
-          timeStamp: data.timeStamp,
-          nonceStr: data.nonceStr,
-          package: data.package,
-          signType: 'MD5',
-          paySign: data.paySign,
+          timeStamp: payData.TimeStamp,
+          nonceStr: payData.NonceStr,
+          package: payData.Package,
+          signType: payData.SignType,
+          paySign: payData.PaySign,
           success(paymentRes) {
-            console.log('支付成功')
-
-            wx.showToast({
-              title: '支付成功',
-              icon: 'success',
-              duration: 2000,
+            wx.showModal({
+              title: '预约成功',
+              content: '订单已预约成功，司机将会在您出发前一小时联系你',
+              showCancel: false, // 隐藏取消按钮，强制用户点击确认
+              confirmText: '我知道了',
               success: function () {
-                console.log('1111')
                 that.setSubscribeMessage();
-                console.log('2222')
                 setTimeout(function () {
-                  console.log('3333')
                   wx.reLaunch({
                     url: '/user_center/pages/payDetail/payDetail?orderId=' + orderId + "&from=orderList"
                   })
@@ -492,10 +569,12 @@ Page({
           }
         })
       } else if (LayerOrderRes.code == 400 && LayerOrderRes.msg == "已付款") {
-        wx.showToast({
-          title: '支付成功',
-          icon: 'success',
-          duration: 2000,
+        wx.showModal({
+          title: '预约成功',
+          content: '订单已预约成功，司机将会在您出发前一小时联系你',
+          showCancel: false, // 隐藏取消按钮，强制用户点击确认
+          confirmText: '我知道了',
+
           success: function () {
             that.setSubscribeMessage();
             setTimeout(function () {
@@ -516,15 +595,15 @@ Page({
     }, (LayerOrderRrr) => {
       console.log('请求失败', LayerOrderRrr)
     })
-  },3000),
-  setSubscribeMessage:function(){
+  }, 3000),
+  setSubscribeMessage: function () {
     wx.showModal({
       title: '提示',
       content: '即将为您开启消息提醒',
       complete: (res) => {
         if (res.confirm) {
           wx.requestSubscribeMessage({
-            tmplIds: ['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA',"LhKVmpSKt-FGzwYVDHB6UQpVrdZmMklLzcFJ6Ln_oJU"],
+            tmplIds: ['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA', "LhKVmpSKt-FGzwYVDHB6UQpVrdZmMklLzcFJ6Ln_oJU"],
             success(res) {
               if (res['deEFYI36UL3YupVO80D_0yKwFT_Q2NPV-VpYqGhn9DA'] === 'accept') {
                 console.log('用户同意接收订阅消息');
@@ -559,7 +638,7 @@ Page({
             }
           });
         }
-       
+
       }
     })
   },
@@ -598,7 +677,7 @@ Page({
       "Id": that.data.orderId,
       "Mark": value
     }
-    http.postRequest("/Api/DispatchMobile/RefundOrder", request, '', (res) => {
+    http.postRequest("/Api/DispatchMobile/UnionPayRefundOrder", request, '', (res) => {
       console.log('申请退款', res)
       if (res.code == 0) {
         wx.showToast({
@@ -611,11 +690,11 @@ Page({
             url: '/user_center/pages/travelList/travelList',
           })
         }, 3000)
-      } else if(res.code == 430) {
+      } else if (res.code == 430) {
         wx.showModal({
           title: '提示',
           content: res.msg,
-          success (res) {
+          success(res) {
             if (res.confirm) {
               console.log('用户点击确定')
             } else if (res.cancel) {
@@ -1042,12 +1121,23 @@ Page({
   },
   menuTap: function (e) {
     var current = e.currentTarget.dataset.current; //获取到绑定的数据
-    this.setData({
-      menuTapCurrent: current,
-      listData: [],
-      pageNo: 1
-    });
-    this.getOrderList(true, this.data.FormTypeId);
+    console.log(current)
+    if (current == 2) {
+      this.setData({
+        menuTapCurrent: current,
+        listData: [],
+        pageNo: 1
+      });
+      this.getOrderList2(true, this.data.FormTypeId);
+    } else {
+      this.setData({
+        menuTapCurrent: current,
+        listData: [],
+        pageNo: 1
+      });
+      this.getOrderList(true, this.data.FormTypeId);
+    }
+
   },
   onPullDownRefresh() {
     wx.showNavigationBarLoading();

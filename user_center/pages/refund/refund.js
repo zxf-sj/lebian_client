@@ -94,7 +94,7 @@ Page({
         "Id": orderId,
         "Mark": "申请退款"
       }
-      http.postRequest("/Api/DispatchMobile/RefundOrder", request, '', (res) => {
+      http.postRequest("/Api/DispatchMobile/UnionPayRefundOrder", request, '', (res) => {
         if (res.code == 0) {
           console.log('退款', res)
           wx.showToast({

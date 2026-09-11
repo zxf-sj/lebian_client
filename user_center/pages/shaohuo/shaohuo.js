@@ -442,17 +442,17 @@ Page({
                   icon: 'success',
                   duration: 2000
                 })
-               
-                http.getRequest('/Api/DispatchMobile/GoPay?LayerOrder=1&Id=' + ress.data.Id + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (res) => {
+                let appid = wx.getStorageSync('appId')
+                http.getRequest('/Api/DispatchMobile/GoUnionPay?appid=' + appid + '&Id=' + ress.data.Id + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (res) => {
                   console.log(res)
                   if (res.code == 0) {
-                    var data = JSON.parse(res.data);
+                    var payData = res.data
                     wx.requestPayment({
-                      timeStamp: data.timeStamp,
-                      nonceStr: data.nonceStr,
-                      package: data.package,
-                      signType: 'MD5',
-                      paySign: data.paySign,
+                      timeStamp: payData.TimeStamp,
+            nonceStr: payData.NonceStr,
+            package: payData.Package,
+            signType: payData.SignType,
+            paySign: payData.PaySign,
                       success(res) {
                         console.log('回调', res)
                         wx.removeStorageSync('starInfo2');
@@ -548,17 +548,18 @@ Page({
                     if (ress.code == '0') {
                       wx.hideLoading();
                       console.log('拿支付信息')
-                      http.getRequest('/Api/DispatchMobile/GoPay?LayerOrder=1&Id=' + ress.data.Id + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (res) => {
+                      let appid = wx.getStorageSync('appId')
+                      http.getRequest('/Api/DispatchMobile/GoUnionPay?appid=' + appid + '&Id=' + ress.data.Id + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (res) => {
                         console.log(res)
                         if (res.code == 0) {
-                          var data = JSON.parse(res.data);
+                          var payData = res.data
                           console.log('拉起支付')
                           wx.requestPayment({
-                            timeStamp: data.timeStamp,
-                            nonceStr: data.nonceStr,
-                            package: data.package,
-                            signType: 'MD5',
-                            paySign: data.paySign,
+                            timeStamp: payData.TimeStamp,
+            nonceStr: payData.NonceStr,
+            package: payData.Package,
+            signType: payData.SignType,
+            paySign: payData.PaySign,
                             success(res) {
                               console.log('回调', res)
                               wx.removeStorageSync('starInfo2');

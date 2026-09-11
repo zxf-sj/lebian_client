@@ -1,5 +1,6 @@
 import http from '../../utils/http';
-import util from "../../utils/util";
+const util = require('../../utils/util.js');
+
 const BASE_URL = require("../../utils/BASE_URL");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 const app = getApp();
@@ -27,8 +28,25 @@ Page({
     endDate: '', // 结束日期，默认为今天之后三天
     isFlipped: false,
     orderWarning: '',
+    mainDate: '', // 例如 "07-16"
+    weekDay: '', // 例如 "周四"
+    relativeDay: '', // 例如 "后天"，如果是大后天则不显示
+    busDay:util.getToday(),
+    busList:[],
+    busLineId:''
   },
+
   onLoad: async function (opt) {
+    console.log(opt)
+    if (opt.date) {
+      console.log(opt.date)
+      this.setData({
+        car_type: 3
+      })
+      this.setDateInfo(opt.date);
+    } else {
+      this.setDateInfo();
+    }
     console.log('onLoad')
     let that = this;
     if (wx.getStorageSync('storageSync')) {
@@ -86,6 +104,73 @@ Page({
     _this.getLineList(); //获取路线列表
     await _this.getLunBo();
 
+  },
+  setDateInfo(data) {
+    let _this = this;
+    let year = ''
+    let month = ''
+    let day = ''
+    let now = ''
+    if (data) {
+      console.log(data)
+      _this.setData({
+        busDay:data
+      })
+      now = data.split('-')
+      year = now[0]
+      console.log(year)
+      month = now[1]
+      console.log(month)
+      day = now[2]
+      console.log(day)
+    } else {
+     
+      now = new Date();
+      year = now.getFullYear();
+      console.log(year)
+      month = now.getMonth() + 1;
+      console.log(month)
+      day = now.getDate();
+      console.log(year + '-' + month + '-' +day)
+    }
+
+    const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
+    // 格式化月日，补零
+    const formatMonth = month < 10 ? '0' + month : month;
+    const formatDay = day < 10 ? '0' + day : day;
+
+    // 计算相对天数 (这里模拟获取后天的数据，实际开发中可能是传入的日期字符串)
+    // 假设我们要显示的是 "后天" 的数据：
+    const targetDate = new Date(year, month - 1, day);
+
+    // 1. 设置主日期
+    const tMonth = targetDate.getMonth() + 1;
+    const tDay = targetDate.getDate();
+    this.setData({
+      mainDate: `${tMonth < 10 ? '0'+tMonth : tMonth}-${tDay < 10 ? '0'+tDay : tDay}`
+    });
+
+    // 2. 设置星期
+    const weekIndex = targetDate.getDay();
+    this.setData({
+      weekDay: weekDays[weekIndex]
+    });
+
+    // 3. 计算并设置相对时间 (今天/明天/后天)
+    // 简单算法：比较目标日期和当前日期的天数差
+    const newNow = new Date();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const diffDays = Math.round((targetDate.getTime() - newNow.getTime()) / oneDay);
+    let relativeText = '';
+    if (diffDays === 0) relativeText = '今天';
+    else if (diffDays === 1) relativeText = '明天';
+    else if (diffDays === 2) relativeText = '后天';
+    // 如果超过后天，通常就不显示这个文字了，或者显示具体日期
+    console.log(relativeText)
+    this.setData({
+      relativeDay: relativeText
+    });
   },
   // 是否有未完成订单
   reqHasOrder() {
@@ -159,6 +244,27 @@ Page({
       startDate: this.data.startDate
     };
     wx.setStorageSync('storageSync', updatedData);
+    //获取大巴线路
+    _this.getBusLine()
+  },
+  //获取大巴线路
+  getBusLine() {
+    let _this = this;
+    http.getRequest("/api/BusMobile/GetBusLineList", '', wx.getStorageSync('header'), res => {
+      if (res.code == 0) {
+       console.log(res.data)
+       let data = res.data
+       data.forEach(item => {
+        const [start, end] = item.LineName.split('-');
+        item.start = start;
+        item.end = end;
+      });
+      console.log(data)
+        _this.setData({
+          busList: data
+        })
+      }
+    }, err => {})
   },
   //切换叫车类型
   car_type(e) {
@@ -188,19 +294,26 @@ Page({
   //点击出发城市
   handleGo() {
     let that = this;
-    wx.navigateTo({
-      url: "/user_center/pages/chooseCity/chooseCity?typeon=" + that.data.type + "&direction=startingCity",
-    })
+    if(that.data.car_type != 3) {
+      wx.navigateTo({
+        url: "/user_center/pages/chooseCity/chooseCity?typeon=" + that.data.type + "&direction=startingCity",
+      })
+    }
+    
   },
   //点击目的地
   handleDestination() {
     let that = this;
-    wx.navigateTo({
-      url: "/user_center/pages/chooseCity/chooseCity?typeon=" + that.data.type + "&direction=endingCity",
-    })
+    if(that.data.car_type != 3) {
+      wx.navigateTo({
+        url: "/user_center/pages/chooseCity/chooseCity?typeon=" + that.data.type + "&direction=endingCity",
+      })
+    }
+    
   },
   //点击查询预定
   reserve() {
+    let _this = this;
     let lineId = wx.getStorageSync('lineld') || '';
     var wxinfo = wx.getStorageSync("userInfo");
     console.log('wxinfo', wxinfo)
@@ -304,12 +417,16 @@ Page({
       })
 
     } else if (this.data.car_type == 3) {
+      wx.navigateTo({
+        url: '/user_center/pages/busList/busList?busDay=' + _this.data.busDay + '&LineId=' + _this.data.busLineId,
+      })
+      return
       const validCities = ["太原市", "孝义市"];
       if (
         !validCities.includes(this.data.startingCity) ||
         !validCities.includes(this.data.endingCity)
       ) {
-        return; 
+        return;
       }
       wx.request({
         url: baseUrl + '/api/DispatchMobile/GetLineIdByCityName',
@@ -372,6 +489,25 @@ Page({
       lineld: res.Id
     })
   },
+  bindHotRoute2(e) {
+    let res = e.currentTarget.dataset
+    console.log(res)
+    let storedData = wx.getStorageSync('storageSync') || {};
+    let request = {
+      startingCity: res.start,
+      endingCity: res.end
+    }
+    let updatedData = {
+      ...storedData,
+      ...request
+    };
+    wx.setStorageSync('storageSync', updatedData);
+    this.setData({
+      busLineId:res.lineid,
+      startingCity: res.start,
+      endingCity: res.end
+    })
+  },
   //获取路线列表
   getLineList() {
     wx.showLoading({
@@ -432,7 +568,7 @@ Page({
       }
     }, 30)
   },
- 
+
   getNews() {
     var data = {
       "FormTypeId": app.globalData.formIdType,
@@ -448,6 +584,12 @@ Page({
       }
     }, err => {
       console.log(err)
+    })
+  },
+  handleCalendar() {
+    console.log('dianji')
+    wx.navigateTo({
+      url: '/user_center/pages/dateSelection/dateSelection',
     })
   },
   onUnload() {

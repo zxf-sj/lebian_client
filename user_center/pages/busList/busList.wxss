@@ -1,0 +1,134 @@
+/* user_center/pages/busList/busList.wxss */
+/* pages/bus-list/bus-list.wxss */
+page {
+  height: 100%;
+  background-color: #f5f6fa;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 占满全屏 */
+}
+
+/* --- 顶部日期栏 --- */
+.date-scroll {
+  height: 140rpx;
+  background: #fff;
+  white-space: nowrap;
+  padding: 20rpx 0;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+  z-index: 10;
+}
+
+.date-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 120rpx;
+  height: 100%;
+  position: relative;
+  color: #333;
+}
+
+.date-item.active {
+  background-color: #3b82f6; /* 选中蓝色 */
+  color: #fff;
+  border-radius: 12rpx;
+  margin: 0 10rpx;
+}
+
+.date-num { font-size: 32rpx; font-weight: bold; }
+.date-week { font-size: 24rpx; margin-top: 4rpx; }
+
+/* --- 列表滚动区域 --- */
+.list-container {
+  flex: 1; /* 占据剩余所有高度 */
+  height: 0; /* 配合 flex:1 必须设置 height:0 才能滚动 */
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.bus-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);
+}
+
+/* 卡片头部 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1rpx solid #eee;
+  padding-bottom: 20rpx;
+  margin-bottom: 20rpx;
+}
+.route-title { font-size: 30rpx; font-weight: bold; color: #333; }
+.price { color: #ff477e; font-size: 36rpx; font-weight: bold; }
+.unit { font-size: 24rpx; font-weight: normal; }
+
+/* 卡片主体 */
+.card-body { display: flex; margin-bottom: 20rpx; }
+.time-col { width: 140rpx; display: flex; flex-direction: column; justify-content: center; }
+.time-range { font-size: 28rpx; font-weight: bold; color: #333; }
+.time-label { font-size: 22rpx; color: #999; margin-top: 6rpx; }
+
+.route-col { flex: 1; padding-left: 20rpx; position: relative; }
+.point-row { display: flex; align-items: center; margin-bottom: 10rpx; }
+.dot { width: 16rpx; height: 16rpx; border-radius: 50%; margin-right: 16rpx; flex-shrink: 0; }
+.green { background: #10b981; }
+.orange { background: #f59e0b; }
+.text { font-size: 28rpx; color: #333; }
+
+/* 途经站点逻辑 */
+.via-section { margin-left: 8rpx; }
+.via-toggle { display: flex; align-items: center; margin: 10rpx 0; cursor: pointer; }
+.line-dashed { width: 2rpx; height: 20rpx; background: #ddd; border-left: 2rpx dashed #ccc; margin-right: 18rpx; }
+.toggle-text { font-size: 24rpx; color: #666; }
+
+.via-list .point-row { margin-top: 10rpx; }
+.via-list .text { color: #666; font-size: 26rpx; }
+
+/* 卡片底部 */
+.card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1rpx solid #f9f9f9; padding-top: 20rpx; }
+.seats-info { display: flex; flex-direction: column; }
+.count { font-size: 28rpx; font-weight: bold; color: #333; }
+.desc { font-size: 22rpx; color: #999; margin-top: 4rpx; }
+
+.book-btn {
+  background: #fff;
+  color: #3b82f6;
+  border: 1rpx solid #3b82f6;
+  font-size: 28rpx;
+  padding: 10rpx 40rpx;
+  border-radius: 8rpx;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.loading-tip { text-align: center; color: #999; font-size: 24rpx; padding: 20rpx; }
+.start {
+  font-size: 28rpx;
+  color: #10b981;
+}
+.start_active {
+  font-size: 28rpx !important;
+  color: #10b981 !important;
+}
+.end_active {
+  font-size: 28rpx !important;
+  color: #d11d1d !important;
+}
+.activeTxt {
+  font-size: 24rpx;
+  color: #adaaaa;
+  margin-left: 20rpx;
+}
+.title_bus {
+  font-size: 24rpx;
+  color: #adaaaa;
+}

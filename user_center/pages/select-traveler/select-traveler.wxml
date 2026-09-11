@@ -1,0 +1,52 @@
+<!--user_center/pages/select-traveler/select-traveler.wxml-->
+<view class="page-container">
+  <!-- 顶部导航栏 -->
+  <!-- <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="icon-back">←</text>
+    </view>
+    <text class="title">选择出行人</text>
+    <view class="header-actions">
+      <text class="action-icon">···</text>
+      <text class="action-icon">⊙</text>
+    </view>
+  </view> -->
+
+  <!-- 出行人列表区域 -->
+  <view class="traveler-list">
+    <!-- 添加出行人按钮 -->
+    <view class="add-traveler-btn" bindtap="addTraveler">
+      <text class="add-icon">+</text>
+      <text class="add-text">添加出行人</text>
+    </view>
+
+    <!-- 已有出行人列表 -->
+    <block wx:for="{{travelers}}" wx:key="id">
+      <view class="traveler-item">
+        <!-- 单选框 -->
+        <view class="radio" bindtap="selectTraveler" data-id="{{item.id}}">
+          <view class="radio-circle {{item.selected ? 'selected' : ''}}"></view>
+        </view>
+
+        <!-- 出行人信息 -->
+        <view class="traveler-info">
+          <view class="name-tag">
+            <text class="name">{{item.name}}</text>
+            <text class="tag" wx:if="{{item.type === 'adult'}}">成人</text>
+          </view>
+          <text class="id-card">{{item.idCardType}} {{item.idCard}}</text>
+        </view>
+
+        <!-- 编辑按钮 -->
+        <view class="edit-btn" bindtap="editTraveler" data-id="{{item.id}}">
+          <text class="edit-icon">✎</text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 底部确认按钮 -->
+  <view class="footer">
+    <button class="confirm-btn" bindtap="confirmSelection">确认</button>
+  </view>
+</view>

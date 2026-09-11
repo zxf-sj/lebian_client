@@ -1,0 +1,166 @@
+/* user_center/pages/booking/booking.wxss */
+page {
+  background-color: #f5f6f8; /* 整体浅橙色背景 */
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+}
+
+.container {
+  padding-bottom: 20rpx;
+}
+
+/* 顶部信息卡片 */
+.info-card {
+  background-color: #ffffff;
+  margin: 20rpx;
+  padding: 30rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.02);
+}
+
+.date-row {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.date-sub {
+  font-size: 26rpx;
+  color: #999;
+  font-weight: normal;
+  margin-left: 10rpx;
+}
+
+.data-source {
+  font-size: 22rpx;
+  color: #bbb;
+  margin-bottom: 20rpx;
+}
+
+.route-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1rpx solid #f0f0f0;
+  padding-top: 20rpx;
+}
+
+.route-text {
+  font-size: 28rpx;
+  color: #333;
+  flex: 1;
+}
+
+.consult-btn {
+  border: 1rpx solid #f5a623 !important;
+  color: #f5a623 !important;
+  font-size: 24rpx;
+  padding: 0 20rpx;
+  height: 50rpx;
+  line-height: 48rpx;
+  display: flex;
+  align-items: center;
+  border-radius: 25rpx;
+}
+
+.icon-phone {
+  width: 24rpx;
+  height: 24rpx;
+  margin-right: 6rpx;
+}
+
+/* 列表卡片 */
+.section-card {
+  background-color: #ffffff;
+  margin: 20rpx;
+  padding: 10rpx 30rpx;
+  border-radius: 16rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  padding: 20rpx 0;
+}
+
+/* 列表项 */
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25rpx 0;
+  border-bottom: 1rpx solid #f9f9f9;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.item-content {
+  display: flex;
+  flex: 1;
+  align-items: flex-start; /* 顶部对齐，防止时间换行影响 */
+}
+
+.time {
+  font-size: 28rpx;
+  color: #333;
+  width: 100rpx;
+  flex-shrink: 0;
+}
+
+.address {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.name {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.desc {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 调整 Radio 大小和位置 */
+radio {
+  transform: scale(0.9);
+  margin-right: 10rpx;
+}
+
+/* 底部按钮区域 */
+.bottom-spacer {
+  height: 140rpx;
+}
+
+.footer-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  padding: 20rpx 30rpx;
+  box-sizing: border-box;
+  box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.03);
+  z-index: 99;
+}
+
+.next-btn {
+  background-color: #9baeb6; /* 截图中的灰蓝色 */
+  color: #fff;
+  font-size: 32rpx;
+  border-radius: 40rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+}
+
+.next-btn:active {
+  opacity: 0.8;
+}

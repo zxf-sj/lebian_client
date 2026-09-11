@@ -1,4 +1,6 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "daohang": "/components/daohang/daohang"
+  },
   "navigationBarTitleText": "乐遍城际"
 }

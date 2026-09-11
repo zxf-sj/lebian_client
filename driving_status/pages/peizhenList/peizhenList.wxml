@@ -1,17 +1,128 @@
+<!-- pages/index/index.wxml -->
 <view class="container">
-  <!-- 车辆租赁选项1 -->
-  <scroll-view scroll-y="true" style="height:97vh;" bindscrolltolower="scrollToLower">
-    <view class="car-card" wx:for="{{list}}" wx:key="key">
-      <image class="car-image" src="{{item.Type?imgUrl+item.Type:'https://www.qierchuxing.com/upload/Annex/202405/AX-20240521-644317-541.png'}}" mode="aspectFit"/>
-      <view class="info-box">
-        <text class="car-type">{{item.Name}}</text>
-        <!-- <text class="car-detail">{{item.Amount}}座</text> -->
-        <text class="price" wx:if="{{item.ExtProp1!=null}}">{{item.ExtProp1}}</text>
-        <text class="price1" wx:if="{{item.ExtProp1==null}}">{{item.CreateDate}}</text>
-      </view>
-      <button class="book-btn" type="primary"  bindtap="handleBook" data-item="{{item}}">
-        查看详情
-      </button>
+
+<!-- 顶部 Banner 区域 -->
+<view class="banner-section">
+  <view class="banner-bg"></view>
+  <view class="banner-content">
+    <text class="main-title">乐遍 · 安心陪诊</text>
+    <text class="sub-title">乐遍出行 健康无忧</text>
+
+    <!-- 服务标签栏 -->
+    <view class="service-tags">
+      <view class="tag-item">陪同就医</view>
+      <view class="divider"></view>
+      <view class="tag-item">代替问诊</view>
+      <view class="divider"></view>
+      <view class="tag-item">代买药</view>
+      <view class="divider"></view>
+      <view class="tag-item">取结果</view>
     </view>
-  </scroll-view>
+    <view class="service-tags row-2">
+      <view class="tag-item">手续办理</view>
+      <view class="divider"></view>
+      <view class="tag-item">人工排队</view>
+      <view class="divider"></view>
+      <view class="tag-item">约检查</view>
+    </view>
+  </view>
+  <!-- 模拟右侧医生插图占位 -->
+  <image class="doctor-img" src="/images/doctor-placeholder.png" mode="aspectFit"></image>
+</view>
+
+<!-- 核心卖点图标栏 -->
+<view class="notice-bar">
+  <view class="notice-icon">📢</view>
+  <swiper 
+    class="notice-swiper" 
+    vertical="{{true}}" 
+    autoplay="{{true}}" 
+    circular="{{true}}" 
+    interval="{{3000}}"
+    duration="{{500}}"
+  >
+    <block wx:for="{{noticeList}}" wx:key="index">
+      <swiper-item>
+        <view class="notice-item">{{item}}</view>
+      </swiper-item>
+    </block>
+  </swiper>
+</view>
+
+<!-- 金刚区/主要功能入口 (Grid布局) -->
+<view class="grid-menu">
+  <!-- 第一行：左侧大卡片 + 右侧两个小卡片 -->
+  <view class="grid-row">
+    <view class="card card-large blue-gradient" bind:tap="handlePeizhen">
+      <view class="card-text">
+        <text class="card-title">就医陪诊</text>
+        <text class="card-desc">专业服务\n全程照护</text>
+      </view>
+      <view class="card-icon-placeholder">🏥</view>
+    </view>
+    <view class="grid-col-right">
+      <view class="card card-small green-gradient">
+        <view class="card-text">
+          <text class="card-title">辅助就医</text>
+          <text class="card-desc-sm">就医规划 精准就医</text>
+        </view>
+        <view class="card-icon-placeholder small">❤️</view>
+      </view>
+      <view class="card card-small orange-gradient">
+        <view class="card-text">
+          <text class="card-title">诊前咨询</text>
+          <text class="card-desc-sm">一键对接 安心寻医</text>
+        </view>
+        <view class="card-icon-placeholder small">👂</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 下方列表项 -->
+  <view class="grid-list">
+    <view class="list-item">
+      <view class="list-info">
+        <text class="list-title">代办问诊</text>
+        <text class="list-desc">省心 省时 省钱</text>
+      </view>
+      <view class="list-icon">🩺</view>
+    </view>
+    <view class="list-item">
+      <view class="list-info">
+        <text class="list-title">代办买药</text>
+        <text class="list-desc">便捷高效 省时省力</text>
+      </view>
+      <view class="list-icon">💊</view>
+    </view>
+    <view class="list-item">
+      <view class="list-info">
+        <text class="list-title">送/取服务</text>
+        <text class="list-desc">便捷高效 省时省力</text>
+      </view>
+      <view class="list-icon">📃</view>
+    </view>
+    <view class="list-item">
+      <view class="list-info">
+        <text class="list-title">检查预约</text>
+        <text class="list-desc">预约代办 高效便捷</text>
+      </view>
+      <view class="list-icon">📋</view>
+    </view>
+    <view class="list-item">
+      <view class="list-info">
+        <text class="list-title">院内服务</text>
+        <text class="list-desc">出入院办理 院内探望</text>
+      </view>
+      <view class="list-icon">♿</view>
+    </view>
+    <view class="list-item">
+      <view class="list-info">
+        <text class="list-title">会员套餐</text>
+        <text class="list-desc">就医无忧 高端之选</text>
+      </view>
+      <view class="list-icon">💼</view>
+    </view>
+  </view>
+</view>
+
 </view>

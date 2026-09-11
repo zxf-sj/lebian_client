@@ -74,7 +74,7 @@
           <view class="box">次卡/优惠券</view>
         </view>
         <view class="juan_r">
-          {{couponList - use_couponList}}张可用 <text class="txt">></text>
+          {{couponList - (coupon_num + membershipCard_num)}}张可用 <text class="txt">></text>
         </view>
       </view>
       <view class="destination">
@@ -84,11 +84,10 @@
           </view>
         </view>
       </view>
-      <view class="zhe" wx:if="{{typeon == 'pc' && PromotionDiscountType == 0}}">活动期间享75折优惠</view>
+      <!-- <view class="zhe" wx:if="{{typeon == 'pc' && PromotionDiscountType == 0}}">活动期间享75折优惠</view> -->
       <view class="details">
-        <view class="detailList" wx:if="{{carTypeList.length > 0 && aduit_num - couponFlag_aduit_num > 0}}">
+        <view class="detailList">
           <view class="detailList_l">基本票价</view>
-
           <view class="detailList_r" wx:if="{{PromotionDiscountType == 9}}">
             <!-- {{initialPrice}} X {{aduit_num - couponFlag_aduit_num}} -->
             {{initialPrice}} 
@@ -100,13 +99,13 @@
             {{initialPrice}} - {{PromotionDiscount}} X {{aduit_num - couponFlag_aduit_num}}
           </view>
         </view>
-        <view class="detailList" wx:if="{{carTypeList.length > 0 && couponFlag}}">
+        <!-- <view class="detailList" wx:if="{{carTypeList.length > 0 && couponFlag}}">
           <view class="detailList_l">基本票价</view>
           <view class="detailList_r" wx:if="{{couponFlag}}">
             {{couponFlag_aduit_num}} X {{initialPrice}}
           </view>
 
-        </view>
+        </view> -->
         <view class="detailList" wx:if="{{child_num > 0}}">
           <view class="detailList_l">儿童优惠票价</view>
           <view class="detailList_r">
@@ -121,16 +120,22 @@
           </view>
         </view>
         <!-- wx:if="{{use_couponList > 0}}" -->
-        <view wx:if="{{couponList_list.length > 0}}">
+        <view wx:if="{{coupon_num > 0}}">
           <view class="detailList" >
-            <view class="detailList_l">{{couponList_list[0].CouponType_Name}}</view>
+            <view class="detailList_l">优惠券</view>
             <view class="detailList_r">
-              <!-- <view class="additional" wx:if="{{item.CouponType == '100004-0001030002'}}"> - {{item.CouponMoney}} * {{item.Count}} 张 </view> -->
-              <view class="additional" >- {{couponList_list.length}} 张</view>
+              <view class="additional" >- {{coupon_num}} 张</view>
             </view>
           </view>
         </view>
-
+        <view wx:if="{{membershipCard_num > 0}}">
+          <view class="detailList" >
+            <view class="detailList_l">次卡</view>
+            <view class="detailList_r">
+              <view class="additional" >- {{membershipCard_num}} 张</view>
+            </view>
+          </view>
+        </view>
         <view class="detailList">
           <view class="detailList_l">合计</view>
           <view class="detailList_r">
