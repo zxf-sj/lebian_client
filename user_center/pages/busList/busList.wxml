@@ -84,7 +84,7 @@
             <!-- <text class="count">余 {{item.seats}}</text> -->
             <text class="desc">🔔 {{item.notice}}</text>
           </view>
-          <button class="book-btn" bind:tap="handleReservation" data-id="{{item.Id}}" data-time="{{item.Time}}">预订</button>
+          <button class="book-btn" bind:tap="handleReservation" data-price="{{item.TicketPrice}}" data-id="{{item.Id}}" data-time="{{item.Time}}">预订</button>
         </view>
 
       </view>

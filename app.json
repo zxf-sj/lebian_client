@@ -5,6 +5,7 @@
     "pages/notice/notice",
     "pages/starting/starting",
     "pages/starting2/starting2",
+    "pages/starting3/starting3",
     "pages/destination/destination",
     "components/slideCoupon/slideCoupon",
     "components/passenger/passenger",
@@ -26,7 +27,9 @@
     "pages/zuDetail/zuDetail",
     "pages/bar/bar",
     "pages/routeDetail/routeDetail",
-    "pages/chengji/chengji"
+    "pages/chengji/chengji",
+    "pages/fancheng/fancheng",
+    "pages/fanchengmap/fanchengmap"
   ],
   "subpackages": [
     {
@@ -39,6 +42,8 @@
         "pages/setting/setting",
         "pages/travelList/travelList",
         "pages/payDetail/payDetail",
+        "pages/payDetail2/payDetail2",
+        "pages/payDetail3/payDetail3",
         "pages/budgetPrice/budgetPrice",
         "pages/login/login",
         "pages/agreement/agreement",

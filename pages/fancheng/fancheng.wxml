@@ -1,0 +1,121 @@
+<view class="page">
+  <!-- 顶部：线路 + 提示 -->
+  <view class="header">
+    <view class="route" bindtap="openRoute">
+      <text class="route-city">{{from}}</text>
+      <text class="route-arrow"><text class="swap">🔃</text></text>
+      <text class="route-city">{{to}}</text>
+    </view>
+  
+  </view>
+
+  <!-- 双列主体 -->
+  <view class="columns">
+    <!-- 去程列 -->
+    <view class="col">
+      <view class="col-top">
+        <view class="col-head">
+          <text class="col-title">去程</text>
+        </view>
+        <scroll-view class="date-bar" scroll-x enable-flex>
+          <view
+            wx:for="{{dates}}"
+            wx:key="idx"
+            class="date-item {{outDateIdx === item.idx ? 'on' : ''}}"
+            bindtap="onDateTap"
+            data-kind="out"
+            data-idx="{{item.idx}}"
+          >
+            <text class="date-md">{{item.md}}</text>
+            <text class="date-week">{{item.week}}</text>
+            <text class="date-label">{{item.label}}</text>
+          </view>
+        </scroll-view>
+      </view>
+
+      <scroll-view class="list" scroll-y>
+        <view
+          wx:for="{{startScheduleList}}"
+          wx:key="index"
+          class="card  {{outSelId === item.DepartureTime ? 'sel' : ''}} {{item.SeatNum == 0?'disbal':''}}"
+          bindtap="onPick"
+          data-item="{{item}}"
+          data-index="{{index}}"
+        >
+          <view class="card-time">
+            <view class="t-box">
+              <text class="t-big">{{item.StartTime}}</text>
+            </view>
+            <view class="t-line"><text class="t-line-arrow">▸</text></view>
+            <view class="t-box right">
+              <text class="t-big">{{item.EndTime}}</text>
+            </view>
+          </view>
+          <view class="card-bottom">
+            <view wx:for="{{item.PriceList}}" wx:for-item="innerItem"  wx:key="innerItem" wx:for-index="innerIndex" >
+              <view bindtap="grom_carType" data-item="{{innerItem}}" data-items="{{item}}" data-index="{{innerIndex}}" class="{{fromIndex == innerIndex && outSelId === item.DepartureTime &&  item.SeatNum != 0 ? 'aaa' : ''}}" >{{innerItem.Name}}</view>
+            </view>
+          </view>
+        </view>
+
+        
+      </scroll-view>
+    </view>
+
+    <!-- 返程列 -->
+    <view class="col">
+      <view class="col-top">
+        <view class="col-head">
+          <text class="col-title">返程</text>
+        </view>
+        <scroll-view class="date-bar" scroll-x enable-flex>
+          <!-- bindtap="onDateTap2" -->
+          <view
+            wx:for="{{dates}}"
+            wx:key="idx"
+            class="date-item {{retDateIdx === item.idx ? 'on' : ''}}"
+            wx:if="{{retDateIdx === item.idx}}"
+            data-kind="ret"
+            data-idx="{{item.idx}}"
+          >
+            <text class="date-md">{{item.md}}</text>
+            <text class="date-week">{{item.week}}</text>
+            <text class="date-label">{{item.label}}</text>
+          </view>
+        </scroll-view>
+      </view>
+
+      <scroll-view class="list" scroll-y>
+        <view
+          wx:for="{{roundScheduleList}}"
+          wx:key="index"
+          class="card {{retSelId === item.DepartureTime ? 'sel' : ''}} {{item.SeatNum == 0?'disbal':''}}"
+          bindtap="onPick2"
+          data-item="{{item}}"
+          data-index="{{index}}"
+        >
+          <view class="card-time">
+            <view class="t-box">
+              <text class="t-big">{{item.StartTime}}</text>
+            </view>
+            <view class="t-line"><text class="t-line-arrow">▸</text></view>
+            <view class="t-box right">
+              <text wx:if="{{item.arrDay}}" class="t-day">{{item.arrDay}}</text>
+              <text class="t-big">{{item.EndTime}}</text>
+            </view>
+          </view>
+          <view class="card-bottom">
+            <view wx:for="{{item.PriceList}}" wx:for-item="innerItem"  wx:key="innerItem" wx:for-index="innerIndex" >
+              <view bindtap="to_carType" data-item="{{innerItem}}" data-index="{{innerIndex}}" data-items="{{item}}" class="{{toIndex == innerIndex && retSelId === item.DepartureTime &&  item.SeatNum != 0  ? 'aaa' : ''}}" >{{innerItem.Name}}</view>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom">
+    <view class="next-btn" bindtap="onNext">下一步</view>
+  </view>
+</view>

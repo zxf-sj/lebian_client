@@ -1,28 +1,19 @@
 // user_center/pages/busOrder/busOrder.js
 // pages/order-confirm/order-confirm.js
 const BASE_URL = require("../../../utils/BASE_URL");
+const throttle = require('../../../utils/throttle.js').throttle;
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 Page({
   data: {
-    // 模拟行程数据
-    tripInfo: {
-      startStation: '太平园地铁站F口',
-      endStation: '什邡市烟厂调拨站宿舍(通站西路北)',
-      date: '7月19日 (后天)',
-      time: '07:40',
-      remainTickets: 6,
-      cancelRule: '07月19日 06:40前免费取消'
-    },
-
+    orderId:'',
     // 模拟已选乘客数据
     passengers: [],
     // 联系人数据
     contactName: '李慧娟',
     contactPhone: '13833665341',
-
     // 价格计算
-    ticketPrice: 50, // 假设单价
-    totalPrice: 50,
+    ticketPrice: 0, // 假设单价
+    totalPrice: 0,
     startingStation: '',
     terminal: '',
     buslineId: '',
@@ -34,7 +25,7 @@ Page({
     phone: '',
     nameError: '',
     phoneError: '',
-    remark:''
+    remark: '',
   },
 
   onLoad(options) {
@@ -44,6 +35,7 @@ Page({
     let terminal = JSON.parse(options.terminal)
     let buslineId = options.buslineId
     let busDay = options.busDay
+    let price = options.price
     let time = options.time.split("-")[0]
     let id = options.id
     this.setData({
@@ -52,8 +44,42 @@ Page({
       buslineId,
       busDay,
       time,
-      id
+      id,
+      ticketPrice:price
     })
+  },
+  onShow() {
+    this.getOldOrder()
+  },
+  getOldOrder() {
+    let _this = this;
+
+    var userinfo = wx.getStorageSync('userInfo');
+    wx.request({
+      url: baseUrl + "/api/BusMobile/GetLastOrder",
+      data: {
+        MemberId: userinfo.Id,
+        LineId: _this.data.buslineId,
+        ArrivalTime: _this.data.busDay + ' ' + _this.data.time + ':00',
+        ScheduleId: _this.data.id
+      },
+      method: "POST",
+      success: (res) => {
+        let data = res.data.data
+        let passengers = _this.data.passengers;
+        data.Userlist.forEach((item, index, array) => {
+          passengers.push({
+            name: item.Name,
+            phone: item.Code
+          })
+        });
+       
+        _this.setData({
+          passengers,
+          totalPrice: passengers.length * this.data.ticketPrice
+        })
+      },
+    });
   },
 
   // 添加乘车人逻辑
@@ -98,7 +124,7 @@ Page({
   },
 
   // 提交订单
-  submitOrder() {
+  submitOrder: throttle(function () {
     let _this = this;
 
     if (this.data.passengers.length === 0) {
@@ -116,10 +142,10 @@ Page({
       return;
     }
 
-    console.log('提交订单', this.data);
+
     // 发起网络请求...
     var userinfo = wx.getStorageSync('userInfo');
-    if(!userinfo){
+    if (!userinfo) {
       wx.navigateTo({
         url: '/user_center/pages/login/login',
       })
@@ -127,28 +153,89 @@ Page({
     }
     let passengers = _this.data.passengers
     let PersonalIds = ''
-    for(let i=0;i<passengers.length;i++) {
+    for (let i = 0; i < passengers.length; i++) {
       PersonalIds += passengers[i].name + '|' + passengers[i].phone
     }
     wx.request({
       url: baseUrl + "/api/BusMobile/Create",
       data: {
-        MemberId:userinfo.Id,
-        LineId:_this.data.buslineId,
-        ArrivalTime:_this.data.busDay + ' ' + _this.data.time,
-        ScheduleId:Number(_this.data.id),
-        PassengerPhone:"17601636466",
-        PersonalIds:PersonalIds,
-        Remark:_this.data.remark,
-        Statinglocation:_this.data.startingStation.Id,
-        EndLocation:_this.data.terminal.Id,
+        MemberId: userinfo.Id,
+        LineId: _this.data.buslineId,
+        ArrivalTime: _this.data.busDay + ' ' + _this.data.time,
+        ScheduleId: Number(_this.data.id),
+        PassengerPhone: passengers[0].phone,
+        PersonalIds: PersonalIds,
+        Remark: _this.data.remark,
+        Statinglocation: _this.data.startingStation.Id,
+        EndLocation: _this.data.terminal.Id,
       },
       method: "POST",
       success: (res) => {
-        console.log(res)
+        let appid = wx.getStorageSync('appId');
+        let userInfo = wx.getStorageSync('userInfo');
+        _this.setData({
+          orderId:res.data.data
+        })
+        wx.request({
+          url: baseUrl + '/api/BusMobile/GoUnionPay',
+          data: {
+            appid: appid,
+            Id: res.data.data,
+            MemberInfoId: userInfo.Id
+          },
+          method: "GET",
+          success: (payRes) => {
+            if (payRes.data.code === 0) {
+              const payData = payRes.data.data
+              wx.requestPayment({
+                timeStamp: payData.TimeStamp,
+                nonceStr: payData.NonceStr,
+                package: payData.Package,
+                signType: payData.SignType,
+                paySign: payData.PaySign,
+                success: () => {
+                  this._handleOrderSuccess(_this.data.orderId);
+                },
+                fail: (err) => {
+                  console.log('支付失败', err);
+                  // this._clearStorageAndRedirect(orderId);
+                  // resolve(); // 支付失败也结束流程，避免卡死
+                  setTimeout(() => {
+                    wx.reLaunch({
+                      url: `/user_center/pages/payDetail2/payDetail2?orderId=${_this.data.orderId}&from=orderList`
+                    });
+                  }, 1000);
+                }
+              });
+            } else if (payRes.code === 400 && payRes.msg === "已付款") {
+              this._handleOrderSuccess(orderId);
+              resolve();
+            } else {
+              wx.showToast({
+                title: payRes.msg,
+                icon: 'none'
+              });
+            }
+          }
+        })
       },
     });
 
+  }, 3000),
+  _handleOrderSuccess(orderId) {
+    wx.showModal({
+      title: '预约成功',
+      content: '订单已预约成功，司机将会在您出发前一小时联系你',
+      showCancel: false, // 隐藏取消按钮，强制用户点击确认
+      confirmText: '我知道了',
+      success: () => {
+        // 用户点击确认后，再执行跳转
+        // 跳转到订单列表页
+        wx.reLaunch({
+          url: `/user_center/pages/payDetail2/payDetail2?orderId=${orderId}&from=orderList`
+        });
+      }
+    });
   },
   handleStart() {
     wx.navigateTo({
@@ -224,20 +311,23 @@ Page({
     let _this = this;
     let passengers = _this.data.passengers;
     passengers.push({
-      name:this.data.name,
-      phone:this.data.phone
+      name: this.data.name,
+      phone: this.data.phone
     })
     _this.setData({
       passengers,
-      name:'',
-      phone:''
+      name: '',
+      phone: '',
+      totalPrice: passengers.length * this.data.ticketPrice
     })
 
     // 这里做提交逻辑
-   
     this.onCancel();
+    this.calculate_amount()
   },
+  calculate_amount() {
 
+  },
   // 取消 / 关闭
   onCancel() {
     this.setData({
@@ -250,7 +340,7 @@ Page({
   },
   onInput(e) {
     this.setData({
-      remark: e.detail.value  // e.detail.value 就是当前输入框的值
+      remark: e.detail.value // e.detail.value 就是当前输入框的值
     });
   },
 });

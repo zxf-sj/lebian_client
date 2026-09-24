@@ -78,13 +78,7 @@ Page({
     })
   },
   onShow() {
-    setTimeout(() => {
-      this.setData({
-        pay_btn:false
-      })
-    }, 10000);
     this.getOrderInfo();
-    this.getOrderInfo2()
     this.getSijiLocation();
   },
   onUnload() {
@@ -168,8 +162,11 @@ Page({
       steps
     });
   },
-  getOrderInfo2() {
+
+  getOrderInfo() {
+    let _this = this;
     var userinfo = wx.getStorageSync('userInfo');
+    this.mapCtx = wx.createMapContext("map");
     var orderId = this.data.orderId;
     let data = {
       Personal: userinfo.Id,
@@ -177,243 +174,46 @@ Page({
     }
     if (orderId) {
       http.postRequest('/api/BusMobile/GetOrderInfo', data, '', res => {
+        console.log(res)
         if (res.code == 0) {
-          // res.data.ArrivalTime = this.getNewtime(res.data.ArrivalTime);
-          let datass = []
-          if (res.data.OrderStatus_Name == "未派单") {
-            datass = [{
-                label: '下单成功',
-                status: 'done'
-              }, //  done  current  pending
-              {
-                label: '已派单',
-                status: 'pending'
-              },
-              {
-                label: '接送中',
-                status: 'pending'
-              },
-              {
-                label: '已完成',
-                status: 'pending'
-              }
-            ]
-          } else if (res.data.OrderStatus_Name == "已派单") {
-            datass = [{
-                label: '下单成功',
-                status: 'done'
-              }, //  done  current  pending
-              {
-                label: '已派单',
-                status: 'done'
-              },
-              {
-                label: '接送中',
-                status: 'pending'
-              },
-              {
-                label: '已完成',
-                status: 'pending'
-              }
-            ]
-          } else if (res.data.OrderStatus_Name == "已上车" || res.data.FormState_Name == "已下车") {
-            datass = [{
-                label: '下单成功',
-                status: 'done'
-              }, //  done  current  pending
-              {
-                label: '已派单',
-                status: 'done'
-              },
-              {
-                label: '接送中',
-                status: 'done'
-              },
-              {
-                label: '已完成',
-                status: 'pending'
-              }
-            ]
-          } else if (res.data.OrderStatus_Name == "完成") {
-            datass = [{
-                label: '下单成功',
-                status: 'done'
-              }, //  done  current  pending
-              {
-                label: '已派单',
-                status: 'done'
-              },
-              {
-                label: '接送中',
-                status: 'done'
-              },
-              {
-                label: '已完成',
-                status: 'done'
-              }
-            ]
-          }
-          // if(res.data.Note != null) {
-          //   this.setData({
-          //     note:res.data.Note.split('-')[0]
-          //   })
-          // }
-          console.log(res.data)
-          this.setData({
-            // count:count,
-            detailData: res.data,
-            steps: datass,
-            orderTime: res.data.CreateDate,
-            arrivalTime: res.data.ArrivalTime,
-            driver_name: res.data.DispatchListId_DriverId_Name != null ? res.data.DispatchListId_DriverId_Name.slice(0, 1) : '',
-            driver_phone: res.data.DispatchListId_DriverId_Phone
+          _this.setData({
+            detailData:res.data
           })
-          // this.startCountdown()
-          //if(res.data.FormState=='100004-0001020006'){
-          this.setData({
-            showHid: true
-          })
-          
-          var data = {};
-          data = {
-            'srcLat': res.data.StatingLocation_lat,
-            'srcLng': res.data.StatingLocation_lng,
-            'desLat': res.data.EndLocation_lat,
-            'desLng': res.data.EndLocation_lng,
-          };
-          this.setData({
-            datas: data,
-            driverInfo: res.data,
-            carId: res.data.DispatchListId_CarDirId,
-            formTypeState: res.data.FormState
-          })
-          this.getLine();
-        }
-        //}
-      }, err => {
-        console.log(err)
-      })
-    }
-  },
-  getOrderInfo() {
-    var userinfo = wx.getStorageSync('userInfo');
-    var orderId = this.data.orderId;
-    let data = {
-      MemberId: userinfo.Id,
-      Id: orderId
-    }
-    if (orderId) {
-      http.postRequest('/Api/DispatchMobile/GetOrderInfo', data, '', res => {
-        if (res.code == 0) {
-          res.data.ArrivalTime = this.getNewtime(res.data.ArrivalTime);
-          let datass = []
-          if (res.data.FormState_Name == "未派单") {
-            datass = [{
-                label: '下单成功',
-                status: 'done'
-              }, //  done  current  pending
-              {
-                label: '已派单',
-                status: 'pending'
-              },
-              {
-                label: '接送中',
-                status: 'pending'
-              },
-              {
-                label: '已完成',
-                status: 'pending'
-              }
-            ]
-          } else if (res.data.FormState_Name == "已派单") {
-            datass = [{
-                label: '下单成功',
-                status: 'done'
-              }, //  done  current  pending
-              {
-                label: '已派单',
-                status: 'done'
-              },
-              {
-                label: '接送中',
-                status: 'pending'
-              },
-              {
-                label: '已完成',
-                status: 'pending'
-              }
-            ]
-          } else if (res.data.FormState_Name == "已上车" || res.data.FormState_Name == "已下车") {
-            datass = [{
-                label: '下单成功',
-                status: 'done'
-              }, //  done  current  pending
-              {
-                label: '已派单',
-                status: 'done'
-              },
-              {
-                label: '接送中',
-                status: 'done'
-              },
-              {
-                label: '已完成',
-                status: 'pending'
-              }
-            ]
-          } else if (res.data.FormState_Name == "完成") {
-            datass = [{
-                label: '下单成功',
-                status: 'done'
-              }, //  done  current  pending
-              {
-                label: '已派单',
-                status: 'done'
-              },
-              {
-                label: '接送中',
-                status: 'done'
-              },
-              {
-                label: '已完成',
-                status: 'done'
-              }
-            ]
-          }
-          if(res.data.Note != null) {
-            this.setData({
-              note:res.data.Note.split('-')[0]
+          setTimeout(() => {
+            _this.setData({
+              pay_btn:false
+            })
+          }, 10000);
+          var datas = res.data.MapResponse.Result.Routes[0];
+          var arr = datas.Steps;
+          var pl = [];
+          for (var i = 0; i < arr.length; i++) {
+            pl.push({
+              latitude: arr[i].StartLocation.lat,
+              longitude: arr[i].StartLocation.lng
             })
           }
-          console.log(res.data)
-          this.setData({
-            // count:count,
-            detailData: res.data,
-            steps: datass,
-            orderTime: res.data.CreateDate,
-            arrivalTime: res.data.ArrivalTime,
-            driver_name: res.data.DispatchListId_DriverId_Name != null ? res.data.DispatchListId_DriverId_Name.slice(0, 1) : '',
-            driver_phone: res.data.DispatchListId_DriverId_Phone
+          let _points = [{
+            latitude: parseFloat(res.data.StatingLocation_lat),
+            longitude: parseFloat(res.data.StatingLocation_lng)
+          }, {
+            latitude: parseFloat(res.data.EndLocation_lat),
+            longitude: parseFloat(res.data.EndLocation_lng)
+          }];
+          _this.setData({
+            polyline: [{
+              points: pl,
+              color: '#4dd08b',
+              width: 4,
+              arrowLine: true
+            }],
+            yjTimes: (datas.duration / 60).toFixed(2),
+            countLen: (datas.distance / 1000).toFixed(2)
           })
-          this.startCountdown()
-          //if(res.data.FormState=='100004-0001020006'){
-          this.setData({
-            showHid: true
+          _this.mapCtx.includePoints({
+            padding: [120],
+            points: _points,
           })
-          var data = {};
-          data = {
-            'srcLat': res.data.IntoLatitude,
-            'srcLng': res.data.IntoLongitude,
-            'desLat': res.data.OffLatitude,
-            'desLng': res.data.OffLongitude,
-          };
-          this.setData({
-            datas: data,
-            driverInfo: res.data,
-            carId: res.data.DispatchListId_CarDirId,
-            formTypeState: res.data.FormState
-          })
-          this.getLine();
         }
         //}
       }, err => {
@@ -492,31 +292,40 @@ Page({
   cancel(e) {
     let that = this;
     var orderId = e.currentTarget.dataset.ids;
+    var usreinfo = wx.getStorageSync('userInfo');
+    let params = {
+      MemberId:usreinfo.Id,
+      Id:orderId,
+      Mark:""
+    }
     wx.showModal({
       title: '提示',
       content: '确定取消订单吗',
       success: function (res) {
         if (res.confirm) { //这里是点击了确定以后
-          // http.getRequest("/Api/DispatchMobile/OrderCancel?formTypeId="+wx.getStorageSync('FormTypeId')+"&id="+orderId, '', wx.getStorageSync('header'), res => {
-          //   if (res.code == 0) {
-          //     wx.showToast({
-          //       title: res.msg,
-          //       icon: 'loading',
-          //     });
-          //     setTimeout(function(){
-          //       wx.navigateTo({
-          //         url: '/user_center/pages/payDetail/payDetail?from=orderList&orderId='+orderId,
-          //       })
-          //     },3000)
-          //   }else{
-          //     wx.showToast({
-          //       title: '取消失败',
-          //       icon:'error'
-          //     })
-          //   }
-          // }, err => {
-          //   console.log(err)
-          // })
+          http.postRequest("/api/BusMobile/UnionPayRefundOrder", params, wx.getStorageSync('header'), res => {
+            if (res.code == 0) {
+              wx.showToast({
+                title: '取消成功',
+                icon:'success',
+                duration:2000,
+                success:function(){
+                    setTimeout(function(){
+                      wx.redirectTo({
+                        url: '/pages/index/index',
+                      })  
+                    },3000)
+                }
+              })
+            }else{
+              wx.showToast({
+                title: '取消失败',
+                icon:'error'
+              })
+            }
+          }, err => {
+            console.log(err)
+          })
           wx.navigateTo({
             url: '/user_center/pages/orderCancel/orderCancel?orderId=' + orderId,
           })
@@ -533,7 +342,7 @@ Page({
     // console.log('去拿支付所需信息')
     var user = wx.getStorageSync('userInfo');
     let appid = wx.getStorageSync('appId')
-    http.getRequest('/Api/DispatchMobile/GoUnionPayOrderRide?appid=' + appid + '&Id=' + orderId + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
+    http.getRequest('/api/BusMobile/GoUnionOrderPay?appid=' + appid + '&Id=' + orderId + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
       console.log('请求成功',LayerOrderRes)
       if (LayerOrderRes.code == 0) {
         console.log('获取支付所需信息成功')
@@ -654,19 +463,16 @@ Page({
     });
   },
   onConfirm(e) {
+    console.log(e)
     let that = this;
     var userinfo = wx.getStorageSync('userInfo');
-    const value = e.detail.value;
-    that.setData({
-      inputValue: value,
-      modalShow: false
-    });
+   
     const request = {
       "MemberId": userinfo.Id,
       "Id": that.data.orderId,
       "Mark": value
     }
-    http.postRequest("/Api/DispatchMobile/UnionPayRefundOrder", request, '', (res) => {
+    http.postRequest("/api/BusMobile/UnionPayRefundOrder", request, '', (res) => {
       console.log('申请退款', res)
       if (res.code == 0) {
         wx.showToast({
@@ -676,7 +482,7 @@ Page({
         });
         setTimeout(function () {
           wx.redirectTo({
-            url: '/user_center/pages/travelList/travelList',
+            url: '/pages/index/index',
           })
         }, 3000)
       } else if(res.code == 430) {
@@ -705,17 +511,8 @@ Page({
     let that = this;
     that.setData({
       modalShow: true,
-      modalValue: that.data.inputValue, // 可选：回显已有值
       orderId:e.currentTarget.dataset.ids
     });
-    let data1 = that.data.arrivalTime.split(' ')
-    let data2 = data1[1].split('-')[0]
-    let isNo = that.isWithinOneHour(data1[0] + ' ' + data2);
-    if (isNo) {
-      that.setData({
-        prompt: "出发前一小时内取消订单将收取30%违约金，是否确认退款？"
-      })
-    }
   },
   toComment(e) {
     var orderId = e.currentTarget.dataset.ids;

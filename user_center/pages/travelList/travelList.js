@@ -211,8 +211,8 @@ Page({
   // 4. 点击确定
   confirmSelect() {
     let _this = this;
+    if(_this.data.menuTapCurrent != 3) {
     const selectedItem = this.data.pickerList[this.data.tempIndex];
-    console.log(selectedItem)
     let time = selectedItem.split('~')[0].split(':')[0]
     let data = _this.data.change_time_item
     let day = _this.data.change_time_item.ArrivalTime.split(' ')[0]
@@ -251,6 +251,44 @@ Page({
         wx.hideLoading()
       }
     })
+    } else if(_this.data.menuTapCurrent == 3) {
+      let data = _this.data.orderId
+      let userInfo = wx.getStorageSync('userInfo')
+      wx.request({
+        url: baseUrl + 'api/BusMobile/UnionPayRefundOrder',
+        data: {
+          Id: data.Id,
+          MemberId: userInfo.Id,
+        },
+        method: "POST",
+        success: (res) => {
+          console.log(res)
+          if (res.data.code == 0) {
+            wx.showToast({
+              title: res.data.msg,
+              icon: 'success',
+              duration: 2000
+            })
+            this.setData({
+              showPicker: false // 关闭弹窗
+            });
+            _this.getOrderList()
+          } else {
+            wx.showToast({
+              title: res.data.msg,
+              icon: "error"
+            })
+          }
+        },
+        fail(res) {
+          wx.hideLoading()
+        },
+        complete(res) {
+          wx.hideLoading()
+        }
+      })
+    }
+    
   },
 
   //到达底部
@@ -263,6 +301,8 @@ Page({
       });
       if(_this.data.menuTapCurrent == 2) {
         this.getOrderList2(true, this.data.FormTypeId);
+      } else if(_this.data.menuTapCurrent == 3){
+        this.getOrderList3(true, this.data.FormTypeId);
       } else {
         this.getOrderList(true, this.data.FormTypeId);
       }
@@ -479,6 +519,57 @@ Page({
       })
     }
   },
+  getOrderList3(isPage, FormTypeId) {
+    console.log('查询订单3', isPage, FormTypeId)
+    wx.showLoading({
+      title: '加载中',
+    })
+    let that = this;
+    var openid = wx.getStorageSync('openid');
+    if (!openid) {
+      that.setData({
+        isLoging: false,
+      })
+      wx.hideLoading()
+    } else {
+      that.setData({
+        isLoging: true,
+      })
+      var usreinfo = wx.getStorageSync('userInfo');
+      let reqData = {
+        limit: 10,
+        page: that.data.pageNo,
+        Personal: usreinfo.Id,
+      }
+      http.postRequest("/api/BusMobile/GetMyOrderList", reqData, wx.getStorageSync('header'), res => {
+        wx.hideLoading()
+        that.setData({
+          loading: false
+        })
+        if (res.code == 0) {
+          console.log(res.data)
+          const newData = res.data || [];
+          if (isPage) {
+            // 加载更多：拼接数据
+            that.setData({
+              listData: [...that.data.listData, ...newData]
+            });
+          } else {
+            // 刷新/首页：直接替换数据
+            that.setData({
+              listData: newData
+            });
+          }
+        }
+      }, err => {
+        wx.hideLoading()
+        this.setData({
+          loadingFailed: true
+        })
+        return false;
+      })
+    }
+  },  
   getNewtime(originalDateTime) {
     var dateString = originalDateTime.replace(/-/g, '/');
     var date = new Date(dateString);
@@ -498,6 +589,7 @@ Page({
   orderDetail(e) {
     var formStatus = e.currentTarget.dataset.status;
     var pathStatus = e.currentTarget.dataset.dispatchlistid;
+    console.log(e.currentTarget.dataset)
     if (formStatus == '100004-0001020002' && pathStatus != null) {
       wx.navigateTo({
         url: '/driving_status/pages/taxiDriving/taxiDriving?orderId=' + e.currentTarget.dataset.item.Id,
@@ -505,6 +597,21 @@ Page({
     } else {
       wx.navigateTo({
         url: '/user_center/pages/payDetail/payDetail?from=orderList&orderId=' + e.currentTarget.dataset.item.Id,
+      })
+    }
+  },
+  //查看订单详情2
+  orderDetail2(e) {
+    var formStatus = e.currentTarget.dataset.status;
+    var pathStatus = e.currentTarget.dataset.dispatchlistid;
+    console.log(e.currentTarget.dataset)
+    if (formStatus == '100004-0001020002' && pathStatus != null) {
+      wx.navigateTo({
+        url: '/driving_status/pages/taxiDriving/taxiDriving?orderId=' + e.currentTarget.dataset.item.Id,
+      })
+    } else {
+      wx.navigateTo({
+        url: '/user_center/pages/payDetail2/payDetail2?from=orderList&orderId=' + e.currentTarget.dataset.item.Id,
       })
     }
   },
@@ -524,6 +631,44 @@ Page({
       }
     })
   },
+  cancel_bus(e) {
+    let that = this;
+    var orderId = e.currentTarget.dataset.ids;
+    var usreinfo = wx.getStorageSync('userInfo');
+    let params = {
+      MemberId:usreinfo.Id,
+      Id:orderId,
+      Mark:""
+    }
+    wx.showModal({
+      title: '提示',
+      content: '确定取消订单吗',
+      success: function (res) {
+        if (res.confirm) { //这里是点击了确定以后
+          http.postRequest("/api/BusMobile/UnionPayRefundOrder" , params, wx.getStorageSync('header'), res => {
+            console.log(res)
+            if (res.code == 0) {
+              wx.showToast({
+                title: '取消成功',
+                icon:'success',
+                duration:2000,
+                success:function(){
+                    setTimeout(function(){
+                      wx.redirectTo({
+                        url: '/pages/index/index',
+                      })  
+                    },3000)
+                }
+              })
+            }
+          }, err => {
+            console.log(err)
+          })
+        } else { //这里是点击了取消以后
+        }
+      }
+    })
+  },
   //付款
   gotopay: throttle(function (e) {
     let that = this;
@@ -531,6 +676,78 @@ Page({
     var user = wx.getStorageSync('userInfo');
     let appid = wx.getStorageSync('appId')
     http.getRequest('/Api/DispatchMobile/GoUnionPayOrderRide?appid=' + appid + '&Id=' + orderId + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
+      console.log('请求成功', LayerOrderRes)
+      if (LayerOrderRes.code == 0) {
+        console.log('获取支付所需信息成功')
+        var payData = LayerOrderRes.data
+        console.log('拉起支+付')
+        wx.requestPayment({
+          timeStamp: payData.TimeStamp,
+          nonceStr: payData.NonceStr,
+          package: payData.Package,
+          signType: payData.SignType,
+          paySign: payData.PaySign,
+          success(paymentRes) {
+            wx.showModal({
+              title: '预约成功',
+              content: '订单已预约成功，司机将会在您出发前一小时联系你',
+              showCancel: false, // 隐藏取消按钮，强制用户点击确认
+              confirmText: '我知道了',
+              success: function () {
+                that.setSubscribeMessage();
+                setTimeout(function () {
+                  wx.reLaunch({
+                    url: '/user_center/pages/payDetail/payDetail?orderId=' + orderId + "&from=orderList"
+                  })
+                }, 100)
+              }
+            })
+          },
+          fail(paymentErr) {
+
+            console.log('拉起支付失败', paymentErr)
+            setTimeout(function () {
+              wx.reLaunch({
+                url: '/user_center/pages/payDetail/payDetail?orderId=' + orderId + "&from=orderList"
+              })
+            }, 1000)
+          }
+        })
+      } else if (LayerOrderRes.code == 400 && LayerOrderRes.msg == "已付款") {
+        wx.showModal({
+          title: '预约成功',
+          content: '订单已预约成功，司机将会在您出发前一小时联系你',
+          showCancel: false, // 隐藏取消按钮，强制用户点击确认
+          confirmText: '我知道了',
+
+          success: function () {
+            that.setSubscribeMessage();
+            setTimeout(function () {
+              wx.reLaunch({
+                url: '/user_center/pages/payDetail/payDetail?orderId=' + orderId + "&from=orderList"
+              })
+            }, 1000)
+          }
+        })
+      } else {
+        console.log('获取支付所需信息失败')
+        wx.showToast({
+          title: LayerOrderRes.msg,
+          icon: 'success',
+          duration: 2000,
+        })
+      }
+    }, (LayerOrderRrr) => {
+      console.log('请求失败', LayerOrderRrr)
+    })
+  }, 3000),
+   //付款2
+   gotopay2: throttle(function (e) {
+    let that = this;
+    var orderId = e.currentTarget.dataset.ids;
+    var user = wx.getStorageSync('userInfo');
+    let appid = wx.getStorageSync('appId')
+    http.getRequest('/api/BusMobile/GoUnionOrderPay?appid=' + appid + '&Id=' + orderId + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
       console.log('请求成功', LayerOrderRes)
       if (LayerOrderRes.code == 0) {
         console.log('获取支付所需信息成功')
@@ -664,8 +881,9 @@ Page({
   },
   onConfirm(e) {
     let that = this;
-
-    var userinfo = wx.getStorageSync('userInfo');
+    console.log(that.data.menuTapCurrent)
+    if(that.data.menuTapCurrent != 3) {
+      var userinfo = wx.getStorageSync('userInfo');
     const value = e.detail.value;
     this.setData({
       inputValue: value,
@@ -711,39 +929,82 @@ Page({
     }, err => {
       console.log(err)
     })
+    } else if(that.data.menuTapCurrent == 3) {
+      var userinfo = wx.getStorageSync('userInfo');
+    const value = e.detail.value;
+    this.setData({
+      inputValue: value,
+      modalShow: false
+    });
+    console.log('用户输入：', value);
+    const request = {
+      "MemberId": userinfo.Id,
+      "Id": that.data.orderId,
+      "Mark": value
+    }
+    http.postRequest("/api/BusMobile/UnionPayRefundOrder", request, '', (res) => {
+      console.log('申请退款', res)
+      if (res.code == 0) {
+        wx.showToast({
+          title: res.msg,
+          icon: 'loading',
+          duration: 3000
+        });
+        setTimeout(function () {
+          wx.redirectTo({
+            url: '/pages/index/index',
+          })
+        }, 3000)
+      } else if (res.code == 430) {
+        wx.showModal({
+          title: '提示',
+          content: res.msg,
+          success(res) {
+            if (res.confirm) {
+              console.log('用户点击确定')
+            } else if (res.cancel) {
+              console.log('用户点击取消')
+            }
+          }
+        })
+      } else {
+        wx.showToast({
+          title: '取消失败',
+          icon: 'error'
+        })
+      }
+    }, err => {
+      console.log(err)
+    })
+    }
+    
   },
   tuikuan(e) {
     let that = this;
     // var orderId = that.data.orderid
     console.log(e.currentTarget.dataset.ids)
-
-    that.setData({
-      modalShow: true,
-      modalValue: that.data.inputValue, // 可选：回显已有值
-      orderId: e.currentTarget.dataset.ids
-    });
-    let data1 = e.currentTarget.dataset.time.split(' ')
-    let data2 = data1[1].split('-')[0]
-    let isNo = that.isWithinOneHour(data1[0] + ' ' + data2);
-    if (isNo) {
+    if(that.data.menuTapCurrent == 3) {
       that.setData({
-        prompt: "出发前一小时内取消订单将收取30%违约金，是否确认退款？"
-      })
+        modalShow: true,
+        orderId: e.currentTarget.dataset.ids
+      });
+    } else {
+      that.setData({
+        modalShow: true,
+        modalValue: that.data.inputValue, // 可选：回显已有值
+        orderId: e.currentTarget.dataset.ids
+      });
+      let data1 = e.currentTarget.dataset.time.split(' ')
+      let data2 = data1[1].split('-')[0]
+      let isNo = that.isWithinOneHour(data1[0] + ' ' + data2);
+      if (isNo) {
+        that.setData({
+          prompt: "出发前一小时内取消订单将收取30%违约金，是否确认退款？"
+        })
+      }
     }
-    // wx.showModal({
-    //   title: '提示',
-    //   content: isNo?'出发前一小时内取消订单将收取30%违约金，是否确认退款？':'确定退款吗',
-    //   success: function (res) {
-    //     if (res.confirm) {//这里是点击了确定以后
-    //       wx.navigateTo({
-    //         url: '/user_center/pages/refund/refund?orderId=' + orderId,
-    //       })
-
-
-    //     } else {//这里是点击了取消以后
-    //     }
-    //   }
-    // })
+    
+    
   },
   //开票
   toInvoice() {
@@ -1129,6 +1390,13 @@ Page({
         pageNo: 1
       });
       this.getOrderList2(true, this.data.FormTypeId);
+    } else if(current == 3) {
+      this.setData({
+        menuTapCurrent: current,
+        listData: [],
+        pageNo: 1
+      });
+      this.getOrderList3(true, this.data.FormTypeId);
     } else {
       this.setData({
         menuTapCurrent: current,

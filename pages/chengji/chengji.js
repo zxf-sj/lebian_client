@@ -417,6 +417,8 @@ Page({
       })
 
     } else if (this.data.car_type == 3) {
+      console.log('巴士')
+      return
       wx.navigateTo({
         url: '/user_center/pages/busList/busList?busDay=' + _this.data.busDay + '&LineId=' + _this.data.busLineId,
       })

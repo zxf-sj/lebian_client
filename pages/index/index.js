@@ -41,8 +41,8 @@ Page({
   },
   onLoad: async function (opt) {
     //发布之前改时间 推迟几个小时
-    var time = "2026-09-08 14:00:00";
-    // var time = "2026-09-09 14:00:00";
+    var time = "2026-09-21 14:00:00";
+    // var time = "2026-09-21 14:00:00";
     var t = util.formatTime(new Date());
     this.setData({
       ischeck: t < time ? true : false
@@ -52,6 +52,10 @@ Page({
     })
     await this.getSystemInfo();
     await this.getLunBo();
+    wx.removeStorageSync('from_starting');
+                  wx.removeStorageSync('from_ending');
+                  wx.removeStorageSync('to_starting')
+                  wx.removeStorageSync('to_ending')
     wx.removeStorageSync('strAddress');
     wx.removeStorageSync('strLatitude');
     wx.removeStorageSync('strLongitude');
@@ -180,7 +184,11 @@ wx.setStorageSync('appId', appId)
     }
 
   },
-  
+  fancheng() {
+    wx.navigateTo({
+      url: '/pages/fancheng/fancheng'
+    })
+  },
   ceshi() {
     wx.navigateTo({
       url: '/user_center/pages/ceshi/ceshi'

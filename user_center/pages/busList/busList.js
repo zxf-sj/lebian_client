@@ -132,6 +132,7 @@ Page({
               e.type = false;
             });
           })
+          console.log(list)
           this.setData({
             busList: list,
           });
@@ -155,8 +156,10 @@ Page({
     }
   },
   handleReservation(e) {
+    console.log(e)
     const id = e.currentTarget.dataset.id;
     const time = e.currentTarget.dataset.time;
+    const price = e.currentTarget.dataset.price;
     let _this = this;
     if (_this.data.startingStation === null && _this.data.terminal === null) {
       const list = _this.data.busList;
@@ -187,7 +190,7 @@ Page({
     } else if (_this.data.startingStation !== null && _this.data.terminal !== null) {
       console.log(JSON.stringify(_this.data.startingStation))
       wx.navigateTo({
-        url: '/user_center/pages/busOrder/busOrder?startingStation=' + JSON.stringify(_this.data.startingStation) + "&terminal=" + JSON.stringify(_this.data.terminal) + "&busDay=" + _this.data.busDay + "&buslineId=" + _this.data.buslineId + "&time=" + time + "&id=" + id,
+        url: '/user_center/pages/busOrder/busOrder?startingStation=' + JSON.stringify(_this.data.startingStation) + "&terminal=" + JSON.stringify(_this.data.terminal) + "&busDay=" + _this.data.busDay + "&buslineId=" + _this.data.buslineId + "&time=" + time + "&id=" + id + "&price=" + price,
       })
     }
 

@@ -29,39 +29,35 @@ Page({
     polygons: [], // 多边形覆盖物
     circles: [], //圆形覆盖物
     fencePoints: [], // 存储围栏顶点,
-    xianzhi: ''
+    lineId:''
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
- 
-    this.setData({
-      xianzhi: options.xianzhi
-    })
-    let storageSync = wx.getStorageSync('storageSync');
+    let that = this;
+    console.log(options)
     if (options) {
-      if (options.direction == "starting") {
+      if (that.data.direction == "from_starting" || that.data.direction == "to_starting") {
         wx.setNavigationBarTitle({
           title: '上车地点'
         });
-        this.setData({
-          city: storageSync.startingCity,
-          startingLati: storageSync.StatingLocation_Latitude + ',' + storageSync.StatingLocation_Longitude
-        })
-      } else if (options.direction == "ending") {
+      } else if (that.data.direction == "from_ending" || that.data.direction == "to_ending") {
         wx.setNavigationBarTitle({
           title: '下车地点'
         });
-        this.setData({
-          city: storageSync.endingCity,
-          endingLati: storageSync.EndLocation_Latitude + ',' + storageSync.EndLocation_Longitude
-        })
+      }
+      let city = ''
+      if(options.lineId == '300213-96f23d82cea647168541241650c39790') {
+        city = '太原'
+      } else {
+        city = '孝义'
       }
       this.setData({
         direction: options.direction,
-        type: options.type
+        lineId: options.lineId,
+        city
       })
     }
     this.calculateScrollViewHeight()
@@ -85,151 +81,36 @@ Page({
       // ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
       key:'FD2Wvwuq8uRaFgheLXBn13U'
     });
+    if (that.data.lineId == '300213-96f23d82cea647168541241650c39790') {
+      that.setData({
+        longitude: '112.55638592687602',
+        latitude: '37.877066721108974',
+      })
+    } else if (that.data.lineId == '300213-7bc4de5562764200a0610b630859d384') {
+      that.setData({
+        longitude: '111.7856064959317',
+        latitude: '37.15114297531276',
+      })
+    }
     BMap.regeocoding({
-      success: function (res) {
-        let adRes = res.originalData.result;
-        var data = res.wxMarkerData[0];
-  
-        if (adRes.addressComponent.city == that.data.city && that.data.type != 'ly') {
-          console.log('111')
-          that.setData({
-            longitude: data.longitude,
-            latitude: data.latitude,
-          })
-          console.log('逆地理编码5',data.latitude + ',' + data.longitude)
-          BMap.regeocoding({
-            location: data.latitude + ',' + data.longitude,
-            success: function (res1) {
-              let adRes = res1.originalData.result.pois;
-              let arrar = adRes.map(item => ({
-                ...item,
-                'address': item.addr,
-                "location": {
-                  "lat": item.point.y,
-                  "lng": item.point.x
-                }
-              }))
-        
-              that.setData({
-                address: arrar,
-              })
-            },
-            fail: function () {
-
-              wx.showToast({
-                title: '1请检查位置服务是否开启',
-              })
-            },
-          });
-          // ----------------------
-          if (that.data.direction == 'starting') {
-            var starInfo2 = {};
-            starInfo2.startCity = that.data.city;
-            starInfo2.startAddress = data.address;
-            starInfo2.startName = data.address;
-            starInfo2.startLait = data.latitude;
-            starInfo2.startLont = data.longitude;
-            that.setData({
-              starInfo2: starInfo2
-            })
-          } else if (that.data.direction == 'ending') {
-            var endInfo2 = {};
-            endInfo2.endCity = that.data.city;
-            endInfo2.endAddress = data.address;
-            endInfo2.endName = data.address;
-            endInfo2.endLait = data.latitude;
-            endInfo2.endLont = data.longitude;
-            that.setData({
-              endInfo2: endInfo2
-            })
+      location: that.data.latitude + ',' + that.data.longitude,
+      success: function (res1) {
+        let adRes = res1.originalData.result.pois;
+        let arrar = adRes.map(item => ({
+          ...item,
+          'address': item.addr,
+          "location": {
+            "lat": item.point.y,
+            "lng": item.point.x
           }
-        } else if (adRes.addressComponent.city != that.data.city && that.data.type != 'ly' && that.data.type != 'xykh' && that.data.type != 'hcyj' && that.data.type != 'hot') {
-          console.log('222')
-          let item = wx.getStorageSync('storageSync')
-       
-          if (that.data.direction == 'starting') {
-            that.setData({
-              longitude: item.StatingLocation_Longitude,
-              latitude: item.StatingLocation_Latitude,
-            })
-          } else if (that.data.direction == 'ending') {
-            that.setData({
-              longitude: item.EndLocation_Longitude,
-              latitude: item.EndLocation_Latitude,
-            })
-          }
-
-          console.log('逆地理编码6',that.data.latitude + ',' + that.data.longitude)
-          BMap.regeocoding({
-            location: that.data.latitude + ',' + that.data.longitude,
-            success: function (res1) {
-              let adRes = res1.originalData.result.pois;
-              let arrar = adRes.map(item => ({
-                ...item,
-                'address': item.addr,
-                "location": {
-                  "lat": item.point.y,
-                  "lng": item.point.x
-                }
-              }))
-              that.setData({
-                address: arrar,
-              })
-            },
-            fail: function () {
-              wx.showToast({
-                title: '2请检查位置服务是否开启',
-              })
-            },
-          });
-        } else if (that.data.type == 'ly' || that.data.type == 'hcyj' || that.data.type == 'xykh' || that.data.type == 'hot') {
-          console.log('333')
-          wx.getLocation({
-            type: "gcj02",
-            success(res) {
-              console.log(res)
-              console.log('逆地理编码7',res.latitude + ',' + res.longitude)
-              BMap.regeocoding({
-                location: res.latitude + ',' + res.longitude,
-                success: function (res1) {
-           
-                  let city = res1.originalData.result.addressComponent.city
-                  let adRes = res1.originalData.result.pois;
-                  let arrar = adRes.map(item => ({
-                    ...item,
-                    'address': item.addr,
-                    "location": {
-                      "lat": item.point.y,
-                      "lng": item.point.x
-                    }
-                  }))
-              
-                  that.setData({
-                    address: arrar,
-                    city: city
-                  })
-                },
-                fail: function () {
-                  wx.showToast({
-                    title: '2请检查位置服务是否开启',
-                  })
-                },
-              });
-              that.setData({
-                latitude: res.latitude,
-                longitude: res.longitude
-              })
-            },
-            fail(err) {
-              console.log(err);
-            }
-          })
-        }
+        }))
+        that.setData({
+          address: arrar,
+        })
       },
-      fail: function (res) {
-
+      fail: function () {
         wx.showToast({
-          title: '3请检查位置服务是否开启',
+          title: '2请检查位置服务是否开启',
         })
       },
     });
@@ -334,7 +215,7 @@ Page({
                   })
                 }
               } else {
-                if (that.data.direction == "starting") {
+                if (that.data.direction == "from_starting" || that.data.direction == "to_starting") {
                   var starInfo2 = {};
                   starInfo2.startCity = that.data.city;
                   starInfo2.startAddress = adRes.formatted_address;
@@ -346,7 +227,7 @@ Page({
                   that.setData({
                     starInfo2: starInfo2
                   })
-                } else if (that.data.direction == "ending") {
+                } else if (that.data.direction == "from_ending" || that.data.direction == "to_ending") {
                   var endInfo2 = {};
                   endInfo2.endCity = that.data.city;
                   endInfo2.endAddress = adRes.formatted_address;
@@ -426,7 +307,7 @@ Page({
     that.setData({
       address: newAddress
     })
-    if (that.data.direction == "starting") {
+    if (that.data.direction == "from_starting" || that.data.direction == "to_starting") {
       var starInfo2 = {};
       starInfo2.startCity = that.data.city;
       starInfo2.startAddress = item.address;
@@ -436,7 +317,7 @@ Page({
       that.setData({
         starInfo2: starInfo2
       })
-    } else if (that.data.direction == "ending") {
+    } else if (that.data.direction == "from_ending" || that.data.direction == "to_ending") {
       var endInfo2 = {};
       endInfo2.endCity = that.data.city;
       endInfo2.endAddress = item.address;
@@ -465,8 +346,8 @@ Page({
     let that = this;
     let starInfo = null
     let requests = null
-
-    if (that.data.direction == "starting") {
+    console.log(that.data.starInfo2)
+    if (that.data.direction == "from_starting" || that.data.direction == "to_starting") {
       if (that.data.starInfo2 == '') {
         wx.showToast({
           title: '请选择乘车地点',
@@ -476,7 +357,7 @@ Page({
       }
       starInfo = that.data.starInfo2
       requests = starInfo.startLont + "," + starInfo.startLait;
-    } else if (that.data.direction == "ending") {
+    } else if (that.data.direction == "from_ending" || that.data.direction == "to_ending") {
       if (that.data.endInfo2 == '') {
         wx.showToast({
           title: '请选择到达地点',
@@ -500,151 +381,32 @@ Page({
       success: (res) => {
     
         let newStarInfo = {}
-        if (that.data.direction == "starting") {
+        if (that.data.direction == "from_starting" || that.data.direction == "to_starting") {
           newStarInfo.startAddress = starInfo.startAddress
           newStarInfo.startCity = starInfo.startCity
           newStarInfo.startName = starInfo.startName
           newStarInfo.startLait = res.data.data[0].Item1
           newStarInfo.startLont = res.data.data[0].Item2
-          wx.setStorageSync('starInfo2', newStarInfo);
-        } else if (that.data.direction == "ending") {
+          if(that.data.direction == "from_starting") {
+            wx.setStorageSync('from_starting', newStarInfo);
+          } else if(that.data.direction == "to_starting") {
+            wx.setStorageSync('to_starting', newStarInfo);
+          }
+        } else if (that.data.direction == "from_ending" || that.data.direction == "to_ending") {
           newStarInfo.endAddress = starInfo.endAddress
           newStarInfo.endCity = starInfo.endCity
           newStarInfo.endName = starInfo.endName
           newStarInfo.endLait = res.data.data[0].Item1
           newStarInfo.endLont = res.data.data[0].Item2
-          wx.setStorageSync('endInfo2', newStarInfo);
+          if(that.data.direction == "from_ending") {
+            wx.setStorageSync('from_ending', newStarInfo);
+          } else if(that.data.direction == "to_ending") {
+            wx.setStorageSync('to_ending', newStarInfo);
+          }
         }
         wx.hideLoading()
-        // wx.setStorageSync('mapBack','mapBack');
-        if (that.data.type == 'pc') {
-          wx.reLaunch({
-            url: '/pages/pingche2/pingche2',
-          })
-        } else if (that.data.type == 'bc') {
-          wx.reLaunch({
-            url: '/user_center/pages/baoche/baoche',
-          })
-        } else if (that.data.type == 'sh') {
-          wx.reLaunch({
-            url: '/user_center/pages/shaohuo/shaohuo',
-          })
-        } else if (that.data.type == 'ly' ) {
-          if (that.data.direction == 'starting') {
-            var BMap = new bmap.BMapWX({
-              // ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
-              key:'FD2Wvwuq8uRaFgheLXBn13U'
-            });
-            console.log('逆地理编码9',newStarInfo.startLait + ',' + newStarInfo.startLont)
-            BMap.regeocoding({
-              location: newStarInfo.startLait + ',' + newStarInfo.startLont,
-              success: function (res_e) {
-                console.log(res_e)
-                let start_city = res_e.originalData.result.addressComponent.city
-                let district = res_e.originalData.result.addressComponent.district
-                if (start_city == "太原市" || start_city == "孝义市" || district == "孝义市") {
-                  wx.setStorageSync('start_city', start_city)
-                  wx.reLaunch({
-                    url: '/driving_status/pages/lvyouList/lvyouList',
-                  })
-                } else {
-                  wx.showModal({
-                    title: '提示',
-                    content: '请选择出发地为太原、孝义',
-                    complete: (res) => {
-                      wx.removeStorageSync('starInfo2')
-                      wx.removeStorageSync('start_city')
-                    }
-                  })
-                }
-              },
-              fail: function () {
-
-                wx.showToast({
-                  title: '1请检查位置服务是否开启',
-                })
-              },
-            });
-          } else {
-            wx.reLaunch({
-              url: '/driving_status/pages/lvyouList/lvyouList',
-            })
-          }
-        } else if (that.data.type == 'hcyj') {
-          wx.reLaunch({
-            url: '/driving_status/pages/lvyouList/lvyouList?type=hcyj',
-          })
-        }else if (that.data.type == 'xykh') {
-        
-          if (that.data.direction == 'starting') {
-            var BMap = new bmap.BMapWX({
-              // ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
-              key:'FD2Wvwuq8uRaFgheLXBn13U'
-            });
-            console.log('逆地理编码10',newStarInfo.startLait + ',' + newStarInfo.startLont)
-            BMap.regeocoding({
-              location: newStarInfo.startLait + ',' + newStarInfo.startLont,
-              success: function (res_e) {
-     
-                let start_city = res_e.originalData.result.addressComponent.city
-                let district = res_e.originalData.result.addressComponent.district
-                if (start_city == "太原市" || start_city == "孝义市" || district == "孝义市") {
-                  wx.setStorageSync('start_city', start_city)
-                  wx.reLaunch({
-                    url: '/driving_status/pages/lvyouList/lvyouList?type=xykh',
-                  })
-                } else {
-                  wx.showModal({
-                    title: '提示',
-                    content: '请选择出发地为太原、孝义',
-                    complete: (res) => {
-                      wx.removeStorageSync('starInfo2')
-                      wx.removeStorageSync('start_city')
-                    }
-                  })
-                }
-              },
-              fail: function () {
-
-                wx.showToast({
-                  title: '1请检查位置服务是否开启',
-                })
-              },
-            });
-          } else {
-            wx.reLaunch({
-              url: '/driving_status/pages/lvyouList/lvyouList?type=xykh',
-            })
-          }
-        } else if (that.data.type == 'hot') {
-          if (that.data.direction == 'starting') {
-            var BMap = new bmap.BMapWX({
-              // ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'
-              key:'FD2Wvwuq8uRaFgheLXBn13U'
-            });
-            console.log('逆地理编码11',newStarInfo.startLait + ',' + newStarInfo.startLont)
-            BMap.regeocoding({
-              location: newStarInfo.startLait + ',' + newStarInfo.startLont,
-              success: function (res_e) {
-          
-                let start_city = res_e.originalData.result.addressComponent.city
-                wx.setStorageSync('start_city', start_city)
-                wx.reLaunch({
-                  url: '/driving_status/pages/hotLine/hotLine',
-                })
-              },
-              fail: function () {
-                wx.showToast({
-                  title: '1请检查位置服务是否开启',
-                })
-              },
-            });
-          } else {
-            wx.reLaunch({
-              url: '/driving_status/pages/lvyouList/lvyouList',
-            })
-          }
-        }
+        wx.navigateBack()
+      
       },
       fail(err) {
         console.log(err)
@@ -667,7 +429,8 @@ Page({
   },
   // 初始化一个多边形电子围栏
   initFence() {
-    let lineId = wx.getStorageSync('lineId') || '';
+    let lineId = this.data.lineId
+    console.log(lineId)
     if(lineId) {
       wx.request({
         url: baseUrl + '/api/DispatchMobile/LineIdFenceMapAll',

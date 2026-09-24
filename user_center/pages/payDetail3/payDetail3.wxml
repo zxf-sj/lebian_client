@@ -1,0 +1,141 @@
+<!-- 已完成订单 -->
+
+<block wx:if="{{!isClosed}}">
+  <view class="over">
+    <block>
+      <view class="h2">
+        <view class="GoLine">去程：</view>
+        <view class="GoLineName">{{detailData.GoLineName}}</view>
+      </view>
+      <view class="h2">
+        <view class="RoundLine">返程：</view>
+        <view class="RoundLineName">{{detailData.RoundLineName}}</view>
+      </view>
+    </block>
+    
+  </view>
+  <view wx:if="{{steps.length > 0}}">
+    <view class="container">
+      <view class="progress-bar">
+        <block wx:for="{{steps}}" wx:key="index">
+          <view class="step-item">
+            <!-- 步骤圆点 -->
+            <view class="step-dot {{item.status === 'done' ? 'dot-done' : item.status === 'current' ? 'dot-current' : 'dot-pending'}}">
+              <text wx:if="{{item.status === 'done'}}" class="icon">✓</text>
+            </view>
+            <!-- 步骤标签 -->
+            <text class="step-text {{item.status}}">{{item.label}}</text>
+            <!-- 连接线（除最后一个外） -->
+            <view wx:if="{{index < steps.length - 1}}" class="connector" style="background-color: {{item.status === 'done' || item.status === 'current' ? '#4CAF50' : '#ddd'}}">
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+  <view class="orderOk" wx:if="{{detailData.IsPayment == 0}}">{{ mm }}:{{ ss }} 下单5分钟内未付款自动取消。</view>
+  <view class="btn-list" style="justify-content: center;margin-top: 10rpx;">
+    
+    <view class="btn-area" wx:if="{{detailData.IsPayment == 0}}">
+      <button  type="primary" disabled="{{pay_btn}}"  size="" catchtap="gotopay" data-ids="{{detailData.Id}}" style="font-size: 28rpx;width: 250rpx !important;">支付</button>
+    </view>
+   
+  </view>
+  <view class="container">
+    <view class="shadow-box">
+     
+      <block>
+        <view class="pay-title">
+          <text class="font-30">订单信息</text>
+        </view>
+        <view class="pay-detail">
+          <block>
+            <view class="border-bottom">
+              <view class="flex-box font-28">
+                <text class="mini-pay">订单编号</text>
+                <text class="mini-pay">{{detailData.Code}}</text>
+              </view>
+            </view>
+           
+            <view class="border-bottom">
+              <view class="flex-box font-28">
+                <text class="mini-pay">付款金额</text>
+                <text class="mini-pay">{{detailData.PayAmount}}</text>
+              </view>
+            </view>
+           
+            <view class="border-bottom" >
+              <view class="flex-box font-28">
+                <text class="mini-pay">去程出发时间</text>
+                <text class="mini-pay">{{detailData.GoArrivalTime}}</text>
+              </view>
+            </view>
+            <view class="border-bottom" >
+              <view class="flex-box font-28">
+                <text class="mini-pay">返程出发时间</text>
+                <text class="mini-pay">{{detailData.ReturnArrivalTime}}</text>
+              </view>
+            </view>
+            <view class="border-bottom">
+              <view class="flex-box font-28">
+                <text class="mini-pay">备注：</text>
+                <text class="mini-pay">{{detailData.Note}}</text>
+              </view>
+            </view>
+          </block>
+        </view>
+      </block>
+    </view>
+    <view class="shadow-box" wx:if="{{detailData.IsPickGoods != '100004-0000010001'}}">
+      <block>
+        <view class="pay-title">
+          <text class="font-30">乘客信息</text>
+        </view>
+        <view class="pay-detail">
+          <block>
+            <view class="border-bottom">
+              <view class="flex-box font-28">
+                <text class="mini-pay">单数</text>
+                <text class="mini-pay">{{detailData.PassengerNumber}}单</text>
+              </view>
+            </view>
+            <view class="border-bottom">
+              <view class="flex-box font-28">
+                <text class="mini-pay" style="min-width: 140rpx;">乘客信息</text>
+                <text class="mini-pay">{{detailData.PersonalIds}}</text>
+              </view>
+            </view>
+          </block>
+        </view>
+      </block>
+    </view>
+    
+    <view class="shadow-box">
+      <block>
+        <view class="pay-title">
+        </view>
+        <view class="pay-detail">
+          <block>
+            <view class="border-bottom" wx:for="{{detailData.DetailList}}" wx:key="key">
+              <view class="flex-box font-28">
+                <text class="mini-pay">乘车费用</text>
+                <text class="mini-pay" wx:if="{{item.DiscountMoney >0}}">-{{item.RealMoney}}元</text>
+                <text class="mini-pay" wx:else>总计:<text style="font-size: 36rpx;color: red;">{{item.RealMoney}}</text>元</text>
+              </view>
+            </view>
+          </block>
+        </view>
+      </block>
+    </view>
+  </view>
+ 
+</block>
+<custom-input-modal
+    show="{{modalShow}}"
+    title="取消订单并申请退款"
+    placeholder="请输入退款原因"
+    prompt="{{prompt}}"
+    value="{{modalValue}}"
+    bind:confirm="onConfirm"
+    bind:cancel="onCancel"
+  />

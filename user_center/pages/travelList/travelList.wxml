@@ -3,8 +3,9 @@
     <text class='menu1 {{menuTapCurrent=="0"&&"borders"}}' data-current="0" catchtap="menuTap">行程订单</text>
     <text class='menu2 {{menuTapCurrent=="1"&&"borders"}}' data-current="1" catchtap="menuTap">旅游订单</text>
     <text class='menu2 {{menuTapCurrent=="2"&&"borders"}}' data-current="2" catchtap="menuTap">陪诊订单</text>
+    <text class='menu2 {{menuTapCurrent=="3"&&"borders"}}' data-current="3" catchtap="menuTap">大巴订单</text>
   </view>
-  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==1 || menuTapCurrent==2}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
+  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==1 || menuTapCurrent==2 || menuTapCurrent==3}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
     <view class="listBox" wx:for="{{listData}}" wx:for-index="id" wx:for-item="item" wx:key="index">
       <view class="flex-title font-28">
         <text class="font-30">{{item.PassengerLineId_Name}}</text>
@@ -127,7 +128,7 @@
       <view wx:if="{{loadingFailed}}">数据加载失败,请重试</view>
     </view>
   </scroll-view>
-  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0 || menuTapCurrent==2}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
+  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0 || menuTapCurrent==2 || menuTapCurrent==3}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
     <view class="listBox" wx:for="{{listData}}" wx:for-index="id" wx:for-item="item" wx:key="index" data-item="{{item}}" data-status="{{item.FormState}}" data-dispatchlistid="{{item.DispatchListId}}">
       <view class="flex-title font-28">
         <text class="font-30"></text>
@@ -194,7 +195,7 @@
       <view wx:if="{{loadingFailed}}">数据加载失败,请重试</view>
     </view>
   </scroll-view>
-  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0 || menuTapCurrent==1}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
+  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0 || menuTapCurrent==1 || menuTapCurrent==3}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
     <view class="listBox" wx:for="{{listData}}" wx:for-index="id" wx:for-item="item" wx:key="index" data-item="{{item}}" data-status="{{item.FormState}}" data-dispatchlistid="{{item.DispatchListId}}">
 
       <view class="list-time font-28">
@@ -226,6 +227,96 @@
         <view class="btn-area" wx:if="{{item.FormState  == '100004-0001020004'}}">
           <button size="mini" catchtap="toComment" data-ids="{{item.Id}}" class="pingjia">评价</button>
         </view>
+      </view>
+    </view>
+    <view style="text-align: center;margin: 10px;">
+      <view wx:if="{{loading}}">加载中...</view>
+      <view wx:if="{{noMore}}">没有更多了</view>
+      <view wx:if="{{loadingFailed}}">数据加载失败,请重试</view>
+    </view>
+  </scroll-view>
+  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0 || menuTapCurrent==1 || menuTapCurrent==2}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
+    <view class="listBox" wx:for="{{listData}}" wx:for-index="id" wx:for-item="item" wx:key="index">
+      <view class="flex-title font-28">
+        <text class="font-30">{{item.LineName}}</text>
+        <text class="status" bindtap="orderDetail2" data-item="{{item}}" data-status="{{item.Id}}" data-dispatchlistid="{{item.DispatchListId}}">{{item.FormState_Name=='草稿'?'已取消':item.FormState_Name}}<text class="iconRight"></text></text>
+      </view>
+      <view class="list-time font-28">
+        <image src="/user_center/assets/images/code.png"></image>
+        <text class="time">{{item.OrderNo}}</text>
+      </view>
+      <view class="list-adress font-28">
+        <text class="circle-str circle"></text>
+        <text class="input-str">{{item.StatingLocation_Name}}</text>
+      </view>
+      <view class="list-adress font-28">
+        <text class="circle-end circle"></text>
+        <text class="input-end">{{item.EndLocation_Name}}</text>
+      </view>
+      <view class="list-time font-28">
+        <image src="/assets/images/time.png"></image>
+        <text class="time">{{item.DepartureTime}}</text>
+      </view>
+      
+      <view class="list-time font-28" wx:if="{{item.IsPickGoods != '100004-0000010001'}}">
+        <text class="yutime">乘车人数:</text>
+        <text class="time">{{item.TicketNum}}人</text>
+      </view>
+     
+      <view class="list-time font-28">
+        <text class="yutime">付款金额:</text>
+        <text class="time">{{item.PayAmount}}</text>
+      </view>
+      <view class="list-time font-28" wx:if="{{item.IsPickGoods != '100004-0000010001'}}">
+        <text class="yutime">乘车人信息:</text>
+        <text class="time">{{item.PassengerPhone}}</text>
+      </view>
+      <view class="list-time font-28" wx:if="{{item.IsPickGoods == '100004-0000010001'}}">
+        <text class="yutime">收件联系方式:</text>
+        <text class="time">{{item.DeliverGoodsTel}}</text>
+      </view>
+      <view class="list-time font-28" wx:if="{{item.IsPickGoods == '100004-0000010001'}}">
+        <text class="yutime">寄件联系方式:</text>
+        <text class="time">{{item.TakeOverGoodsTel}}</text>
+      </view>
+      <view class="btn-list">
+        <view class="btn-area" wx:if="{{item.BtnCancel}}">
+          <button type="warn" size="mini" catchtap="cancel_bus" data-ids="{{item.Id}}">取消</button>
+        </view>
+        <view class="btn-area" wx:if="{{item.BtnPay}}">
+          <button type="primary" size="mini" catchtap="gotopay2" data-ids="{{item.Id}}">支付</button>
+        </view>
+        <view class="btn-area" wx:if="{{item.BtnRefund}}">
+          <button size="mini" catchtap="tuikuan" data-time="{{item.ArrivalTime}}" data-ids="{{item.Id}}" class="tuik">取消订单并申请退款</button>
+        </view>
+        <view class="btn-area">
+          <button size="mini" data-ids="{{item.Id}}" class="pingjia" bind:tap="goKeFu">联系客服</button>
+        </view>
+        <view class="btn-area" wx:if="{{item.FormState  == '100004-0001020004'}}">
+          <button size="mini" catchtap="toComment" data-ids="{{item.Id}}" class="pingjia">评价</button>
+        </view>
+      </view>
+      <view class="chenge_time">
+        <picker class="pickers" wx:if="{{item.FormState == '100004-0001020002'}}" style="margin-right: 20rpx;" mode="date" value="{{date}}" start="{{StartDay}}" end="{{EndDay}}" bindchange="bindDateChange" bind:tap="handleChangeDate" data-item="{{item}}">
+          修改日期
+        </picker>
+        <button class="mini-btn" wx:if="{{item.FormState == '100004-0001020002'}}" type="primary" size="mini" data-item="{{item}}" bind:tap="handleTime">修改出发时间</button>
+      </view>
+    </view>
+   
+    <view class="custom-picker-mask" wx:if="{{showPicker}}" bindtap="closeCustomPicker" >
+      <!-- 2. 弹框容器，阻止点击穿透 -->
+      <view class="custom-picker-container" catchtap="">
+        <view class="picker-header">
+          <text bindtap="closeCustomPicker">取消</text>
+          <text bindtap="confirmSelect">确定</text>
+        </view>
+        <!-- 3. scroll-view 必须设置固定高度，如需要横向滚动请加上 enable-flex -->
+        <scroll-view scroll-y class="picker-list">
+          <view wx:for="{{pickerList}}" wx:key="index" class="picker-item {{tempIndex === index ? 'active' : ''}}" catchtap="selectItem" data-index="{{index}}">
+            {{item}}
+          </view>
+        </scroll-view>
       </view>
     </view>
     <view style="text-align: center;margin: 10px;">
