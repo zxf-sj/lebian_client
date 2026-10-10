@@ -118,7 +118,7 @@
     </block> -->
 		<block>
 			<view class="coupon-wrapper">
-				<image class="bg_bg" src="{{imgbaseUrl + '/wxImg/20260327114013_792_401.jpg?v=1'}}"></image>
+				<image class="bg_bg" src="{{imgbaseUrl + '/wxImg/20260327114013_792_401.jpg?v=2'}}"></image>
 				<!-- <view class="cou_tit"></view>
 				<view class="cou_cont">
           <view class="cou_item">
