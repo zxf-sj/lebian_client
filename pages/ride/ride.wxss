@@ -251,7 +251,7 @@ page { background: #f4f6f9; }
   align-items: center;
   justify-content: center;
 }
-.ch-chip.wide { flex: 1.6; }
+.ch-chip.wide { flex: 1.8; }
 .chc-label { font-size: 28rpx; font-weight: 700; color: #1a1a1a; }
 .chc-md { font-size: 26rpx; color: #4a525c; margin-top: 4rpx; }
 .chc-route { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }

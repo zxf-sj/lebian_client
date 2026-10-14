@@ -103,7 +103,7 @@ Page({
     if(true_false) {
       console.log(true_false)
       wx.reLaunch({
-        url: '/pages/chengji/chengji?date=' + date
+        url: '/pages/index/index?date=' + date
       })
     }
   },

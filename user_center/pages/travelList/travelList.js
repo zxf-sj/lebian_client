@@ -327,6 +327,12 @@ Page({
       url: '/user_center/pages/login/login'
     })
   },
+  // 我要开票
+  goInvoice() {
+    wx.navigateTo({
+      url: '/user_center/pages/invoiceList/invoiceList'
+    })
+  },
   // 查询订单
   getOrderList(isPage, FormTypeId) {
     console.log('查询订单', isPage, FormTypeId)

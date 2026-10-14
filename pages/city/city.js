@@ -6,7 +6,8 @@ const CITIES = [
   '柳林县', '石楼县', '岚县',
   '方山县', '中阳县', '交口县',
 ];
-
+const BASE_URL = require("../../utils/BASE_URL");
+var baseUrl = BASE_URL.BASE_URL //配置基础url
 Page({
   data: {
     cities: CITIES,
@@ -18,8 +19,34 @@ Page({
     this.from = query.from || 'from';
     this.setData({ selected: query.current || '' });
     this.ec = this.getOpenerEventChannel();
+    this.getCity()
   },
-
+//获取路线列表
+getCity() {
+  wx.showLoading({
+    title: '',
+  })
+  let _this = this;
+  
+  wx.request({
+    url: baseUrl + '/api/BusMobile/GetLineCityList',
+    data: {},
+    method: "GET",
+    success: (res) => {
+        console.log(res)
+      if (res.data.code == 0) {
+        _this.setData({
+          cities:res.data.data
+        })
+      }
+    },
+    fail(err) {
+      console.error('网络异常:', err)
+    },complete() {
+      wx.hideLoading()
+    }
+  })
+},
   onPick(e) {
     const city = e.currentTarget.dataset.city;
     this.setData({ selected: city });

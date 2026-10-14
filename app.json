@@ -1,6 +1,5 @@
 {
   "pages": [
-    "pages/chengji/chengji",
     "pages/index/index",
     "pages/priceRules/priceRules",
     "pages/notice/notice",

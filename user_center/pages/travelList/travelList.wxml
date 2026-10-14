@@ -1,11 +1,16 @@
 <view class="container">
-  <view class="menu_box">
-    <text class='menu1 {{menuTapCurrent=="0"&&"borders"}}' data-current="0" catchtap="menuTap">行程订单</text>
-    <text class='menu2 {{menuTapCurrent=="1"&&"borders"}}' data-current="1" catchtap="menuTap">旅游订单</text>
-    <text class='menu2 {{menuTapCurrent=="2"&&"borders"}}' data-current="2" catchtap="menuTap">陪诊订单</text>
-    <text class='menu2 {{menuTapCurrent=="3"&&"borders"}}' data-current="3" catchtap="menuTap">大巴订单</text>
+  <view class="top-bar">
+    <view class="invoice-row">
+      <view class="invoice-btn" bindtap="goInvoice">我要开票</view>
+    </view>
+    <view class="tab-row">
+      <view class="tab-pill {{menuTapCurrent==3?'active':''}}" data-current="3" catchtap="menuTap">大巴订单</view>
+      <view class="tab-pill {{menuTapCurrent==0?'active':''}}" data-current="0" catchtap="menuTap">拼车订单</view>
+      <view class="tab-pill {{menuTapCurrent==1?'active':''}}" data-current="1" catchtap="menuTap">包车订单</view>
+      <view class="tab-pill {{menuTapCurrent==2?'active':''}}" data-current="2" catchtap="menuTap">捎货订单</view>
+    </view>
   </view>
-  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==1 || menuTapCurrent==2 || menuTapCurrent==3}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
+  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==1 || menuTapCurrent==2 || menuTapCurrent==3}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:calc(100vh - 340rpx)" bindscrolltolower="scrollToLower">
     <view class="listBox" wx:for="{{listData}}" wx:for-index="id" wx:for-item="item" wx:key="index">
       <view class="flex-title font-28">
         <text class="font-30">{{item.PassengerLineId_Name}}</text>
@@ -128,7 +133,7 @@
       <view wx:if="{{loadingFailed}}">数据加载失败,请重试</view>
     </view>
   </scroll-view>
-  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0 || menuTapCurrent==2 || menuTapCurrent==3}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
+  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0 || menuTapCurrent==2 || menuTapCurrent==3}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:calc(100vh - 340rpx)" bindscrolltolower="scrollToLower">
     <view class="listBox" wx:for="{{listData}}" wx:for-index="id" wx:for-item="item" wx:key="index" data-item="{{item}}" data-status="{{item.FormState}}" data-dispatchlistid="{{item.DispatchListId}}">
       <view class="flex-title font-28">
         <text class="font-30"></text>
@@ -195,7 +200,7 @@
       <view wx:if="{{loadingFailed}}">数据加载失败,请重试</view>
     </view>
   </scroll-view>
-  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0 || menuTapCurrent==1 || menuTapCurrent==3}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
+  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0 || menuTapCurrent==1 || menuTapCurrent==3}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:calc(100vh - 340rpx)" bindscrolltolower="scrollToLower">
     <view class="listBox" wx:for="{{listData}}" wx:for-index="id" wx:for-item="item" wx:key="index" data-item="{{item}}" data-status="{{item.FormState}}" data-dispatchlistid="{{item.DispatchListId}}">
 
       <view class="list-time font-28">
@@ -235,7 +240,7 @@
       <view wx:if="{{loadingFailed}}">数据加载失败,请重试</view>
     </view>
   </scroll-view>
-  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0 || menuTapCurrent==1 || menuTapCurrent==2}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:92vh" bindscrolltolower="scrollToLower">
+  <scroll-view wx:if="{{listData}}" hidden="{{menuTapCurrent==0 || menuTapCurrent==1 || menuTapCurrent==2}}" scroll-y="true" class='hiddenBar' lower-threshold="100" style="height:calc(100vh - 340rpx)" bindscrolltolower="scrollToLower">
     <view class="listBox" wx:for="{{listData}}" wx:for-index="id" wx:for-item="item" wx:key="index">
       <view class="flex-title font-28">
         <text class="font-30">{{item.LineName}}</text>
@@ -348,3 +353,4 @@
   </view>
 </view>
 <custom-input-modal show="{{modalShow}}" title="取消订单并申请退款" placeholder="请输入退款原因" prompt="{{prompt}}" value="{{modalValue}}" bind:confirm="onConfirm" bind:cancel="onCancel" />
+<tabbar current="orders"></tabbar>

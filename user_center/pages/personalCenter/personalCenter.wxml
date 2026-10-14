@@ -139,3 +139,4 @@
     </view>
   </view>
 </view>
+<tabbar current="mine"></tabbar>

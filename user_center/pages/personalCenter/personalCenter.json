@@ -3,5 +3,8 @@
     "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#fff",
     "navigationBarTitleText": "个人中心",
-    "navigationBarTextStyle": "black"
+    "navigationBarTextStyle": "black",
+    "usingComponents": {
+      "tabbar": "/components/tabbar/tabbar"
+    }
 }

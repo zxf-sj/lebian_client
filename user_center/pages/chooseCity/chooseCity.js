@@ -126,7 +126,7 @@ Page({
       wx.setStorageSync('storageSync', updatedData);
      }
      wx.reLaunch({
-      url: '/pages/chengji/chengji?typeon=' + this.data.typeon 
+      url: '/pages/index/index?typeon=' + this.data.typeon 
     })
   },
   //获取列表
@@ -177,7 +177,7 @@ Page({
    }
    console.log(this.data.typeon)
     wx.reLaunch({
-      url: '/pages/chengji/chengji?typeon=' + this.data.typeon 
+      url: '/pages/index/index?typeon=' + this.data.typeon 
     })
   },
   /**

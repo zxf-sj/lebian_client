@@ -296,6 +296,54 @@ button{
   z-index: 10000;
   font-size: 25rpx;
 }
+/* --- 新版顶部 --- */
+.top-bar {
+  padding-top: 4rpx;
+}
+
+.invoice-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16rpx;
+}
+
+.invoice-btn {
+  background: #fff;
+  color: #1e9be0;
+  font-size: 26rpx;
+  padding: 10rpx 28rpx;
+  border-radius: 28rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
+}
+
+.tab-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.tab-pill {
+  flex: 1;
+  height: 64rpx;
+  line-height: 64rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #333;
+  background: #fff;
+  border-radius: 32rpx;
+  margin-right: 16rpx;
+}
+
+.tab-pill:last-child {
+  margin-right: 0;
+}
+
+.tab-pill.active {
+  background: linear-gradient(90deg, #45c1f2, #1e9be0);
+  color: #fff;
+  font-weight: 500;
+}
+
 .menu_box{
   display: flex;
   height: 80rpx;

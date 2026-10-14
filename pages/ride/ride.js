@@ -1,4 +1,6 @@
 // pages/ride/ride.js  站点上车/拼车上门/包车出发/跨城跑腿
+const BASE_URL = require("../../utils/BASE_URL");
+var baseUrl = BASE_URL.BASE_URL //配置基础url
 const WEEK = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
 // 服务类型 tab（价格为示例，实际由接口返回）
@@ -108,18 +110,15 @@ Page({
     });
   },
   onLoad(query) {
-    // 出发地/目的地/日期由 chengji 页 onQuery 带入
+    // 出发地/目的地/日期由首页 index 页查询带入
     const from = query.from ? decodeURIComponent(query.from) : this.data.from;
     const to = query.to ? decodeURIComponent(query.to) : this.data.to;
 
-    // 基准日：优先用传入日期，否则今天
-    let base = new Date();
-    if (query.date) {
-      base = new Date(String(query.date).replace(/-/g, '/'));
-      if (isNaN(base.getTime())) base = new Date();
-    }
-
+    // 可选四天固定以真实今天为基准（今天/明天/后天/第4天），不受传入日期影响
+    const base = new Date();
     const dates = this.buildDates(base);
+
+    // 传入日期落在哪天就选中哪天，默认第 1 天
     let idx = 0;
     if (query.date) {
       const hit = dates.findIndex(d => d.full === query.date);
@@ -136,6 +135,47 @@ Page({
     this.filterCarpool();
   },
 
+  //获取包车车型列表
+  getCarList() {
+    wx.showLoading({
+      title: '',
+    })
+    let _this = this;
+    let data = {
+      IsExclusive: '100004-0000010001',
+      Id: storageSync.lineId,
+      StartLat: starInfo2.startLait,
+      StartLng: starInfo2.startLont,
+      EndLat: endInfo2.endLait,
+      EndLng: endInfo2.endLont,
+      ArrivalTime: ArrivalTime,
+      MemberId: userinfo.Id,
+      AdultNumber: 1,
+    };
+    wx.request({
+      url: baseUrl + '/Api/DispatchMobile/getPriceListForLineId',
+      data: data,
+      method: "POST",
+      success: (res) => {
+        if (res.data.code == 0) {
+         console.log(res)
+          // _this.setData({
+          //   hotRoutes:res.data.data
+          // })
+        } else {
+          wx.showToast({
+            title: res.data.msg,
+            icon: "none"
+          })
+        }
+      },
+      fail(err) {
+        console.error('网络异常:', err)
+      },complete() {
+        wx.hideLoading()
+      }
+    })
+  },
   // 生成固定四天：今天/明天/后天 + 第4天显示周几
   buildDates(base) {
     const arr = [];

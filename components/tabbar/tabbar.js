@@ -15,7 +15,7 @@ Component({
    */
   data: {
     tabs: {
-      home: '/pages/chengji/chengji',
+      home: '/pages/index/index',
       orders: '/user_center/pages/travelList/travelList',
       life: '/pages/life/life',
       mine: '/user_center/pages/personalCenter/personalCenter'

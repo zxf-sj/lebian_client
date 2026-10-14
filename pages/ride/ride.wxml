@@ -48,11 +48,11 @@
 
     <view class="ch-addr">
       <view class="ch-addr-row" bindtap="onPickAddr" data-direction="starting">
-        <text class="ch-addr-city">{{from}}市</text>
+        <text class="ch-addr-city">{{from}}</text>
         <text class="ch-addr-text">{{addrFrom}}</text>
       </view>
       <view class="ch-addr-row" bindtap="onPickAddr" data-direction="ending">
-        <text class="ch-addr-city">{{to}}市</text>
+        <text class="ch-addr-city">{{to}}</text>
         <text class="ch-addr-text">{{addrTo}}</text>
       </view>
     </view>
@@ -139,14 +139,14 @@
                 <text class="st-vcol">场站售票</text>
                 <view class="st-vcol st-vnumcol">
                   <text class="st-vnum">{{item.stationPrice}}</text>
-                  <text class="st-vunit">元/位</text>
+                  <text class="st-vunit">元 /位</text>
                 </view>
               </view>
               <view class="st-vgroup plat">
                 <text class="st-vcol">平台售票</text>
                 <view class="st-vcol st-vnumcol">
                   <text class="st-vnum">{{item.platformPrice}}</text>
-                  <text class="st-vunit">元/位</text>
+                  <text class="st-vunit">元 /位</text>
                 </view>
               </view>
             </view>

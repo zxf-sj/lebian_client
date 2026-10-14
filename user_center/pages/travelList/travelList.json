@@ -1,12 +1,12 @@
 {
   "backgroundTextStyle": "dark",
   "navigationBarBackgroundColor": "#fff",
-  "navigationBarTitleText": "行程订单",
+  "navigationBarTitleText": "订单",
   "navigationBarTextStyle": "black",
-  "enablePullDownRefresh":true,
+  "enablePullDownRefresh": true,
   "usingComponents": {
-    "daohang":"/components/daohang/daohang",
-    "custom-input-modal": "/components/custom-input-modal/custom-input-modal"
+    "daohang": "/components/daohang/daohang",
+    "custom-input-modal": "/components/custom-input-modal/custom-input-modal",
+    "tabbar": "/components/tabbar/tabbar"
   }
- 
 }
