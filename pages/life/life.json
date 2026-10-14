@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "生活",
+  "usingComponents": {
+    "tabbar": "/components/tabbar/tabbar"
+  }
+}

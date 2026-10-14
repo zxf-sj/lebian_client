@@ -1,0 +1,58 @@
+<view class="page">
+
+  <!-- 顶部 Banner：棕色皮革质感 -->
+  <view class="banner">
+    <view class="banner-left">
+      <text class="banner-title">城际代驾</text>
+      <text class="banner-sub">酒局散场 代驾出场</text>
+      <view class="poem">
+        <text class="poem-line">开累了，换人开！</text>
+        <text class="poem-line">酒过三巡，我替朋友把您和爱车安全送回家中</text>
+        <text class="poem-line">八匹马呀，喝了酒呀，咋回家呀，上高速呀。</text>
+        <text class="poem-line">九连环呀，放心喝呀，咱有人呀，有代驾呀。</text>
+      </view>
+    </view>
+    <view class="banner-right">
+      <text class="banner-emoji">🚕👨‍✈️</text>
+    </view>
+  </view>
+
+  <!-- 副标题 -->
+  <view class="slogan">城际间专业送车，载人代驾服务</view>
+
+  <!-- 表单 -->
+  <view class="form-card">
+    <view class="form-row" bindtap="onPickStart">
+      <text class="form-label">起点</text>
+      <view class="form-value {{startPoint ? '' : 'ph'}}">{{startPoint || '请选择位置'}}</view>
+    </view>
+    <view class="form-row" bindtap="onPickEnd">
+      <text class="form-label">终点</text>
+      <view class="form-value {{endPoint ? '' : 'ph'}}">{{endPoint || '请选择位置'}}</view>
+    </view>
+    <view class="form-row">
+      <text class="form-label">电话</text>
+      <input class="form-input" type="number" maxlength="11" placeholder="请输入电话" placeholder-class="ph" value="{{phone}}" bindinput="onPhoneInput"/>
+    </view>
+    <view class="form-row">
+      <text class="form-label">费用</text>
+      <view class="form-value fee">¥ {{fee}}</view>
+    </view>
+    <view class="form-row">
+      <text class="form-label">备注</text>
+      <input class="form-input" placeholder="请输入备注" placeholder-class="ph" value="{{remark}}" bindinput="onRemarkInput"/>
+    </view>
+  </view>
+
+  <!-- 立即预订按钮 -->
+  <view class="submit-btn" bindtap="onSubmit">
+    <text class="submit-text">立即预订</text>
+  </view>
+
+  <!-- 底部两个按钮 -->
+  <view class="bottom-actions">
+    <view class="bottom-btn home-btn" bindtap="onGoHome">首页</view>
+    <view class="bottom-btn order-btn" bindtap="onGoOrders">代驾订单</view>
+  </view>
+
+</view>

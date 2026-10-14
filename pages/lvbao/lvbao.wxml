@@ -1,0 +1,143 @@
+<view class="page">
+
+  <!-- 顶部 Banner -->
+  <view class="banner">
+    <view class="banner-road">
+      <view class="road-sign road-top">TRAVEL</view>
+      <view class="road-sign road-bottom">TIME</view>
+    </view>
+    <view class="banner-text">
+      <text class="banner-title">旅游包车 · 品质租车</text>
+      <text class="banner-sub">自驾随心行 包车安心达</text>
+    </view>
+    <view class="banner-globe">✈️🌍</view>
+  </view>
+
+  <!-- Tab 切换 -->
+  <view class="tab-bar">
+    <view class="tab-item {{tabIdx === 0 ? 'on' : ''}}" bindtap="onTabTap" data-idx="0">
+      包车服务（含司机）
+    </view>
+    <view class="tab-item {{tabIdx === 1 ? 'on' : ''}}" bindtap="onTabTap" data-idx="1">
+      汽车租赁（不含司机）
+    </view>
+  </view>
+
+  <!-- ========== Tab 1：包车服务（含司机） ========== -->
+  <block wx:if="{{tabIdx === 0}}">
+    <view class="form-card">
+      <view class="form-row">
+        <text class="form-label">起点</text>
+        <input class="form-input" placeholder="选择起点" placeholder-class="ph" value="{{startPoint}}" bindinput="onStartInput"/>
+      </view>
+      <view class="form-row">
+        <text class="form-label">终点</text>
+        <input class="form-input" placeholder="选择终点" placeholder-class="ph" value="{{endPoint}}" bindinput="onEndInput"/>
+      </view>
+      <view class="form-row">
+        <text class="form-label">电话</text>
+        <input class="form-input" type="number" maxlength="11" placeholder="请输入联系电话" placeholder-class="ph" value="{{phone}}" bindinput="onPhoneInput"/>
+      </view>
+      <view class="form-row">
+        <text class="form-label">出发日期</text>
+        <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+          <view class="picker-value {{startDate ? '' : 'ph'}}">{{startDate || '请选择日期'}}</view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 车型选择 -->
+    <view class="section-title">车型选择</view>
+    <view class="car-card {{selectedCar === 0 ? 'selected' : ''}}" bindtap="onCarTap" data-idx="0">
+      <view class="car-info">
+        <text class="car-name">6座高级包车</text>
+        <view class="car-price">
+          <text class="price-label">价格</text>
+          <text class="price-value">约 ¥0元</text>
+        </view>
+      </view>
+      <view class="car-img-wrap">
+        <text class="car-emoji">🚐</text>
+        <text class="car-tag">宽敞</text>
+      </view>
+    </view>
+
+    <!-- 行程类型 -->
+    <view class="section-title">行程类型</view>
+    <view class="trip-type">
+      <view class="radio-wrap {{tripType === 0 ? 'on' : ''}}" bindtap="onTripTap" data-idx="0">
+        <view class="radio">{{tripType === 0 ? '✓' : ''}}</view>
+        <text class="radio-label">单程</text>
+      </view>
+      <view class="radio-wrap {{tripType === 1 ? 'on' : ''}}" bindtap="onTripTap" data-idx="1">
+        <view class="radio">{{tripType === 1 ? '✓' : ''}}</view>
+        <text class="radio-label">往返</text>
+      </view>
+    </view>
+
+    <view class="submit-btn" bindtap="onSubmitCharter">
+      <text class="submit-text">预订单</text>
+    </view>
+
+    <view class="notice-text">
+      此价格为系统计算价格，预订后客服会主动联系沟通。或咨询 13133387813 获取更多优惠。
+    </view>
+
+    <view class="bottom-actions">
+      <view class="bottom-btn home-btn" bindtap="onGoHome">旅游首页</view>
+      <view class="bottom-btn order-btn" bindtap="onGoOrders">旅游订单</view>
+    </view>
+  </block>
+
+  <!-- ========== Tab 2：汽车租赁（不含司机） ========== -->
+  <block wx:if="{{tabIdx === 1}}">
+    <view class="form-card">
+      <view class="form-row">
+        <text class="form-label">租用日期</text>
+        <picker mode="date" value="{{rentStartDate}}" bindchange="onRentStartDateChange">
+          <view class="picker-value {{rentStartDate ? '' : 'ph'}}">{{rentStartDate || '请选择日期'}}</view>
+        </picker>
+      </view>
+      <view class="form-row">
+        <text class="form-label">还车日期</text>
+        <picker mode="date" value="{{rentEndDate}}" bindchange="onRentEndDateChange">
+          <view class="picker-value {{rentEndDate ? '' : 'ph'}}">{{rentEndDate || '请选择日期'}}</view>
+        </picker>
+      </view>
+      <view class="form-row">
+        <text class="form-label">电话</text>
+        <input class="form-input" type="number" maxlength="11" placeholder="请输入联系电话" placeholder-class="ph" value="{{rentPhone}}" bindinput="onRentPhoneInput"/>
+      </view>
+      <view class="form-row">
+        <text class="form-label">押金</text>
+        <text class="deposit-value">¥5000</text>
+      </view>
+    </view>
+
+    <!-- 车型选择 -->
+    <view class="section-title">车型选择</view>
+    <view class="car-card {{selectedRentCar === 0 ? 'selected' : ''}}" bindtap="onRentCarTap" data-idx="0">
+      <view class="car-info">
+        <text class="car-name">6座高级MPV</text>
+      </view>
+      <view class="car-img-wrap">
+        <text class="car-emoji">🚐</text>
+        <text class="car-tag">宽敞</text>
+      </view>
+    </view>
+    <view class="car-card {{selectedRentCar === 1 ? 'selected' : ''}}" bindtap="onRentCarTap" data-idx="1">
+      <view class="car-info">
+        <text class="car-name">7座中级MPV</text>
+      </view>
+      <view class="car-img-wrap">
+        <text class="car-emoji">🚙</text>
+        <text class="car-tag">舒适</text>
+      </view>
+    </view>
+
+    <view class="submit-btn" bindtap="onSubmitRent">
+      <text class="submit-text">立即预订</text>
+    </view>
+  </block>
+
+</view>

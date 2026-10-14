@@ -1,0 +1,89 @@
+<view class="page">
+  <!-- 基础信息 -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">基础信息</text>
+      <text class="card-sub">用于实名制乘车，请务必准确填写</text>
+    </view>
+
+    <view class="row">
+      <view class="label"><text class="star">*</text>乘客类型</view>
+      <view class="seg">
+        <view class="seg-item {{type === 'adult' ? 'on' : ''}}" bindtap="onType" data-t="adult">成人</view>
+        <view class="seg-item {{type === 'child' ? 'on' : ''}}" bindtap="onType" data-t="child">儿童</view>
+      </view>
+    </view>
+    <view class="line"></view>
+
+    <view class="row">
+      <view class="label"><text class="star">*</text>证件类型</view>
+      <view class="val">
+        <input class="ipt" value="身份证" disabled placeholder="身份证" placeholder-class="ph" />
+      </view>
+    </view>
+    <view class="line"></view>
+
+    <view class="row">
+      <view class="label"><text class="star">*</text>姓名</view>
+      <view class="val">
+        <input class="ipt" value="{{name}}" bindinput="onName" placeholder="请输入真实姓名" placeholder-class="ph" />
+      </view>
+    </view>
+    <view class="line"></view>
+
+    <view class="row">
+      <view class="label"><text class="star">*</text>身份证号</view>
+      <view class="val">
+        <input class="ipt" value="{{idcard}}" bindinput="onIdcard" maxlength="18" placeholder="请输入证件号码" placeholder-class="ph" />
+      </view>
+      <text class="chev">›</text>
+    </view>
+  </view>
+
+  <!-- 联系方式 -->
+  <view class="card">
+    <view class="row">
+      <view class="label">联系方式</view>
+      <view class="val">
+        <input class="ipt" value="{{contact}}" bindinput="onContact" maxlength="11" type="number" placeholder="用于接收行程信息" placeholder-class="ph" />
+      </view>
+    </view>
+    <view class="line"></view>
+    <view class="row">
+      <view class="label"><text class="star">*</text>手机号</view>
+      <view class="val">
+        <input class="ipt" value="{{phone}}" bindinput="onPhone" maxlength="11" type="number" placeholder="用于联系您准时上车" placeholder-class="ph" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 设为默认乘车人 -->
+  <view class="card">
+    <view class="row">
+      <view class="col">
+        <view class="row-title">设为默认乘车人</view>
+        <view class="row-desc">下次购票时优先选中该乘客信息</view>
+      </view>
+      <switch class="sw" checked="{{isDefault}}" color="#1aad19" bindchange="onDefault" />
+    </view>
+  </view>
+
+  <!-- 协议 -->
+  <view class="agree" bindtap="onAgree">
+    <view class="cb {{agree ? 'on' : ''}}">{{agree ? '✓' : ''}}</view>
+    <text class="agree-txt">我已阅读并同意</text>
+    <text class="agree-link">《吕客行用户隐私政策》</text>
+  </view>
+
+  <!-- 保存 -->
+  <view class="btn" bindtap="onSave">保 存</view>
+
+  <!-- 温馨提示 -->
+  <view class="tips">
+    <view class="tips-title">温馨提示</view>
+    <view class="tips-p">1.互联网售票实行实名制，成人、儿童乘车需准确填写真实有效的身份证信息进行核验。</view>
+    <view class="tips-p">2.根据交通法规要求，一人一座一票，怀抱婴儿、儿童均需要购票，购买多张车票的乘客请添加多乘车人信息。</view>
+    <view class="tips-p">3.成人不可使用儿童票购票。</view>
+    <view class="tips-p">4.为了绑定账号、登录小程序、收取车票站点或退票等短信通知，乘车人请填写真实手机号。</view>
+  </view>
+</view>

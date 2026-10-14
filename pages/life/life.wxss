@@ -1,0 +1,75 @@
+.life-container {
+  min-height: 100vh;
+  background: #f0f4fa;
+  padding: 32rpx 24rpx 120rpx;
+  box-sizing: border-box;
+}
+
+.life-logo {
+  font-size: 56rpx;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: 4rpx;
+  padding: 24rpx 16rpx 40rpx;
+}
+
+.life-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24rpx;
+  padding: 0 8rpx;
+}
+
+.life-card {
+  width: calc((100% - 24rpx) / 2);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 28rpx 24rpx;
+  border-radius: 32rpx;
+  background: #e3ecfb;
+  box-shadow: 0 6rpx 18rpx rgba(46, 120, 255, 0.08);
+}
+
+.life-card.on {
+  background: #2e9eff;
+  box-shadow: 0 8rpx 20rpx rgba(46, 158, 255, 0.3);
+}
+
+.life-card-img {
+  width: 88rpx;
+  height: 88rpx;
+  flex-shrink: 0;
+}
+
+.life-card-name {
+  flex: 1;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #2a3444;
+}
+
+.life-card.on .life-card-name {
+  color: #fff;
+}
+
+.life-kefu {
+  position: fixed;
+  right: 32rpx;
+  bottom: 180rpx;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: #ff5b5b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6rpx 16rpx rgba(255, 91, 91, 0.4);
+  overflow: hidden;
+}
+
+.life-kefu image {
+  width: 64rpx;
+  height: 64rpx;
+}

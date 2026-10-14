@@ -1,0 +1,82 @@
+<view class="page">
+
+  <!-- 顶部 Banner -->
+  <view class="banner-section">
+    <view class="banner-content">
+      <text class="main-title">陪诊</text>
+      <text class="sub-title">乐遍出行 健康无忧</text>
+      <view class="service-tags">
+        <text class="tag-item">陪同就医</text>
+        <view class="divider"></view>
+        <text class="tag-item">代替问诊</text>
+        <view class="divider"></view>
+        <text class="tag-item">代买药</text>
+        <view class="divider"></view>
+        <text class="tag-item">取结果</text>
+      </view>
+      <view class="service-tags">
+        <text class="tag-item">手续办理</text>
+        <view class="divider"></view>
+        <text class="tag-item">人工排队</text>
+        <view class="divider"></view>
+        <text class="tag-item">约检查</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 表单 -->
+  <view class="form-card">
+    <view class="form-row">
+      <text class="form-label">咨询医院</text>
+      <input
+        class="form-input"
+        placeholder="请输入咨询医院"
+        placeholder-class="placeholder"
+        value="{{hospital}}"
+        bindinput="onHospitalInput"
+      />
+    </view>
+    <view class="form-row">
+      <text class="form-label">咨询类型</text>
+      <picker
+        class="form-picker"
+        range="{{typeOptions}}"
+        value="{{typeIndex}}"
+        bindchange="onTypeChange"
+      >
+        <view class="picker-text {{typeIndex < 0 ? 'placeholder' : ''}}">
+          {{typeIndex >= 0 ? typeOptions[typeIndex] : '请选择咨询类型'}}
+          <text class="arrow">▾</text>
+        </view>
+      </picker>
+    </view>
+    <view class="form-row">
+      <text class="form-label">电话</text>
+      <input
+        class="form-input"
+        type="number"
+        maxlength="11"
+        placeholder="请输入手机号码"
+        placeholder-class="placeholder"
+        value="{{phone}}"
+        bindinput="onPhoneInput"
+      />
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-btn" bindtap="onSubmit">
+    <text class="submit-text">报名留资</text>
+  </view>
+
+  <!-- 底部两个按钮 -->
+  <view class="bottom-actions">
+    <view class="action-btn back-btn" bindtap="onBack">
+      <text class="back-text">返回上页</text>
+    </view>
+    <view class="action-btn order-btn" bindtap="onGoOrders">
+      <text class="order-text">陪诊订单</text>
+    </view>
+  </view>
+
+</view>

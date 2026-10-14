@@ -1,0 +1,57 @@
+<view class="page">
+  <!-- 选择出发日期 -->
+  <view class="card">
+    <view class="card-title">🗓 选择出发日期</view>
+    <view class="date-row">
+      <view
+        wx:for="{{dates}}"
+        wx:key="full"
+        class="date-card {{dateIdx === index ? 'on' : ''}}"
+        bindtap="onDateTap" data-idx="{{index}}"
+      >
+        <text class="date-md">{{item.md}}</text>
+        <text class="date-week">{{item.week}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 出行人数 -->
+  <view class="card">
+    <view class="card-title">👤 出行人数</view>
+    <view class="pax-row">
+      <view class="pax-info">
+        <text class="pax-name">成人</text>
+        <text class="pax-price">328/人起</text>
+      </view>
+      <view class="stepper">
+        <view class="step-btn" bindtap="onAdultMinus">－</view>
+        <text class="step-num">{{adults}}</text>
+        <view class="step-btn plus" bindtap="onAdultPlus">＋</view>
+      </view>
+    </view>
+    <view class="divider"></view>
+    <view class="pax-row">
+      <view class="pax-info">
+        <text class="pax-name">儿童</text>
+        <text class="pax-price">328/人起</text>
+      </view>
+      <view class="stepper">
+        <view class="step-btn" bindtap="onChildMinus">－</view>
+        <text class="step-num">{{children}}</text>
+        <view class="step-btn plus" bindtap="onChildPlus">＋</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 订单总价 -->
+  <view class="card">
+    <view class="total-label">订单总价</view>
+    <view class="total-price">¥{{totalPrice}}</view>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="bottom-bar">
+    <view class="btn primary" bindtap="onPay">立即预订</view>
+    <view class="btn ghost" bindtap="onBack">返 回</view>
+  </view>
+</view>

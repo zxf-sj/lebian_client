@@ -1,0 +1,62 @@
+<view class="page">
+  <!-- 顶部水墨头图 -->
+  <view class="hero">
+    <image class="hero-bg" src="/assets/images/lvyou2.png" mode="aspectFill"/>
+    <view class="hero-mask"></view>
+    <view class="hero-text">
+      <view class="hero-title">山西出发 · 品质路线</view>
+      <view class="hero-sub">精选省内出发旅游线路，一键搜索下单</view>
+    </view>
+    <view class="search-box">
+      <input class="search-input" placeholder="搜索目的地，如碛口古镇、平遥古城、五台山等" />
+      <view class="search-btn">🔍</view>
+    </view>
+  </view>
+
+  <!-- 城市 tab -->
+  <scroll-view scroll-x class="city-row" enhanced show-scrollbar="{{false}}">
+    <view class="city-pill {{cityIdx === index ? 'on' : ''}}" wx:for="{{cities}}" wx:key="*this" bindtap="onCityTap" data-idx="{{index}}">{{item}}</view>
+  </scroll-view>
+
+  <!-- 排序行 -->
+  <view class="sort-row">
+    <view class="sort-pill filter">⚙ 筛选</view>
+    <view class="sort-pill {{sortIdx === index ? 'on' : ''}}" wx:for="{{sorts}}" wx:key="*this" bindtap="onSortTap" data-idx="{{index}}">{{item}}</view>
+  </view>
+
+  <!-- 筛选面板 -->
+  <view class="filter-card">
+    <view class="f-title">价格区间</view>
+    <view class="f-range">
+      <text>最低0元</text>
+      <text>最高5000元</text>
+    </view>
+    <slider class="f-slider" min="0" max="5000" value="2500" activeColor="#2e9eff" backgroundColor="#cfe0fb"/>
+    <view class="f-title">行程天数</view>
+    <view class="f-days">
+      <view class="day-pill {{dayIdx === index ? 'on' : ''}}" wx:for="{{days}}" wx:key="*this" bindtap="onDayTap" data-idx="{{index}}">{{item}}</view>
+    </view>
+  </view>
+
+  <!-- 统计行 -->
+  <view class="stat-row">
+    <text>共 {{routes.length}} 条线路</text>
+    <text>更新于 09:53</text>
+  </view>
+
+  <!-- 线路列表 -->
+  <view class="route-card" wx:for="{{routes}}" wx:key="id" bindtap="onRouteTap" data-id="{{item.id}}">
+    <view class="route-head">
+      <text class="route-title">{{item.title}}</text>
+      <text class="route-tag">{{item.from}}出发</text>
+    </view>
+    <view class="route-line">📍 {{item.from}} → {{item.to}}{{item.days}}天</view>
+    <view class="route-pills">
+      <text class="route-pill" wx:for="{{item.tags}}" wx:for-item="t" wx:key="*this">{{t}}</text>
+    </view>
+    <view class="route-bottom">
+      <text class="route-price">¥{{item.price}}<text class="route-price-unit">/人起</text></text>
+      <text class="route-dates">{{item.dates}}</text>
+    </view>
+  </view>
+</view>

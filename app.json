@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/chengji/chengji",
     "pages/index/index",
     "pages/priceRules/priceRules",
     "pages/notice/notice",
@@ -27,9 +28,19 @@
     "pages/zuDetail/zuDetail",
     "pages/bar/bar",
     "pages/routeDetail/routeDetail",
-    "pages/chengji/chengji",
     "pages/fancheng/fancheng",
-    "pages/fanchengmap/fanchengmap"
+    "pages/fanchengmap/fanchengmap",
+    "pages/city/city",
+    "pages/life/life",
+    "pages/ride/ride",
+    "pages/rideOrder/rideOrder",
+    "pages/stationOrder/stationOrder",
+    "pages/addPassenger/addPassenger",
+    "pages/lvyouHome/lvyouHome",
+    "pages/lvyouDetail/lvyouDetail",
+    "pages/lvyouOrder/lvyouOrder",
+    "pages/lvbao/lvbao",
+    "pages/daijia/daijia"
   ],
   "subpackages": [
     {
@@ -98,6 +109,7 @@
         "pages/zhongdian/zhongdian",
         "pages/beforeOrder/beforeOrder",
         "pages/peizhen/peizhen",
+        "pages/peizhenConsult/peizhenConsult",
         "pages/lvyou/lvyou",
         "pages/lvyouList/lvyouList",
         "pages/peizhenList/peizhenList",

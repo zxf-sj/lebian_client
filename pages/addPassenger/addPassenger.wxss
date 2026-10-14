@@ -1,0 +1,126 @@
+page { background: #f4f6f9; }
+.page { padding: 16rpx 16rpx 60rpx; box-sizing: border-box; }
+
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  margin-bottom: 16rpx;
+}
+
+/* 卡片头部 */
+.card-head {
+  display: flex;
+  align-items: baseline;
+  padding: 26rpx 0 6rpx;
+}
+.card-title { font-size: 32rpx; font-weight: 700; color: #1a1a1a; }
+.card-sub { font-size: 22rpx; color: #98a0ab; margin-left: 12rpx; }
+
+/* 表单行 */
+.row {
+  display: flex;
+  align-items: center;
+  min-height: 100rpx;
+}
+.col { flex: 1; min-width: 0; }
+.row-title { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
+.row-desc { font-size: 22rpx; color: #98a0ab; margin-top: 6rpx; }
+
+.label {
+  width: 150rpx;
+  flex: none;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.star { color: #e64340; margin-right: 4rpx; }
+
+.val { flex: 1; min-width: 0; }
+.ipt { font-size: 28rpx; color: #1a1a1a; }
+.ph { color: #b6bec9; font-size: 26rpx; }
+
+.chev { font-size: 34rpx; color: #c8cdd4; margin-left: 10rpx; }
+
+.line { border-top: 2rpx solid #f0f2f5; }
+
+/* 成人/儿童分段器 */
+.seg {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+.seg-item {
+  width: 140rpx;
+  height: 62rpx;
+  line-height: 62rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #1a1a1a;
+  background: #f4f6f9;
+}
+.seg-item:first-child { border-radius: 32rpx 0 0 32rpx; }
+.seg-item:last-child { border-radius: 0 32rpx 32rpx 0; }
+.seg-item.on {
+  background: #2f7cf6;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* 默认乘车人开关 */
+.sw { transform: scale(.8); transform-origin: right center; }
+
+/* 协议 */
+.agree {
+  display: flex;
+  align-items: center;
+  padding: 6rpx 8rpx 0;
+}
+.cb {
+  width: 32rpx;
+  height: 32rpx;
+  flex: none;
+  border-radius: 6rpx;
+  border: 2rpx solid #c8cdd4;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  color: #fff;
+  margin-right: 10rpx;
+}
+.cb.on { background: #2f7cf6; border-color: #2f7cf6; }
+.agree-txt { font-size: 24rpx; color: #1a1a1a; }
+.agree-link { font-size: 24rpx; color: #2f7cf6; }
+
+/* 保存按钮 */
+.btn {
+  margin: 44rpx 30rpx 0;
+  height: 92rpx;
+  line-height: 92rpx;
+  text-align: center;
+  border-radius: 46rpx;
+  background: linear-gradient(90deg, #38a7f0, #2f7cf6);
+  color: #fff;
+  font-size: 34rpx;
+  font-weight: 700;
+  letter-spacing: 6rpx;
+}
+
+/* 温馨提示 */
+.tips { padding: 40rpx 8rpx 0; }
+.tips-title {
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #e64340;
+  margin-bottom: 16rpx;
+}
+.tips-p {
+  font-size: 24rpx;
+  color: #333;
+  line-height: 1.7;
+}

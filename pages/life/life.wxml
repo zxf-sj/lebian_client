@@ -1,0 +1,25 @@
+<view class="life-container">
+  <!-- 顶部 logo -->
+  <view class="life-logo">吕客行</view>
+
+  <!-- 2 列 3 行 服务卡片 -->
+  <view class="life-grid">
+    <view
+      wx:for="{{services}}"
+      wx:key="name"
+      class="life-card {{item.active ? 'on' : ''}}"
+      bindtap="onServiceTap"
+      data-name="{{item.name}}"
+      data-url="{{item.url}}"
+    >
+      <image class="life-card-img" src="/assets/images/lvyou2.png" mode="aspectFit"/>
+      <text class="life-card-name">{{item.name}}</text>
+    </view>
+  </view>
+
+  <!-- 右下角客服悬浮 -->
+  <view class="life-kefu" bindtap="onKefuTap">
+    <image src="/assets/images/lvyou2.png" mode="aspectFit"/>
+  </view>
+</view>
+<tabbar current="life"></tabbar>

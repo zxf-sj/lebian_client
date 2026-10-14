@@ -1,0 +1,138 @@
+<view class="page">
+  <!-- 行程条：日期 | 线路+时间 | 价格 -->
+  <view class="ch-trip">
+    <view class="ch-chip">
+      <text class="chc-label">{{dayLabel}}</text>
+      <text class="chc-md">{{md}}</text>
+    </view>
+    <view class="ch-chip wide">
+      <text class="chc-route">{{from}} → {{to}}</text>
+      <text class="chc-time">{{time}}</text>
+    </view>
+    <view class="ch-chip">
+      <text class="chc-price">¥{{vehPrice}}</text>
+    </view>
+  </view>
+
+  <!-- 站点 -->
+  <view class="sta-wrap">
+    <view class="sta-row" bindtap="onPickAddr" data-direction="starting">
+      <view class="sta-dot on">
+        <view class="sta-dot-inner"></view>
+      </view>
+      <view class="sta-info">
+        <text class="sta-label">上车</text>
+        <text class="sta-addr">{{stations[0].city}}市 {{stations[0].address}}</text>
+      </view>
+    </view>
+    <view class="sta-line"></view>
+    <view class="sta-swap" bindtap="onSwapStations">⇅</view>
+    <view class="sta-row" bindtap="onPickAddr" data-direction="ending">
+      <view class="sta-dot off">
+        <view class="sta-dot-inner"></view>
+      </view>
+      <view class="sta-info">
+        <text class="sta-label">下车</text>
+        <text class="sta-addr">{{stations[1].city}}市 {{stations[1].address}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 车型选择 -->
+  <view wx:for="{{vehicles}}" wx:key="name" class="veh-card {{vehSel === index ? 'sel' : ''}}" bindtap="onVehTap" data-idx="{{index}}">
+    <view class="car_left">
+      <view class="car_top">
+        <text class="veh-name">{{item.name}}</text>
+        <view class="veh-price">
+          <text class="veh-cl">价格</text>
+          <text class="veh-origin">¥{{item.origin || item.price}}</text>
+        </view>
+      </view>
+      <view wx:if="{{item.origin}}" class="veh-special">
+        <text class="veh-hot">限时特惠</text>
+        <text class="veh-sp-price">¥{{item.price}}</text>
+      </view>
+    </view>
+    <view class="veh-right">
+      <image src="{{item.img}}" mode="aspectFit" class="car_img"/>
+    </view>
+    <view class="veh-tag">{{item.tag}}</view>
+  </view>
+
+  <!-- 乘车人选择 -->
+  <view class="pass-tabs">
+    <view
+      wx:for="{{passengers}}" wx:key="name"
+      class="pass-tab {{paxIdx === index ? 'sel' : ''}}"
+      bindtap="onPaxTab" data-idx="{{index}}"
+    >
+      <text class="pass-tab-name">{{item.name}}</text>
+    </view>
+  </view>
+
+  <view class="pax-id-row">
+    <text class="pax-id-name">{{passengers[paxIdx].name}}</text>
+    <text class="pax-id-num">{{passengers[paxIdx].idCard}}</text>
+  </view>
+
+  <!-- 成人/儿童：拼车下单页显示 -->
+  <view wx:if="{{mode === 'carpool'}}" class="pax-row">
+    <view class="pax-group">
+      <text class="pax-label">成 人</text>
+      <view class="stepper">
+        <view class="step-btn {{passengers[paxIdx].adults <= 1 ? 'dis' : ''}}" bindtap="onAdultMinus">－</view>
+        <text class="step-num">{{passengers[paxIdx].adults}}</text>
+        <view class="step-btn plus" bindtap="onAdultPlus">＋</view>
+      </view>
+    </view>
+    <view class="pax-divider"></view>
+    <view class="pax-group">
+      <text class="pax-label">儿 童</text>
+      <view class="stepper">
+        <view class="step-btn {{passengers[paxIdx].children <= 0 ? 'dis' : ''}}" bindtap="onChildMinus">－</view>
+        <text class="step-num">{{passengers[paxIdx].children}}</text>
+        <view class="step-btn plus" bindtap="onChildPlus">＋</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-row">
+    <text class="form-label">联系方式</text>
+    <input class="form-input" type="number" maxlength="11" placeholder="请输入手机号" value="{{phone}}" bindinput="onPhoneInput" />
+  </view>
+  <view class="form-row">
+    <text class="form-label">乘车备注</text>
+    <input class="form-input" placeholder="选填" value="{{remark}}" bindinput="onRemarkInput" />
+  </view>
+
+  <view class="notice">
+    <text class="notice-line">※是否携带大件行李、飞机航班号、列车车次及乘坐时间、是否是孕妇或老人、是否是孩童单独乘车等，以便更好的为您服务。</text>
+    <text class="notice-line">※儿童是指3岁以下的小朋友，每位成人乘客仅可享受一位儿童价优惠票。</text>
+  </view>
+
+  <view class="fee-row">
+    <text class="fee-label">优惠券</text>
+    <text class="fee-val link">可用3张></text>
+  </view>
+  <view class="fee-row">
+    <text class="fee-label">订单总额</text>
+    <text class="fee-val">¥{{vehPrice}}</text>
+  </view>
+  <view class="fee-row">
+    <text class="fee-label">基本票价</text>
+    <text class="fee-val">¥{{vehPrice}}</text>
+  </view>
+  <view class="fee-row total">
+    <text class="fee-label">合计</text>
+    <text class="fee-val price big">¥{{vehPrice}}</text>
+  </view>
+
+  <view class="agree" bindtap="onAgreeTap">
+    <view class="agree-box {{agree ? 'on' : ''}}">{{agree ? '✓' : ''}}</view>
+    <text class="agree-text">下单即同意本</text>
+    <text class="agree-link">《服务条款》</text>
+  </view>
+
+  <view class="pay-btn" bindtap="onPay">预约支付</view>
+  <view class="gap"></view>
+</view>

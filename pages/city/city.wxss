@@ -1,0 +1,34 @@
+/* pages/city/city.wxss */
+page { background: #f4f6f9; }
+
+.page { padding: 24rpx; }
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.item {
+  width: 31%;
+  box-sizing: border-box;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: 44rpx;
+  background: #e3edfb;
+  color: #1a1a1a;
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 26rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 12rpx;
+}
+
+.item.on {
+  background: #2ba9e8;
+  color: #fff;
+  box-shadow: 0 6rpx 16rpx rgba(43,169,232,.35);
+}

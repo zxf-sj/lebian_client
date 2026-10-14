@@ -1,0 +1,277 @@
+<view class="page">
+  <!-- 顶部：出发地 / 目的地 / 出发日期（包车 tab 下隐藏，由 ch-top 替代） -->
+  <view class="topbar" hidden="{{tab === 2}}">
+    <view class="tb-col">
+      <text class="tb-label">出发地</text>
+      <text class="tb-value">{{from}}</text>
+    </view>
+    <view class="tb-swap" bindtap="onSwap">⇄</view>
+    <view class="tb-col">
+      <text class="tb-label">目的地</text>
+      <text class="tb-value">{{to}}</text>
+    </view>
+    <view class="tb-col">
+      <text class="tb-label">出发日期</text>
+      <text class="tb-value">{{dateLabel}}</text>
+    </view>
+  </view>
+
+  <!-- 日期：今天/明天/后天/第4天显示周几，固定四天（包车 tab 下隐藏） -->
+  <view class="date-row" hidden="{{tab === 2}}">
+    <view
+      wx:for="{{dates}}"
+      wx:key="full"
+      class="date-cell {{dateIdx === index ? 'on' : ''}}"
+      bindtap="onDateTap"
+      data-idx="{{index}}"
+    >
+      <text class="dc-label">{{item.label}}</text>
+      <text class="dc-md">{{item.md}}</text>
+    </view>
+  </view>
+
+  <!-- 包车 tab 专用：通栏的三胶囊 + 上下车地址（在左右分栏之上） -->
+  <view class="ch-top" wx:if="{{tab === 2}}">
+    <view class="ch-trip">
+      <view class="ch-chip">
+        <text class="chc-label">{{dates[dateIdx].label}}</text>
+        <text class="chc-md">{{dates[dateIdx].md}}</text>
+      </view>
+      <view class="ch-chip wide">
+        <text class="chc-route">{{from}} → {{to}}</text>
+        <text class="chc-time">{{tripTime}}</text>
+      </view>
+      <view class="ch-chip">
+        <text class="chc-price">¥{{vehPrice}}</text>
+      </view>
+    </view>
+
+    <view class="ch-addr">
+      <view class="ch-addr-row" bindtap="onPickAddr" data-direction="starting">
+        <text class="ch-addr-city">{{from}}市</text>
+        <text class="ch-addr-text">{{addrFrom}}</text>
+      </view>
+      <view class="ch-addr-row" bindtap="onPickAddr" data-direction="ending">
+        <text class="ch-addr-city">{{to}}市</text>
+        <text class="ch-addr-text">{{addrTo}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="body">
+    <!-- 左侧服务 tab -->
+    <scroll-view class="side" scroll-y>
+      <view
+        wx:for="{{tabs}}"
+        wx:key="name"
+        class="side-item {{tab === index ? 'on' : ''}} {{item.badge ? 'has-badge' : ''}}"
+        bindtap="onTabTap"
+        data-idx="{{index}}"
+      >
+        <text wx:if="{{item.badge}}" class="side-badge">{{item.badge}}</text>
+        <text class="side-name">{{item.name}}</text>
+        <text class="side-price">{{item.price}}</text>
+      </view>
+    </scroll-view>
+
+    <!-- 右侧列：上面固定头部（仅站点上车），下面滚动内容 -->
+    <view class="main-col">
+
+    <!-- 站点上车 tab 下固定在顶部的热门站点块 -->
+    <view class="station-fixed" wx:if="{{tab === 0}}">
+      <view class="hot-card">
+        <view class="hot-head">
+          <text class="hot-title">🚏 热门站点</text>
+          <text class="hot-count">已选{{hotCount}}个</text>
+        </view>
+        <view class="hot-pills">
+          <view
+            wx:for="{{hotStations}}"
+            wx:key="index"
+            class="hot-pill {{item.sel ? 'on' : ''}}"
+            bindtap="onHotTap"
+            data-idx="{{index}}"
+          >{{item.name}}</view>
+        </view>
+      </view>
+      <view class="hot-link" bindtap="onOpenStationPage">点击进入选择上下车站点</view>
+    </view>
+    <!-- 拼车上门 tab 下固定的时段行 -->
+    <view class="period-fixed" wx:if="{{tab === 1}}">
+      <view class="period-row">
+        <view
+          wx:for="{{periods}}"
+          wx:key="*this"
+          class="period {{periodIdx === index ? 'on' : ''}}"
+          bindtap="onPeriodTap"
+          data-idx="{{index}}"
+        >{{item}}</view>
+      </view>
+    </view>
+
+    <scroll-view class="main" scroll-y>
+
+      <!-- ========== 1. 站点上车 ========== -->
+      <block wx:if="{{tab === 0}}">
+        <view wx:for="{{stationRoutes}}" wx:key="time" class="st-card" bindtap="onBookStation" data-idx="{{index}}">
+          <view class="st-main">
+            <view class="st-head">
+              <text class="st-time">{{item.time}}</text>
+              <text class="st-type">{{item.type}}</text>
+            </view>
+            <view class="st-line">
+              <view class="st-stop">
+                <view class="st-dot blue"></view>
+                <text class="st-stop-name">{{item.start}}</text>
+              </view>
+              <view class="st-mids">
+                <view wx:for="{{item.mids}}" wx:for-item="m" wx:key="index" class="st-pill">{{m}}</view>
+              </view>
+              <view class="st-stop">
+                <view class="st-dot red"></view>
+                <text class="st-stop-name">{{item.end}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="st-side">
+            <view class="st-vprices">
+              <view class="st-vgroup">
+                <text class="st-vcol">场站售票</text>
+                <view class="st-vcol st-vnumcol">
+                  <text class="st-vnum">{{item.stationPrice}}</text>
+                  <text class="st-vunit">元/位</text>
+                </view>
+              </view>
+              <view class="st-vgroup plat">
+                <text class="st-vcol">平台售票</text>
+                <view class="st-vcol st-vnumcol">
+                  <text class="st-vnum">{{item.platformPrice}}</text>
+                  <text class="st-vunit">元/位</text>
+                </view>
+              </view>
+            </view>
+            <view class="st-ticket {{item.tickets <= 5 ? 'low' : ''}}">
+              <text class="st-ticket-label">余票</text>
+              <text class="st-ticket-num">{{item.tickets}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- ========== 2. 拼车上门（点班次进下单页） ========== -->
+      <block wx:elif="{{tab === 1}}">
+        <view
+          wx:for="{{carpoolShow}}"
+          wx:key="id"
+          class="cp-card {{item.sold ? 'sold' : ''}} {{carpoolSel === item.id ? 'sel' : ''}}"
+          bindtap="onCarpoolTap"
+          data-id="{{item.id}}"
+          data-sold="{{item.sold}}"
+        >
+          <view class="cp-left">
+            <text class="cp-route">{{from}}→{{to}}</text>
+            <text class="cp-time">{{item.time}}</text>
+          </view>
+          <view class="cp-right">
+            <text class="cp-seats-label">余座</text>
+            <text class="cp-seats">{{item.seats}}</text>
+          </view>
+          <view wx:if="{{item.sold}}" class="stamp">SOLD OUT</view>
+        </view>
+      </block>
+
+      <!-- ========== 3. 包车出发：右侧直接下单，不跳转 ========== -->
+      <block wx:elif="{{tab === 2}}">
+        <!-- 车型选择 -->
+        <view wx:for="{{charterVeh}}" wx:key="name" class="veh-card {{vehSel === index ? 'sel' : ''}}" bindtap="onVehTap" data-idx="{{index}}">
+          <view class="car_left">
+            <view class="car_top">
+              <text class="veh-name">{{item.name}}</text>
+              <text wx:if="{{item.hot}}" class="veh-hot">限时特惠</text>
+            </view>
+            <view class="car_bot">
+              <view class="veh-col">
+                <text class="veh-cl">可乘坐</text>
+                <text class="veh-cv">{{item.seats}}</text>
+              </view>
+              <view class="veh-col">
+                <text class="veh-cl">价格</text>
+                <text class="veh-cv price">¥{{item.price}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="veh-right">
+            <image src="{{item.img}}" mode="aspectFit" class="car_img"/>
+          </view>
+          <view class="veh-tag">{{item.tag}}</view>
+        </view>
+
+        <view class="form-row">
+          <text class="form-label">联系方式</text>
+          <input class="form-input" type="number" maxlength="11" placeholder="请输入手机号" value="{{phone}}" bindinput="onPhoneInput" />
+        </view>
+        <view class="form-row">
+          <text class="form-label">乘车备注</text>
+          <input class="form-input" placeholder="选填" value="{{remark}}" bindinput="onRemarkInput" />
+        </view>
+
+        <view class="notice">
+          <text class="notice-line">※是否携带大件行李、飞机航班号、列车车次及乘坐时间、是否是孕妇或老人、是否是孩童单独乘车等，以便更好的为您服务。</text>
+          <text class="notice-line">※儿童是指3岁以下的小朋友，每位成人乘客仅可享受一位儿童价优惠票。</text>
+        </view>
+
+        <view class="fee-row">
+          <text class="fee-label">优惠券</text>
+          <text class="fee-val link">可用3张&gt;</text>
+        </view>
+        <view class="fee-row">
+          <text class="fee-label">订单总额</text>
+          <text class="fee-val">¥{{vehPrice}}</text>
+        </view>
+        <view class="fee-row">
+          <text class="fee-label">基本票价</text>
+          <text class="fee-val">¥{{vehPrice}}</text>
+        </view>
+        <view class="fee-row total">
+          <text class="fee-label">合计</text>
+          <text class="fee-val price big">¥{{vehPrice}}</text>
+        </view>
+
+        <view class="agree" bindtap="onAgreeTap">
+          <view class="agree-box {{agree ? 'on' : ''}}">{{agree ? '✓' : ''}}</view>
+          <text class="agree-text">下单即同意本</text>
+          <text class="agree-link">《服务条款》</text>
+        </view>
+
+        <view class="pay-btn" bindtap="onCharterPay">预约支付</view>
+        <view class="gap"></view>
+
+        
+      </block>
+
+      <!-- ========== 4. 跨城跑腿 ========== -->
+      <block wx:else>
+        <view
+          wx:for="{{errandList}}"
+          wx:key="id"
+          class="er-card {{errandSel === item.id ? 'sel' : ''}}"
+          bindtap="onErrandTap"
+          data-id="{{item.id}}"
+        >
+          <view class="er-left">
+            <text class="er-route">{{from}}→{{to}}</text>
+            <text class="er-desc">{{item.desc}}</text>
+          </view>
+          <view class="er-right">
+            <text class="er-speed">{{item.speed}}</text>
+            <text class="er-price">¥{{item.price}}</text>
+          </view>
+        </view>
+        <view class="pay-btn" bindtap="onErrandOrder">立即下单</view>
+        <view class="gap"></view>
+      </block>
+
+    </scroll-view>
+    </view>
+  </view>
+</view>

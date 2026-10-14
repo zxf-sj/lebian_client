@@ -1,0 +1,15 @@
+<view class="tabbar-placeholder"></view>
+<view class="tabbar">
+  <view class="tab-item {{current=='home'?'active':''}}" data-key="home" bindtap="switchTab">
+    <text>首 页</text>
+  </view>
+  <view class="tab-item {{current=='orders'?'active':''}}" data-key="orders" bindtap="switchTab">
+    <text>订 单</text>
+  </view>
+  <view class="tab-item {{current=='life'?'active':''}}" data-key="life" bindtap="switchTab">
+    <text>生 活</text>
+  </view>
+  <view class="tab-item {{current=='mine'?'active':''}}" data-key="mine" bindtap="switchTab">
+    <text>我 的</text>
+  </view>
+</view>

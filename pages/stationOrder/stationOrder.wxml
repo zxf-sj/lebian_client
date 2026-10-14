@@ -1,0 +1,110 @@
+<view class="page">
+  <!-- 顶部站点纵览 -->
+  <view class="sta-wrap">
+    <view class="sta-row">
+      <view class="sta-col" wx:for="{{stations}}" wx:key="index">
+        <view class="sta-name {{item.mark === 'up' ? 'green' : ''}} {{item.mark === 'down' ? 'red' : ''}}">
+          <text wx:for="{{item.chars}}" wx:for-item="c" wx:key="index" class="sta-char">{{c}}</text>
+        </view>
+        <view class="sta-mark {{item.mark === 'up' ? 'up' : ''}} {{item.mark === 'down' ? 'down' : ''}}" bindtap="onStaTap" data-idx="{{index}}">
+          <text wx:if="{{item.mark === 'up'}}">上</text>
+          <text wx:elif="{{item.mark === 'down'}}">下</text>
+        </view>
+      </view>
+    </view>
+    <view class="sta-dash"></view>
+    <view class="sta-row">
+      <view class="sta-col" wx:for="{{stations}}" wx:key="index">
+        <view class="sta-time">{{item.timeH}}</view>
+        <view class="sta-time">{{item.timeM}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 上下车点 / 乘车人 -->
+  <view class="card">
+    <view class="pick-row" bindtap="onPickUp">
+      <text class="pick-city">{{upCity}}</text>
+      <text class="pick-label {{upStation ? 'picked' : ''}}">{{upStation || '选择上车点'}}</text>
+      <text class="pick-arrow">⌄</text>
+    </view>
+    <view class="line"></view>
+    <view class="pick-row" bindtap="onPickDown">
+      <text class="pick-city">{{downCity}}</text>
+      <text class="pick-label {{downStation ? 'picked' : ''}}">{{downStation || '选择下车点'}}</text>
+      <text class="pick-arrow">⌄</text>
+    </view>
+    <view class="line"></view>
+
+    <!-- 乘车人列表 -->
+    <view class="psg-head">
+      <view class="psg-names">
+        <view
+          wx:for="{{passengers}}" wx:key="name"
+          class="psg-tag {{paxIdx === index ? 'on' : ''}}"
+          bindtap="onPaxTab" data-idx="{{index}}"
+        >
+          {{item.name}}
+          <text wx:if="{{item.isChild}}" class="psg-child">儿童</text>
+        </view>
+      </view>
+      <view class="psg-add" bindtap="onAddUser">新增</view>
+    </view>
+    <view class="psg-row">
+      <text class="psg-name">{{passengers[paxIdx].name}}</text>
+      <text class="psg-type">{{passengers[paxIdx].type}}</text>
+      <text class="psg-phone">{{passengers[paxIdx].idCard}}</text>
+      <text class="psg-price">¥{{platformPrice}}</text>
+    </view>
+  </view>
+
+  <!-- 优惠方式 -->
+  <view class="card coupon-row" bindtap="onCoupon">
+    <text class="coupon-label">优惠方式</text>
+    <text class="coupon-none">未使用></text>
+  </view>
+
+  <!-- 乘车须知 -->
+  <view class="card notice">
+    <view class="notice-title">乘车安全须知：</view>
+    <view class="notice-p">感谢您使用本平台!为了您和他人的安全，请务必仔细阅读，感谢配合!</view>
+    <view class="notice-h">车辆行驶规定:</view>
+    <view class="notice-p">车辆运行过程中请配合公检法(22-0806)，每2小时停车休息20分钟，凌晨2:00至5:00禁止运行。未拼车连车不可开超过限速及高速360公里/公里，请全程系好安全带。</view>
+    <view class="notice-p">班次售完即止，请提前24小时以上-坐不满取消，24小时至2小时内取消需缴纳全额20%手续费，发生20分钟内-需缴纳全额20%手续费，发生3分钟内取消将不予退费。</view>
+    <view class="notice-h">改签退票规定:</view>
+    <view class="notice-p">请在开车3-5个工作日前办理改签退票业务。</view>
+    <view class="notice-p">特别提示:改签将产生改签补差费用。</view>
+    <view class="notice-p">在线改签-特价票改签需要购买改签的车票2次不可改签，仅可改签一次(改签后乘车时间不变，改签一次仅可改签乘车时间，改签不支持不退票)。</view>
+    <view class="notice-h">儿童及携童规定:</view>
+    <view class="notice-p">按照交通运输部《民用运输服务管理规定》及《汽车客运规定》等文件要求：儿童需实名，不占座不运行书客运手续上，不运行书客运手续上。</view>
+    <view class="notice-p">儿童票标准:6周岁(含)以下或1.2米以下免费乘车(不占座，需成人携带)。6-14周岁或1.2-1.5米可购买儿童优惠票。每名成年旅客可免费携带一名不单独占座的儿童，超过人数时需购买儿童票。</view>
+    <view class="notice-h">禁止携带物品:</view>
+    <view class="notice-p">按照《反恐怖主义法》和《危险化学品安全管理条例》等法律法规，严禁携带易燃、易爆、有毒、有放射性、腐蚀性等危险品及国家明令禁止的其它物品乘车。</view>
+    <view class="notice-p">行李限重:免费携带品的重量/规格:每件外部尺寸长、宽、高之和不超过160厘米，重量不超过20千克。超长、超宽物品需另行办理托运。</view>
+    <view class="notice-agree" bindtap="onAgree">
+      <view class="cb {{agree ? 'on' : ''}}">{{agree ? '✓' : ''}}</view>
+      <text class="agree-txt">我接受服务合同</text>
+    </view>
+  </view>
+
+  <!-- 底部支付栏 -->
+  <view class="paybar">
+    <view class="pay-left">
+      <text class="pay-amount">订单金额：<text class="pay-num">¥{{total}}</text></text>
+    </view>
+    <view class="pay-detail" bindtap="onDetail">
+      <text>明细</text>
+      <text class="pay-tri {{detailOpen ? 'up' : ''}}">▲</text>
+    </view>
+    <view class="pay-btn" bindtap="onPay">下单并支付</view>
+  </view>
+
+  <!-- 明细弹层 -->
+  <view class="mask" wx:if="{{detailOpen}}" bindtap="onDetail">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-title">费用明细</view>
+      <view class="sheet-row"><text>平台售票</text><text>¥{{platformPrice}} × {{psgCount}}</text></view>
+      <view class="sheet-row total"><text>合计</text><text>¥{{total}}</text></view>
+    </view>
+  </view>
+</view>

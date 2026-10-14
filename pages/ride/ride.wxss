@@ -1,0 +1,365 @@
+page { background: #f4f6f9; }
+.page { height: 100vh; display: flex; flex-direction: column; }
+
+/* ===== 顶部线路栏 ===== */
+.topbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 18rpx 12rpx 22rpx;
+}
+.tb-col { flex: 1; display: flex; flex-direction: column; align-items: center; }
+.tb-label { font-size: 22rpx; color: #9aa3ad; }
+.tb-value { font-size: 32rpx; font-weight: 700; color: #1a1a1a; margin-top: 6rpx; }
+.tb-swap { width: 72rpx; text-align: center; font-size: 36rpx; color: #29a8e8; font-weight: 700; }
+
+/* ===== 日期四格 ===== */
+.date-row {
+  flex-shrink: 0;
+  display: flex;
+  padding: 16rpx 16rpx 6rpx;
+}
+.date-cell {
+  flex: 1;
+  margin: 0 8rpx;
+  height: 112rpx;
+  border-radius: 16rpx;
+  background: #eaf1fb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.date-cell.on { background: #2ba9e8; box-shadow: 0 6rpx 16rpx rgba(43,169,232,.35); }
+.dc-label { font-size: 28rpx; font-weight: 600; color: #1a1a1a; }
+.dc-md { font-size: 26rpx; color: #6b7480; margin-top: 4rpx; }
+.date-cell.on .dc-label, .date-cell.on .dc-md { color: #fff; }
+
+/* ===== 主体：左 tab + 右内容 ===== */
+.body { flex: 1; display: flex; overflow: hidden; }
+
+.side { width: 150rpx; flex-shrink: 0; min-height: 0; background: #f4f6f9; }
+.side-item {
+  margin: 14rpx 10rpx;
+  padding: 22rpx 0 16rpx;
+  border-radius: 14rpx;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.side-item.on { background: #2ba9e8; box-shadow: 0 6rpx 16rpx rgba(43,169,232,.35); }
+.side-name { font-size: 28rpx; font-weight: 700; color: #1a1a1a; line-height: 38rpx; text-align: center; white-space: pre-line; }
+.side-price { font-size: 24rpx; font-weight: 700; color: #e64340; margin-top: 8rpx; }
+.side-item.on .side-name, .side-item.on .side-price { color: #fff; }
+
+/* 左侧 tab 右上角"推荐"印章角标 */
+.side-item.has-badge { position: relative; }
+.side-badge {
+  position: absolute;
+  top: -10rpx;
+  right: -14rpx;
+  background: #e64340;
+  color: #fff;
+  font-size: 18rpx;
+  line-height: 1;
+  padding: 6rpx 8rpx;
+  border-radius: 8rpx 8rpx 8rpx 0;
+  transform: rotate(12deg);
+  box-shadow: 0 2rpx 6rpx rgba(230,67,64,.4);
+}
+
+.main-col { flex: 1; min-height: 0; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+
+.station-fixed {
+  flex-shrink: 0;
+  padding: 12rpx 16rpx 0;
+  background: #f4f6f9;
+}
+
+.period-fixed {
+  flex-shrink: 0;
+  padding: 12rpx 16rpx 0;
+  background: #f4f6f9;
+}
+
+.main { flex: 1; min-height: 0; padding: 12rpx 16rpx 40rpx; box-sizing: border-box; }
+
+/* ===== 1. 站点上车 ===== */
+.hot-card { background: #e8f1fd; border-radius: 20rpx; padding: 24rpx; }
+.hot-head { display: flex; align-items: baseline; }
+.hot-title { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
+.hot-count { font-size: 26rpx; color: #6b7480; margin-left: 16rpx; }
+.hot-pills { display: flex; flex-wrap: wrap; margin-top: 16rpx; }
+.hot-pill {
+  width: 30.5%;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 30rpx;
+  padding: 12rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #1a1a1a;
+  margin: 0 4% 16rpx 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.hot-pill:nth-child(3n) { margin-right: 0; }
+.hot-pill.on { background: #2ba9e8; color: #fff; font-weight: 700; }
+.hot-link {
+  margin: 20rpx 0 6rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 700;
+  letter-spacing: 6rpx;
+  color: #e64340;
+}
+
+.st-card { display: flex; background: #e8f1fd; border-radius: 20rpx; padding: 24rpx 12rpx 24rpx 24rpx; margin-top: 22rpx; }
+.st-main { flex: 1; min-width: 0; }
+.st-head { display: flex; align-items: baseline; }
+.st-time { font-size: 40rpx; font-weight: 700; color: #2ba9e8; letter-spacing: 2rpx; }
+.st-type { font-size: 26rpx; color: #1a1a1a; margin-left: 16rpx; }
+
+.st-line { position: relative; margin-top: 16rpx; }
+.st-line::before {
+  content: '';
+  position: absolute;
+  left: 9rpx;
+  top: 12rpx;
+  bottom: 12rpx;
+  width: 2rpx;
+  background: #c3cede;
+}
+.st-stop { position: relative; display: flex; align-items: center; }
+.st-dot { width: 20rpx; height: 20rpx; border-radius: 50%; margin-right: 16rpx; flex-shrink: 0; }
+.st-dot.blue { background: #2ba9e8; }
+.st-dot.red { background: #e64340; }
+.st-stop-name { font-size: 28rpx; font-weight: 700; color: #1a1a1a; }
+
+.st-mids { display: flex; flex-wrap: wrap; margin: 14rpx 0 14rpx 36rpx; }
+.st-pill {
+  background: #fff;
+  border-radius: 26rpx;
+  padding: 8rpx 0;
+  font-size: 25rpx;
+  color: #1a1a1a;
+  text-align: center;
+  width: 150rpx;
+  margin: 0 16rpx 14rpx 0;
+}
+
+.st-side { width: 148rpx; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 6rpx 0; }
+.st-vprices { display: flex; flex-direction: row; align-items: stretch; }
+.st-vgroup { display: flex; flex-direction: row; align-items: flex-start; }
+.st-vgroup + .st-vgroup {
+  border-left: 2rpx solid #c3cede;
+  margin-left: 8rpx;
+  padding-left: 8rpx;
+}
+.st-vcol {
+  width: 24rpx;
+  font-size: 22rpx;
+  line-height: 28rpx;
+  text-align: center;
+  word-break: break-all;
+  color: #1a1a1a;
+  margin-right: 6rpx;
+}
+.st-vcol:last-child { margin-right: 0; }
+.st-vnumcol { width: auto; display: flex; flex-direction: column; align-items: center; }
+.st-vnum { font-size: 22rpx; line-height: 28rpx; color: #1a1a1a; white-space: nowrap; }
+.st-vunit { font-size: 22rpx; line-height: 28rpx; text-align: center; word-break: break-all; color: #1a1a1a; width: 24rpx; }
+.st-vgroup.plat .st-vcol, .st-vgroup.plat .st-vnum, .st-vgroup.plat .st-vunit { color: #e64340; }
+.st-ticket { display: flex; flex-direction: column; align-items: center; margin-top: 16rpx; }
+.st-ticket-label { font-size: 26rpx; color: #1a1a1a; }
+.st-ticket-num { font-size: 30rpx; font-weight: 700; color: #1a1a1a; margin-top: 6rpx; }
+.st-ticket.low .st-ticket-label, .st-ticket.low .st-ticket-num { color: #e64340; }
+
+/* ===== 2. 拼车上门 ===== */
+.period-row { display: flex; margin: 8rpx 0 18rpx; }
+.period {
+  flex: 1;
+  margin: 0 8rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  text-align: center;
+  border-radius: 14rpx;
+  background: #eaf1fb;
+  font-size: 28rpx;
+  color: #1a1a1a;
+}
+.period.on { background: #2ba9e8; color: #fff; font-weight: 700; }
+
+.cp-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #e8f1fd;
+  border-radius: 18rpx;
+  padding: 26rpx 28rpx;
+  margin-bottom: 22rpx;
+  overflow: hidden;
+}
+.cp-card.sel { background: #2ba9e8; box-shadow: 0 8rpx 20rpx rgba(43,169,232,.35); }
+.cp-card.sel .cp-route, .cp-card.sel .cp-time, .cp-card.sel .cp-seats-label, .cp-card.sel .cp-seats { color: #fff; }
+.cp-card.sold { background: #cfd6de; }
+.cp-card.sold .cp-route, .cp-card.sold .cp-time, .cp-card.sold .cp-seats-label, .cp-card.sold .cp-seats { color: #6b7480; }
+
+.cp-left { flex: 1; display: flex; flex-direction: column; }
+.cp-route { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
+.cp-time { font-size: 28rpx; color: #1a1a1a; margin-top: 8rpx; }
+.cp-right { display: flex; flex-direction: column; align-items: center; }
+.cp-seats-label { font-size: 26rpx; color: #1a1a1a; }
+.cp-seats { font-size: 30rpx; font-weight: 700; color: #1a1a1a; margin-top: 4rpx; }
+
+.stamp {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  border: 4rpx solid #d33;
+  color: #d33;
+  border-radius: 10rpx;
+  padding: 4rpx 14rpx;
+  font-size: 30rpx;
+  font-weight: 900;
+  letter-spacing: 2rpx;
+  opacity: .85;
+}
+
+/* ===== 3. 包车出发：右侧直接下单 ===== */
+
+/* 包车 tab 顶部通栏：三胶囊 + 地址框（在左右分栏之上） */
+.ch-top { padding: 12rpx 16rpx 0; }
+
+/* 行程条三胶囊 */
+.ch-trip {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 16rpx;
+  gap: 16rpx;
+}
+.ch-chip {
+  flex: 1;
+  background: #eaf1fb;
+  border-radius: 16rpx;
+  padding: 14rpx 12rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.ch-chip.wide { flex: 1.6; }
+.chc-label { font-size: 28rpx; font-weight: 700; color: #1a1a1a; }
+.chc-md { font-size: 26rpx; color: #4a525c; margin-top: 4rpx; }
+.chc-route { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
+.chc-time { font-size: 24rpx; color: #4a525c; margin-top: 4rpx; }
+.chc-price { font-size: 34rpx; font-weight: 700; color: #1a1a1a; }
+
+/* 上下车地址 */
+.ch-addr { background: #e8f1fd; border-radius: 18rpx; padding: 8rpx 24rpx; margin-bottom: 24rpx; }
+.ch-addr-row { display: flex; align-items: center; padding: 22rpx 0; }
+.ch-addr-row + .ch-addr-row { border-top: 2rpx solid #d7e5f7; }
+.ch-addr-city { width: 150rpx; font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
+.ch-addr-text { flex: 1; font-size: 27rpx; color: #4a525c; }
+
+/* 车型卡 */
+.veh-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #e8f1fd;
+  border-radius: 20rpx;
+  padding: 16rpx;
+  margin-bottom: 20rpx;
+  border: 3rpx solid transparent;
+}
+.veh-card.sel { background: #2ba9e8; border-color: #2ba9e8; box-shadow: 0 8rpx 20rpx rgba(43,169,232,.35); }
+.veh-card.sel .veh-name, .veh-card.sel .veh-cl, .veh-card.sel .veh-cv { color: #fff; }
+.veh-card.sel .veh-cv.price { color: #ffd400; }
+
+.car_left { flex: 1; min-width: 0; }
+.car_top { display: flex; align-items: baseline; }
+.veh-name { font-size: 28rpx; font-weight: 700; color: #1a1a1a; }
+.veh-hot { font-size: 26rpx; font-weight: 400; font-style: normal; color: #e64340; margin-left: 10rpx; }
+.veh-card.sel .veh-hot { color: #ffd400; }
+.car_bot { display: flex; align-items: center; margin-top: 14rpx; }
+.veh-col { display: flex; flex-direction: column; margin-right: 30rpx; }
+.veh-cl { font-size: 24rpx; color: #6b7480; }
+.veh-card.sel .veh-cl { color: rgba(255,255,255,.85); }
+.veh-cv { font-size: 28rpx; font-weight: 700; color: #1a1a1a; margin-top: 4rpx; }
+.veh-cv.price { color: #e64340; }
+
+.veh-right { width: 210rpx; flex: none; display: flex; align-items: center; justify-content: flex-end; }
+.car_img { width: 210rpx; height: 110rpx; }
+.veh-tag {
+  position: absolute; top: 8rpx; right: 10rpx;
+  background: #fff; border-radius: 22rpx; padding: 2rpx 16rpx;
+  font-size: 22rpx; color: #6b7480; line-height: 34rpx;
+}
+.veh-card.sel .veh-tag { color: #2ba9e8; }
+
+/* 表单 */
+.form-row { display: flex; align-items: center; margin: 26rpx 0; }
+.form-label { width: 160rpx; flex: none; font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
+.form-input { flex: 1; background: #e8f1fd; border-radius: 14rpx; height: 72rpx; padding: 0 24rpx; font-size: 28rpx; }
+
+.notice { margin: 10rpx 0 20rpx; }
+.notice-line { display: block; font-size: 24rpx; color: #e64340; line-height: 40rpx; }
+
+/* 费用 */
+.fee-row { display: flex; align-items: center; padding: 10rpx 0; }
+.fee-label { font-size: 28rpx; color: #1a1a1a; }
+.fee-val { margin-left: auto; font-size: 28rpx; color: #1a1a1a; }
+.fee-val.link { color: #2ba9e8; }
+.fee-val.price { color: #1a1a1a; font-weight: 700; }
+.fee-val.price.big { font-size: 32rpx; }
+.fee-row.total .fee-label { font-weight: 700; font-size: 32rpx; }
+
+.agree { display: flex; align-items: center; justify-content: center; margin: 22rpx 0 20rpx; }
+.agree-box { width: 34rpx; height: 34rpx; border-radius: 6rpx; border: 2rpx solid #c3cede; display: flex; align-items: center; justify-content: center; font-size: 26rpx; color: #fff; margin-right: 10rpx; }
+.agree-box.on { background: #1aad19; border-color: #1aad19; }
+.agree-text { font-size: 26rpx; color: #1a1a1a; }
+.agree-link { font-size: 26rpx; color: #2ba9e8; font-weight: 700; }
+
+.pay-btn {
+  height: 96rpx; line-height: 96rpx; text-align: center;
+  border-radius: 16rpx;
+  background: #2ba9e8;
+  color: #fff; font-size: 34rpx; font-weight: 600;
+  margin-top: 30rpx;
+}
+.pay-btn:active { opacity: .85; }
+.gap { height: 40rpx; }
+
+/* 右侧悬浮客服圆按钮 */
+.kefu-float {
+  position: absolute;
+  right: -8rpx;
+  top: 360rpx;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,.15);
+  overflow: hidden;
+  border: 2rpx solid #fff;
+}
+.kefu-img { width: 100%; height: 100%; }
+
+/* ===== 4. 跨城跑腿 ===== */
+.er-card {
+  display: flex; align-items: center;
+  background: #e8f1fd; border-radius: 18rpx;
+  padding: 28rpx; margin-bottom: 22rpx;
+  border: 3rpx solid transparent;
+}
+.er-card.sel { border-color: #2ba9e8; background: #dcecfd; }
+.er-left { flex: 1; display: flex; flex-direction: column; }
+.er-route { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
+.er-desc { font-size: 25rpx; color: #6b7480; margin-top: 8rpx; }
+.er-right { display: flex; flex-direction: column; align-items: flex-end; }
+.er-speed { font-size: 24rpx; color: #2ba9e8; }
+.er-price { font-size: 34rpx; font-weight: 700; color: #e64340; margin-top: 6rpx; }

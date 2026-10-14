@@ -1,0 +1,181 @@
+page {
+  background-color: #f5f7fa;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+}
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 60rpx;
+}
+
+/* --- 顶部 Banner --- */
+.banner-section {
+  position: relative;
+  background: linear-gradient(135deg, #5DE8E0 0%, #1B6FE0 100%);
+  padding: 50rpx 40rpx 40rpx;
+  box-sizing: border-box;
+  border-radius: 0 0 24rpx 24rpx;
+}
+
+.banner-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-title {
+  font-size: 56rpx;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 12rpx;
+  letter-spacing: 4rpx;
+}
+
+.sub-title {
+  font-size: 26rpx;
+  color: #1a1a1a;
+  margin-bottom: 36rpx;
+  letter-spacing: 2rpx;
+  font-weight: 500;
+}
+
+.service-tags {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  color: #1a1a1a;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+
+.tag-item {
+  font-weight: 600;
+}
+
+.divider {
+  width: 2rpx;
+  height: 26rpx;
+  background-color: #1a1a1a;
+  margin: 0 16rpx;
+  opacity: 0.7;
+}
+
+/* --- 表单卡片 --- */
+.form-card {
+  background-color: #fff;
+  margin: 24rpx;
+  border-radius: 16rpx;
+  padding: 10rpx 32rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  min-height: 110rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.form-row:last-child {
+  border-bottom: none;
+}
+
+.form-label {
+  width: 160rpx;
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.form-input {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+  padding: 20rpx 0;
+}
+
+.form-picker {
+  flex: 1;
+}
+
+.picker-text {
+  font-size: 30rpx;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+}
+
+.picker-text.placeholder {
+  color: #999;
+}
+
+.placeholder {
+  color: #999;
+  font-size: 30rpx;
+}
+
+.arrow {
+  color: #bbb;
+  font-size: 28rpx;
+  margin-left: 16rpx;
+}
+
+/* --- 提交按钮 --- */
+.submit-btn {
+  margin: 60rpx 40rpx 0;
+  height: 96rpx;
+  border-radius: 48rpx;
+  background: linear-gradient(135deg, #5DE8E0 0%, #1B6FE0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(27, 111, 224, 0.3);
+}
+
+.submit-text {
+  color: #fff;
+  font-size: 34rpx;
+  font-weight: 600;
+  letter-spacing: 4rpx;
+}
+
+/* --- 底部两个按钮 --- */
+.bottom-actions {
+  display: flex;
+  justify-content: space-between;
+  margin: 80rpx 40rpx 0;
+  gap: 32rpx;
+}
+
+.action-btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-btn {
+  background: linear-gradient(135deg, #5DE8E0 0%, #1B6FE0 100%);
+}
+
+.back-text {
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+}
+
+.order-btn {
+  background: linear-gradient(135deg, #5DE8E0 0%, #1B6FE0 100%);
+}
+
+.order-text {
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+}

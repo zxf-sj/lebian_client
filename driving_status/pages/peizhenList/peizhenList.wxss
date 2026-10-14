@@ -1,21 +1,23 @@
-/* pages/index/index.wxss */
+/* 陪诊首页 - 匹配设计稿蓝青风格 */
 page {
-  background-color: #f7f8fa;
+  background-color: #f5f7fa;
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
 }
 
 .container {
   padding-bottom: 40rpx;
+  min-height: 100vh;
 }
 
-/* --- 顶部 Banner --- */
+/* --- 顶部 Banner：蓝青渐变 --- */
 .banner-section {
   position: relative;
-  height: 360rpx;
-  background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%); /* 浅绿色背景 */
+  height: 380rpx;
+  background: linear-gradient(135deg, #5DE8E0 0%, #1B6FE0 100%);
   overflow: hidden;
-  padding: 40rpx 30rpx;
+  padding: 50rpx 40rpx 30rpx;
   box-sizing: border-box;
+  border-radius: 0 0 24rpx 24rpx;
 }
 
 .banner-content {
@@ -26,75 +28,68 @@ page {
 }
 
 .main-title {
-  font-size: 44rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10rpx;
+  font-size: 56rpx;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 12rpx;
+  letter-spacing: 4rpx;
 }
 
 .sub-title {
-  font-size: 24rpx;
-  color: #555;
-  margin-bottom: 30rpx;
+  font-size: 26rpx;
+  color: #1a1a1a;
+  margin-bottom: 36rpx;
   letter-spacing: 2rpx;
+  font-weight: 500;
 }
 
 .service-tags {
   display: flex;
   align-items: center;
-  font-size: 24rpx;
-  color: #333;
-  margin-bottom: 10rpx;
-}
-
-.tag-item {
+  font-size: 26rpx;
+  color: #1a1a1a;
+  margin-bottom: 12rpx;
   font-weight: 500;
 }
 
+.tag-item {
+  font-weight: 600;
+}
+
 .divider {
-  width: 1rpx;
-  height: 24rpx;
-  background-color: #999;
-  margin: 0 15rpx;
+  width: 2rpx;
+  height: 26rpx;
+  background-color: #1a1a1a;
+  margin: 0 16rpx;
+  opacity: 0.7;
 }
 
-.doctor-img {
-  position: absolute;
-  right: -20rpx;
-  bottom: 0;
-  width: 260rpx;
-  height: 300rpx;
-  z-index: 1;
-  opacity: 0.9;
-}
-
-/* --- 核心卖点栏 --- */
-
+/* --- 通知栏 --- */
 .notice-bar {
   display: flex;
   align-items: center;
   background-color: #fff8e6;
-  padding: 0 20rpx;
-  height: 70rpx;
-  border-radius: 8rpx;
-  margin: 20rpx;
+  padding: 0 24rpx;
+  height: 72rpx;
+  border-radius: 12rpx;
+  margin: 24rpx;
 }
 
 .notice-icon {
   font-size: 32rpx;
-  margin-right: 15rpx;
+  margin-right: 16rpx;
   flex-shrink: 0;
 }
 
 .notice-swiper {
   flex: 1;
-  height: 70rpx; /* 高度必须与父容器一致 */
+  height: 72rpx;
 }
 
 .notice-item {
-  height: 70rpx;
-  line-height: 70rpx;
-  font-size: 28rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  font-size: 26rpx;
   color: #ff9900;
   white-space: nowrap;
   overflow: hidden;
@@ -108,26 +103,28 @@ page {
 
 .grid-row {
   display: flex;
-  height: 320rpx;
-  margin-bottom: 20rpx;
+  height: 340rpx;
+  margin-bottom: 24rpx;
 }
 
 .card {
-  border-radius: 16rpx;
-  padding: 30rpx;
+  border-radius: 20rpx;
+  padding: 36rpx;
   box-sizing: border-box;
   position: relative;
   color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  overflow: hidden;
 }
 
-/* 左侧大卡片 */
+/* 左侧大卡片：蓝青渐变 */
 .card-large {
-  flex: 1.8; /* 占比宽一点 */
+  flex: 1.8;
   margin-right: 20rpx;
-  background: linear-gradient(180deg, #6dd5ed 0%, #2193b0 100%); /* 蓝色渐变 */
+  background: linear-gradient(160deg, #5BE0E0 0%, #2B7CE9 100%);
+  box-shadow: 0 8rpx 24rpx rgba(43, 124, 233, 0.25);
 }
 
 /* 右侧列容器 */
@@ -138,45 +135,52 @@ page {
   justify-content: space-between;
 }
 
-.card-small {
-  height: 150rpx; /* 大概一半高度减去间距 */
-  background: linear-gradient(135deg, #ff7878 0%, #78ffd6 100%); /* 默认绿色 */
+/* 辅助就医：粉红到浅绿渐变 */
+.card-small.green-gradient {
+  height: 160rpx;
+  background: linear-gradient(135deg, #FF8A8A 0%, #8AE6B5 100%);
+  box-shadow: 0 6rpx 18rpx rgba(255, 138, 138, 0.2);
 }
 
+/* 诊前咨询：橙黄渐变 */
 .card-small.orange-gradient {
-  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); /* 橙色 */
+  height: 160rpx;
+  background: linear-gradient(135deg, #FFC94D 0%, #FF8A65 100%);
+  box-shadow: 0 6rpx 18rpx rgba(255, 160, 77, 0.2);
 }
 
 .card-title {
-  font-size: 34rpx;
-  font-weight: bold;
+  font-size: 36rpx;
+  font-weight: 700;
   display: block;
-  margin-bottom: 10rpx;
+  margin-bottom: 12rpx;
 }
 
 .card-desc {
-  font-size: 22rpx;
-  opacity: 0.9;
-  white-space: pre-line; /* 支持换行 */
+  font-size: 24rpx;
+  opacity: 0.95;
+  white-space: pre-line;
+  line-height: 1.6;
 }
 
 .card-desc-sm {
-  font-size: 20rpx;
-  opacity: 0.9;
+  font-size: 22rpx;
+  opacity: 0.95;
+  margin-top: 8rpx;
 }
 
 .card-icon-placeholder {
   position: absolute;
-  right: 20rpx;
-  bottom: 20rpx;
+  right: 24rpx;
+  bottom: 24rpx;
   font-size: 80rpx;
-  opacity: 0.3;
+  opacity: 0.25;
 }
 .card-icon-placeholder.small {
-  font-size: 50rpx;
+  font-size: 52rpx;
 }
 
-/* --- 下方列表 --- */
+/* --- 下方列表：2列3行 --- */
 .grid-list {
   display: flex;
   flex-wrap: wrap;
@@ -184,16 +188,16 @@ page {
 }
 
 .list-item {
-  width: 48.5%; /* 两列布局 */
+  width: 48.5%;
   background-color: #fff;
-  border-radius: 12rpx;
-  padding: 30rpx 20rpx;
+  border-radius: 16rpx;
+  padding: 32rpx 24rpx;
   box-sizing: border-box;
   margin-bottom: 20rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.02);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 .list-info {
@@ -203,17 +207,22 @@ page {
 
 .list-title {
   font-size: 30rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 8rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 10rpx;
 }
 
 .list-desc {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: #999;
 }
 
 .list-icon {
-  font-size: 50rpx;
-  color: #e0e0e0; /* 浅灰色图标背景感 */
+  width: 64rpx;
+  height: 64rpx;
+  flex-shrink: 0;
+  font-size: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

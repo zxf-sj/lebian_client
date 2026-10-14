@@ -1,0 +1,12 @@
+<!--pages/city/city.wxml-->
+<view class="page">
+  <view class="grid">
+    <view
+      class="item {{item === selected ? 'on' : ''}}"
+      wx:for="{{cities}}"
+      wx:key="*this"
+      bindtap="onPick"
+      data-city="{{item}}"
+    >{{item}}</view>
+  </view>
+</view>

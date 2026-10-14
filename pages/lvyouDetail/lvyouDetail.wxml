@@ -1,0 +1,58 @@
+<view class="page">
+  <!-- 顶部水墨头图 -->
+  <view class="hero">
+    <image class="hero-bg" src="/assets/images/lvyou2.png" mode="aspectFill"/>
+    <view class="hero-mask"></view>
+    <view class="hero-title">{{route.title}}</view>
+  </view>
+
+  <!-- 基本信息卡 -->
+  <view class="card">
+    <view class="pills">
+      <text class="pill" wx:for="{{route.tags}}" wx:key="*this">{{item}}</text>
+    </view>
+    <view class="meta">
+      <text class="meta-item">📍 {{route.from}} → {{route.to}}</text>
+      <text class="meta-item">🗓 {{route.days}}天</text>
+    </view>
+    <view class="price-row">
+      <view class="price-box">
+        <text class="price-label">成人价</text>
+        <text class="price-num">¥{{route.price}}</text>
+        <text class="price-unit">/人</text>
+      </view>
+      <view class="price-box">
+        <text class="price-label">儿童价</text>
+        <text class="price-num">¥{{route.price}}</text>
+        <text class="price-unit">/人</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 行程安排 -->
+  <view class="card">
+    <view class="card-title">行程安排</view>
+    <view class="timeline">
+      <view class="tl-item" wx:for="{{route.itinerary}}" wx:key="day">
+        <view class="tl-dot {{index === 0 ? 'blue' : 'red'}}"></view>
+        <view class="tl-line" wx:if="{{index < route.itinerary.length - 1}}"></view>
+        <view class="tl-text"><text class="tl-day">{{item.day}}：</text>{{item.text}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 费用说明 -->
+  <view class="card">
+    <view class="card-title">费用说明</view>
+    <view class="sub-title">费用包含</view>
+    <view class="bullet" wx:for="{{route.included}}" wx:key="*this">• {{item}}</view>
+    <view class="sub-title">费用不含</view>
+    <view class="bullet" wx:for="{{route.excluded}}" wx:key="*this">• {{item}}</view>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="bottom-bar">
+    <view class="btn primary" bindtap="onBook">立即预订</view>
+    <view class="btn ghost" bindtap="onBack">返 回</view>
+  </view>
+</view>

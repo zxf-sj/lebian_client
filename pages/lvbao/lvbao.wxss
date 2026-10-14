@@ -1,0 +1,322 @@
+page {
+  background: #f5f6f8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+}
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 60rpx;
+}
+
+/* ---------- Banner ---------- */
+.banner {
+  position: relative;
+  height: 280rpx;
+  background: linear-gradient(135deg, #FFD89B 0%, #FF9A56 100%);
+  border-radius: 0 0 24rpx 24rpx;
+  padding: 40rpx 40rpx;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.banner-road {
+  position: relative;
+  width: 140rpx;
+  height: 180rpx;
+  flex-shrink: 0;
+}
+
+.road-sign {
+  position: absolute;
+  padding: 10rpx 20rpx;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.15);
+}
+
+.road-top {
+  top: 0;
+  left: 0;
+  background: #4ECDC4;
+  transform: rotate(-8deg);
+}
+
+.road-bottom {
+  bottom: 10rpx;
+  left: 10rpx;
+  background: #FFB347;
+  transform: rotate(-8deg);
+}
+
+.banner-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 20rpx;
+}
+
+.banner-title {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: 2rpx;
+}
+
+.banner-sub {
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: #666;
+  letter-spacing: 2rpx;
+}
+
+.banner-globe {
+  font-size: 80rpx;
+  flex-shrink: 0;
+}
+
+/* ---------- Tab 切换 ---------- */
+.tab-bar {
+  display: flex;
+  gap: 24rpx;
+  padding: 30rpx 32rpx 10rpx;
+}
+
+.tab-item {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  color: #666;
+  background: #FFE4C4;
+  font-weight: 500;
+}
+
+.tab-item.on {
+  background: linear-gradient(135deg, #FFB347 0%, #FF8C42 100%);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 6rpx 18rpx rgba(255, 140, 66, 0.3);
+}
+
+/* ---------- 表单 ---------- */
+.form-card {
+  margin: 24rpx 32rpx 0;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 10rpx 32rpx;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  min-height: 100rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.form-row:last-child {
+  border-bottom: none;
+}
+
+.form-label {
+  width: 160rpx;
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.form-input {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+  padding: 20rpx 0;
+}
+
+.ph {
+  color: #999;
+  font-size: 28rpx;
+}
+
+.picker-value {
+  font-size: 28rpx;
+  color: #333;
+  padding: 10rpx 24rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+}
+
+.deposit-value {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+/* ---------- 区块标题 ---------- */
+.section-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+  padding: 30rpx 32rpx 20rpx;
+}
+
+/* ---------- 车型卡片 ---------- */
+.car-card {
+  margin: 0 32rpx 20rpx;
+  background: linear-gradient(135deg, #FFE4B5 0%, #FFD89B 100%);
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 4rpx solid transparent;
+}
+
+.car-card.selected {
+  border-color: #FF8C42;
+  box-shadow: 0 8rpx 24rpx rgba(255, 140, 66, 0.25);
+}
+
+.car-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.car-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.car-price {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+}
+
+.price-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.price-value {
+  font-size: 36rpx;
+  color: #FF4D4F;
+  font-weight: 700;
+}
+
+.car-img-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.car-emoji {
+  font-size: 100rpx;
+}
+
+.car-tag {
+  margin-top: 8rpx;
+  padding: 6rpx 20rpx;
+  background: #fff;
+  color: #FF8C42;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+/* ---------- 行程类型单选 ---------- */
+.trip-type {
+  display: flex;
+  gap: 60rpx;
+  padding: 0 32rpx 20rpx;
+}
+
+.radio-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.radio {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  border: 2rpx solid #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: #fff;
+}
+
+.radio-wrap.on .radio {
+  background: #52C41A;
+  border-color: #52C41A;
+}
+
+.radio-label {
+  font-size: 30rpx;
+  color: #333;
+}
+
+/* ---------- 提交按钮 ---------- */
+.submit-btn {
+  margin: 40rpx 32rpx 0;
+  height: 96rpx;
+  border-radius: 48rpx;
+  background: linear-gradient(135deg, #FFB347 0%, #FF8C42 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(255, 140, 66, 0.35);
+}
+
+.submit-text {
+  color: #fff;
+  font-size: 34rpx;
+  font-weight: 600;
+  letter-spacing: 4rpx;
+}
+
+/* ---------- 底部说明 ---------- */
+.notice-text {
+  margin: 30rpx 32rpx 0;
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.6;
+}
+
+/* ---------- 底部两个按钮 ---------- */
+.bottom-actions {
+  display: flex;
+  gap: 24rpx;
+  margin: 40rpx 32rpx 0;
+}
+
+.bottom-btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.home-btn {
+  background: linear-gradient(135deg, #FFB347 0%, #FF8C42 100%);
+  color: #fff;
+}
+
+.order-btn {
+  background: #FFE4C4;
+  color: #666;
+}
