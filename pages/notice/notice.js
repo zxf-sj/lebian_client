@@ -60,10 +60,7 @@ Page({
     })
   },
   toDetail(e) {
-    let id = e.currentTarget.dataset.id;
-    wx.navigateTo({
-      url: '/pages/noticeDetail/noticeDetail?id='+id,
-    })
+    // 公告详情页 noticeDetail 已下线，原跳转已移除
   },
   loadMore: function() {
     wx.showLoading({

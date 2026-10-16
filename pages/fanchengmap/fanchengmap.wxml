@@ -1,4 +1,4 @@
-<!--pages/pingche2/pingche2.wxml-->
+<!--pages/fanchengmap/fanchengmap.wxml-->
 <view class="page">
   <text style="margin-left: 30rpx;color: #328944;">去程：</text>
   <view class="journey">

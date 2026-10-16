@@ -1,4 +1,4 @@
-/* pages/pingche2/pingche2.wxss */
+/* pages/fanchengmap/fanchengmap.wxss */
 @import '../../app.wxss';
 
 .page {

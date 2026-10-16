@@ -1,4 +1,4 @@
-// pages/pingche2/pingche2.js
+// pages/fanchengmap/fanchengmap.js
 const throttle = require('../../utils/throttle.js').throttle;
 const BASE_URL = require("../../utils/BASE_URL");
 const debounce = require('../../utils/debounce');

@@ -126,18 +126,7 @@ Page({
       })
     }
   },
-  //切换城市
-  chooseCity() {
-    if(this.data.fixedLine){
-      wx.navigateTo({
-        url: "/pages/searchCity/searchCity?urlFrom=1&type=fixedLine",
-      })
-    }else{
-      wx.navigateTo({
-        url: "/pages/searchCity/searchCity?urlFrom=1",
-      })
-    }
-  },
+  // 原"切换城市"跳转的 searchCity 页已下线，方法整体移除
   bindArea(e){
     var area = e.currentTarget.dataset.area;
     let that = this;

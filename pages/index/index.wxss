@@ -168,6 +168,19 @@ page {
   color: #fff;
 }
 
+/* 热门线路：改为靠左排列 + 固定间距，最后一行不足 3 个时不会一左一右 */
+.route-list.hot {
+  justify-content: flex-start;
+}
+
+.route-list.hot .route-chip {
+  margin-right: 16rpx;
+}
+
+.route-list.hot .route-chip:nth-child(3n) {
+  margin-right: 0;
+}
+
 .route-list.hot .route-chip:nth-last-child(-n+3) {
   margin-bottom: 0;
 }

@@ -65,10 +65,10 @@
     </view>
     <view class="route-list hot">
       <view class="route-chip {{selectedKey=='hot-'+index?'selected':''}}" wx:for="{{hotRoutes}}" wx:key="index" bindtap="onChipTap" data-route="{{item}}" data-group="hot" data-index="{{index}}">
-        <text class="chip-route">{{item.StatingLocation_Name}}→{{item.EndLocation_Name}}</text>
+        <text class="chip-route">{{item.startName}}→{{item.endName}}</text>
         <view class="chip-price">
           <text class="chip-label">最低</text>
-          <text class="chip-amount">¥{{item.TicketPrice}}</text>
+          <text class="chip-amount">¥{{item.minPrice}}</text>
         </view>
       </view>
     </view>

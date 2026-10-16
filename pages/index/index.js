@@ -49,12 +49,8 @@ getLineList() {
   let _this = this;
   
   wx.request({
-    url: baseUrl + '/Api/DispatchMobile/getPassengerLine',
-    data: {
-      page: '1',
-      limit: '10',
-      city:''
-    },
+    url: baseUrl + '/api/BusMobile/GetHotLineCityList',
+    data: {},
     method: "GET",
     success: (res) => {
       

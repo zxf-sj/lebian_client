@@ -516,18 +516,10 @@ Page({
           wx.setStorageSync('endInfo2', newStarInfo);
         }
         wx.hideLoading()
-        // wx.setStorageSync('mapBack','mapBack');
-        if (that.data.type == 'pc') {
-          wx.reLaunch({
-            url: '/pages/pingche2/pingche2',
-          })
-        } else if (that.data.type == 'bc') {
+        // 原 type=='pc' 跳转的 pingche2、type=='sh' 跳转的 shaohuo 页已下线，分支移除
+        if (that.data.type == 'bc') {
           wx.reLaunch({
             url: '/user_center/pages/baoche/baoche',
-          })
-        } else if (that.data.type == 'sh') {
-          wx.reLaunch({
-            url: '/user_center/pages/shaohuo/shaohuo',
           })
         } else if (that.data.type == 'ly' ) {
           if (that.data.direction == 'starting') {

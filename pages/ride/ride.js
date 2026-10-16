@@ -293,16 +293,26 @@ Page({
   },
 
   onCharterPay() {
-    if (!/^1\d{10}$/.test(this.data.phone)) {
-      wx.showToast({ title: '请输入正确的手机号', icon: 'none' });
-      return;
-    }
-    if (!this.data.agree) {
-      wx.showToast({ title: '请先同意服务条款', icon: 'none' });
-      return;
-    }
-    const veh = this.data.charterVeh[this.data.vehSel];
-    wx.showToast({ title: `${veh.name} ¥${veh.price}`, icon: 'none' });
+    // if (!/^1\d{10}$/.test(this.data.phone)) {
+    //   wx.showToast({ title: '请输入正确的手机号', icon: 'none' });
+    //   return;
+    // }
+    // if (!this.data.agree) {
+    //   wx.showToast({ title: '请先同意服务条款', icon: 'none' });
+    //   return;
+    // }
+    // const veh = this.data.charterVeh[this.data.vehSel];
+    // wx.showToast({ title: `${veh.name} ¥${veh.price}`, icon: 'none' });
+    wx.navigateToMiniProgram({
+      appId: 'wx3cbe919f36710d1c',
+      path: '/pages/CQPApplet/index?tn=548548590630064569907',
+      extraData: {
+        foo: 'bar'
+      },
+      success(res) {
+        // 打开成功
+      }
+    })
   },
 
  

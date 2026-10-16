@@ -1,6 +1,6 @@
 <view class="container">
   <view class="sectionBox">
-    <view class="head" bindtap="goMy">
+    <view class="head">
       <view wx:if="{{avatar}}">
         <image class="head_img" src="{{avatar}}"></image>
       </view>

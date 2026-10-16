@@ -91,20 +91,13 @@ Page({
       url: '/user_center/pages/renzheng/renzheng',
     })
   },
-  goMy() {
-    wx.navigateTo({
-      url: '/user_center/pages/editInfo/editInfo',
-    })
-  },
   toAddUser() {
     wx.navigateTo({
       url: '/user_center/pages/userList/userList',
     })
   },
   goYue() {
-    wx.navigateTo({
-      url: '/user_center/pages/yue/yue',
-    })
+    // 余额页 yue 已下线，原跳转已移除
   },
   goCoupon() {
     wx.navigateTo({

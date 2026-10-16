@@ -631,10 +631,7 @@ Page({
     }
   },
   choosePerson(e){
-    var type = e.currentTarget.dataset.type;
-    wx.navigateTo({
-      url: '/driving_status/pages/choosePerson/choosePerson?type='+type
-    })
+    // 人员选择页已下线，原跳转已移除
   },
   getPriceInfo() {
     let that = this;
