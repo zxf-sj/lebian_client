@@ -152,3 +152,4 @@
   </view>
   <button class="submit-btn" bindtap="submitOrder">提交订单</button>
 </view>
+<kefu-float />

@@ -2,5 +2,8 @@
   "backgroundTextStyle": "dark",
   "navigationBarBackgroundColor": "#fff",
   "navigationBarTitleText": "优惠券中心",
-  "navigationBarTextStyle": "black"
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "kefu-float": "/components/kefu-float/kefu-float"
+  }
 }

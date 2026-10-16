@@ -42,3 +42,4 @@
   <button class="u-reset-button pay-btn" bindtap="confirmPay">确认支付{{ygprice}}元</button>
 </view>
 <daohang></daohang>
+<kefu-float />

@@ -1,1 +1,6 @@
-{"navigationBarTitleText": "实名认证"}
+{
+  "navigationBarTitleText": "实名认证",
+  "usingComponents": {
+    "kefu-float": "/components/kefu-float/kefu-float"
+  }
+}

@@ -47,7 +47,8 @@
     </view>
   
   <view wx:if="{{!listData && isLoging}}" class="bg">
-    <image class="bg-img" src="../../assets/images/no_list.png"></image>
+    <image class="bg-img" src="/assets/images/no_list.png"></image>
     <view class="bg-cont">近期没有订单记录~</view>
   </view>
 </view>
+<kefu-float />

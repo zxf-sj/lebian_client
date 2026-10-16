@@ -1,5 +1,5 @@
 {
   "usingComponents": {
-    
+    "kefu-float": "/components/kefu-float/kefu-float"
   }
 }

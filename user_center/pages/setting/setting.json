@@ -4,6 +4,7 @@
   "navigationBarTitleText": "设置",
   "navigationBarTextStyle": "black",
   "usingComponents": {
-    "daohang":"/components/daohang/daohang"
+    "daohang": "/components/daohang/daohang",
+    "kefu-float": "/components/kefu-float/kefu-float"
   }
 }

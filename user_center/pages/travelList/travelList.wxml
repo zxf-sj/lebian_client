@@ -331,7 +331,7 @@
     </view>
   </scroll-view>
   <view wx:if="{{!listData && isLoging}}" class="bg">
-    <image class="bg-img" src="../../assets/images/no_list.png"></image>
+    <image class="bg-img" src="/assets/images/no_list.png"></image>
     <view class="bg-cont">近期没有订单记录~</view>
   </view>
 </view>
@@ -354,3 +354,4 @@
 </view>
 <custom-input-modal show="{{modalShow}}" title="取消订单并申请退款" placeholder="请输入退款原因" prompt="{{prompt}}" value="{{modalValue}}" bind:confirm="onConfirm" bind:cancel="onCancel" />
 <tabbar current="orders"></tabbar>
+<kefu-float />

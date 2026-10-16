@@ -19,3 +19,4 @@
   </view>
   <button class="btn" style="background:{{item.isExchange == 0 ? '#ccc' : ''}}" bindtap="exchange">{{btnText}}</button>
 </view>
+<kefu-float />

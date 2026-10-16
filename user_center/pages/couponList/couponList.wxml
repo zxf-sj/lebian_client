@@ -24,7 +24,7 @@
 
             <view class="btm" >长期有效</view>
             <view class="tag">
-              <image src="../../assets/images/youhuiquan_biaoqian01.png"></image>
+              <image src="/assets/images/youhuiquan_biaoqian01.png"></image>
               <view class="num">1张</view>
             </view>
           </view>
@@ -33,8 +33,9 @@
     </view>
   </scroll-view>
   <view wx:else class="bg">
-    <image class="bg-img" src="../../assets/images/no_list.png"></image>
+    <image class="bg-img" src="/assets/images/no_list.png"></image>
     <view class="bg-cont">暂无优惠券~</view>
   </view>
 </view>
 <daohang></daohang>
+<kefu-float />

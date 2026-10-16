@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "订单支付",
   "usingComponents": {
-    "daohang":"/components/daohang/daohang"
+    "daohang": "/components/daohang/daohang",
+    "kefu-float": "/components/kefu-float/kefu-float"
   }
 }

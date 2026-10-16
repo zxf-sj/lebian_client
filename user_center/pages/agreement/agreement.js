@@ -22,7 +22,7 @@ Page({
     // 4.target为Page对象, 一般为this(必填)
     // 5.imagePadding为当图片自适应是左右的单一padding(默认为0, 可选)
     var content = res.data.AgreeOn;
-    const WxParses = require('../wxParse/wxParse.js');
+    const WxParses = require('../../../components/wxParse/wxParse.js');
     WxParses.setImageDomain(BASE_URL);
     WxParses.wxParse('content', 'html', content, that, 5);
     }, err => {

@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "发票",
-  "usingComponents": {}
+  "usingComponents": {
+    "kefu-float": "/components/kefu-float/kefu-float"
+  }
 }

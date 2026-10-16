@@ -22,7 +22,7 @@
         </view>
         <view class="btm">{{item.DeadDate}}</view>
         <view class="tag">
-          <image src="../../assets/images/youhuiquan_biaoqian01.png"></image>
+          <image src="/assets/images/youhuiquan_biaoqian01.png"></image>
           <view class="num">{{item.GetNum}}张</view>
         </view>
       </view>
@@ -33,3 +33,4 @@
     <image mode="widthFix" src="{{item.ImgPath}}" />
   </view>
 </view>
+<kefu-float />

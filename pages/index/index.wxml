@@ -76,3 +76,4 @@
 
   <tabbar current="home"></tabbar>
 </view>
+<kefu-float />

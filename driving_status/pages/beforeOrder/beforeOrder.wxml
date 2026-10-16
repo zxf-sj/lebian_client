@@ -204,7 +204,7 @@
     </view>
     </view>
   </view> -->
-  <import src="../wxParse/wxParse.wxml"/>
+  <import src="/components/wxParse/wxParse.wxml"/>
   <view class="mask" catchtouchmove="true" wx:if="{{isshow}}">
     <view class="box_3">
       <scroll-view scroll-y="true" style="height:70vh;">
@@ -217,3 +217,4 @@
     </view>
   </view>
 </view>
+<kefu-float />

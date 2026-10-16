@@ -139,3 +139,4 @@
     bind:confirm="onConfirm"
     bind:cancel="onCancel"
   />
+<kefu-float />

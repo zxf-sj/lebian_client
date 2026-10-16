@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "计费规则"
+  "navigationBarTitleText": "计费规则",
+  "usingComponents": {
+    "kefu-float": "/components/kefu-float/kefu-float"
+  }
 }

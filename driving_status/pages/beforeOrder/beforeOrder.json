@@ -1,11 +1,11 @@
 {
   "usingComponents": {
-    "slideCoupon":"/components/slideCoupon/slideCoupon",
-    "daohang":"/components/daohang/daohang"
+    "slideCoupon": "/components/slideCoupon/slideCoupon",
+    "daohang": "/components/daohang/daohang",
+    "kefu-float": "/components/kefu-float/kefu-float"
   },
-    "backgroundTextStyle":"dark",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "随车捎货",
-    "navigationBarTextStyle":"black"
-  
+  "backgroundTextStyle": "dark",
+  "navigationBarBackgroundColor": "#fff",
+  "navigationBarTitleText": "随车捎货",
+  "navigationBarTextStyle": "black"
 }

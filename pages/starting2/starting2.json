@@ -1,4 +1,6 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "kefu-float": "/components/kefu-float/kefu-float"
+  },
   "navigationBarTitleText": "上车地点"
 }

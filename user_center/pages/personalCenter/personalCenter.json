@@ -1,10 +1,10 @@
-
-  {
-    "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "个人中心",
-    "navigationBarTextStyle": "black",
-    "usingComponents": {
-      "tabbar": "/components/tabbar/tabbar"
-    }
+{
+  "backgroundTextStyle": "dark",
+  "navigationBarBackgroundColor": "#fff",
+  "navigationBarTitleText": "个人中心",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "tabbar": "/components/tabbar/tabbar",
+    "kefu-float": "/components/kefu-float/kefu-float"
+  }
 }

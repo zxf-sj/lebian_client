@@ -33,5 +33,4 @@
 					<button class="loginBtn"  bindtap="loginOut">退出登录</button>
 		</view>
   </view>
-
-
+<kefu-float />

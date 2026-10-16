@@ -4,6 +4,7 @@
   "navigationBarTitleText": "费用明细",
   "navigationBarTextStyle": "black",
   "usingComponents": {
-    "custom-input-modal": "/components/custom-input-modal/custom-input-modal"
+    "custom-input-modal": "/components/custom-input-modal/custom-input-modal",
+    "kefu-float": "/components/kefu-float/kefu-float"
   }
 }

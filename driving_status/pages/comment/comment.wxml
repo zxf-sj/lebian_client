@@ -47,3 +47,4 @@
 </view>
 <!--提交评价-->
 <button class='btn' bindtap='handleBtn'>提交评价</button>
+<kefu-float />

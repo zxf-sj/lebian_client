@@ -98,9 +98,7 @@
     "navigationBarTextStyle": "black"
   },
   "sitemapLocation": "sitemap.json",
-  "plugins": {
-   
-  },
+  "plugins": {},
   "requiredPrivateInfos": [
     "getLocation"
   ],

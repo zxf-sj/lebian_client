@@ -1,0 +1,19 @@
+.kf {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, .18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+/* 非拖拽时带过渡，松手吸边动画生效 */
+.kf.snap { transition: left .28s ease, top .28s ease; }
+/* 拖拽期间关闭过渡，跟手 */
+.kf.drag { transition: none; }
+.kf-img { width: 60rpx; height: 60rpx; }

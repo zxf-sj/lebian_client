@@ -32,3 +32,4 @@
   <button class='btns' form-type='submit'>提交验证</button>
 </view>
 </form>
+<kefu-float />

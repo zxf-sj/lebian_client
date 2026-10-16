@@ -1,0 +1,9 @@
+<!--components/kefu-float 悬浮客服：可拖拽、松手吸边、点击拨号-->
+<view class="kf {{dragging ? 'drag' : 'snap'}}"
+      style="left:{{x}}px;top:{{y}}px;"
+      bindtouchstart="onStart"
+      bindtouchmove="onMove"
+      bindtouchend="onEnd"
+      bindtap="onTap">
+  <image class="kf-img" src="/assets/images/kefu.png" mode="aspectFit"></image>
+</view>

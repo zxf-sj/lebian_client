@@ -21,3 +21,4 @@
     </scroll-view>
 	</block>
 </view>
+<kefu-float />

@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "修改下车地点"
+  "navigationBarTitleText": "修改下车地点",
+  "usingComponents": {
+    "kefu-float": "/components/kefu-float/kefu-float"
+  }
 }

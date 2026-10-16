@@ -84,3 +84,4 @@
     </view>
     <view class="mini-btn goinvoice" type="primary"  bind:tap="goinvoice" style="{{hasSelection?'background-color:#fd9153;':'background-color:#cccccc;'}}">下一步</view>
   </view>
+<kefu-float />

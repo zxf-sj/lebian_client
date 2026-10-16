@@ -81,3 +81,4 @@
   <view class="tips">注意乘车安全，请确认车主信息</view>
 
 </view>
+<kefu-float />

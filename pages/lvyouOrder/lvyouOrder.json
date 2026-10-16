@@ -1,1 +1,6 @@
-{ "navigationBarTitleText": "填写订单" }
+{
+  "navigationBarTitleText": "填写订单",
+  "usingComponents": {
+    "kefu-float": "/components/kefu-float/kefu-float"
+  }
+}

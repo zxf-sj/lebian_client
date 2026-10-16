@@ -5,7 +5,7 @@
         <image class="head_img" src="{{avatar}}"></image>
       </view>
       <view wx:else>
-        <image class="head_img" src="/user_center/assets/images/touxiang.png"></image>
+        <image class="head_img" src="/assets/images/touxiang.png"></image>
       </view>
     </view>
     <text class="head_nick">{{nickName}}</text>
@@ -36,7 +36,7 @@
           </a>
           <a class="weui-cell weui-cell_active weui-cell_access weui-cell_example" bindtap="goYue" wx:if="{{IsBalance=='100004-0000010001'}}">
             <view class="weui-cell__hd">
-              <image src="../../assets/images/yue.png" style="width: 20px; height: 20px; margin-right: 16px; display: block;"></image>
+              <image src="/user_center/assets/images/uc_yue.png" style="width: 20px; height: 20px; margin-right: 16px; display: block;"></image>
             </view>
             <view class="weui-cell__bd weui-cell_primary">
               <view class="font-28">余额管理</view>
@@ -140,3 +140,4 @@
   </view>
 </view>
 <tabbar current="mine"></tabbar>
+<kefu-float />

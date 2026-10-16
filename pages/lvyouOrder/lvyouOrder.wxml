@@ -55,3 +55,4 @@
     <view class="btn ghost" bindtap="onBack">返 回</view>
   </view>
 </view>
+<kefu-float />

@@ -1,8 +1,9 @@
 {
   "usingComponents": {
-    "information":"/components/information/information",
-    "distanceNav":"/components/distanceNav2/distanceNav2",
-    "remarks":"/components/remarks/remarks"
+    "information": "/components/information/information",
+    "distanceNav": "/components/distanceNav2/distanceNav2",
+    "remarks": "/components/remarks/remarks",
+    "kefu-float": "/components/kefu-float/kefu-float"
   },
   "navigationBarTitleText": "乐遍包车"
 }

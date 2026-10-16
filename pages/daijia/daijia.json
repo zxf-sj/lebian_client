@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "城际代驾",
-  "usingComponents": {}
+  "usingComponents": {
+    "kefu-float": "/components/kefu-float/kefu-float"
+  }
 }

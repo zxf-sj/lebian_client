@@ -1,6 +1,7 @@
 {
   "usingComponents": {
-    "tabbar": "/components/tabbar/tabbar"
+    "tabbar": "/components/tabbar/tabbar",
+    "kefu-float": "/components/kefu-float/kefu-float"
   },
   "navigationBarTitleText": "乐遍城际"
 }

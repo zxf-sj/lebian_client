@@ -13,7 +13,7 @@
         <view class="tab-name">我的积分</view>
       </view>
       <view class="order" bindtap="toOrder">
-        <image src="../../assets/images/order.png" style="width:90rpx;height:90rpx;"></image>
+        <image src="/user_center/assets/images/uc_order.png" style="width:90rpx;height:90rpx;"></image>
         <view class="tab-name">兑换订单</view>
       </view>
     </view>
@@ -41,3 +41,4 @@
   </scroll-view>
 </view>
 <daohang></daohang>
+<kefu-float />

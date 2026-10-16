@@ -25,7 +25,7 @@
             {{item.Quantity}}<text style="color: {{index == 1 ? '#000' : (index == 2 ? '#000' : '#e3c048')}} ">张</text>
           </view>
           <view class="tag" catchtap="handleRadio" data-item="{{index}}">
-            <image src="/user_center/assets/images/youhuiquan_biaoqian01.png"></image>
+            <image src="/assets/images/youhuiquan_biaoqian01.png"></image>
             <view class="num">剩余{{item.Remaining}}张</view>
           </view>
         </view>
@@ -63,3 +63,4 @@
     </view> -->
   </view>
 </view>
+<kefu-float />

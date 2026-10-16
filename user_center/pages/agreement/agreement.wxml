@@ -1,6 +1,7 @@
-<import src="../wxParse/wxParse.wxml"/>
+<import src="/components/wxParse/wxParse.wxml"/>
 <view class="gywm">
   <view class="wxParse">
     <template is="wxParse" data="{{wxParseData:content.nodes}}"/>
   </view>
 </view>
+<kefu-float />

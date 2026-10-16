@@ -1,10 +1,11 @@
 {
   "usingComponents": {
-    "information":"/components/information/information",
-    "distanceNav":"/components/distanceNav/distanceNav",
+    "information": "/components/information/information",
+    "distanceNav": "/components/distanceNav/distanceNav",
     "mp-dialog": "weui-miniprogram/dialog/dialog",
-    "remarks":"/components/remarks/remarks",
-    "slideCoupon":"/components/slideCoupon/slideCoupon"
+    "remarks": "/components/remarks/remarks",
+    "slideCoupon": "/components/slideCoupon/slideCoupon",
+    "kefu-float": "/components/kefu-float/kefu-float"
   },
   "navigationBarTitleText": "乐遍出行"
 }

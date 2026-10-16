@@ -30,3 +30,4 @@
         <button form-type="submit" class="submit-btn">{{btn}}</button>
     </form>
 </view>
+<kefu-float />

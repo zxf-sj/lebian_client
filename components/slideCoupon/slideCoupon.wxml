@@ -38,7 +38,7 @@
               <radio checked="{{item.selected}}" catchtap="handleRadio" data-item="{{index}}" />
             </label>
             <view class="tag" catchtap="handleRadio" data-item="{{index}}">
-              <image src="../../user_center/assets/images/youhuiquan_biaoqian01.png"></image>
+              <image src="/assets/images/youhuiquan_biaoqian01.png"></image>
               <view class="num">1张</view>
             </view>
           </block>

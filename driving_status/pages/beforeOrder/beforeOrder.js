@@ -69,7 +69,7 @@ Page({
     http.postRequest("/Api/DispatchMobile/NewGetXcx?ShortCode=Car", "", wx.getStorageSync('header'), res => {
       if (res.code == 0) {
         var content = res.data.Content;
-        const WxParses = require('../wxParse/wxParse.js');
+        const WxParses = require('../../../components/wxParse/wxParse.js');
         WxParses.setImageDomain(BASE_URL);
         WxParses.wxParse('content','html', content, that, 5);
       }

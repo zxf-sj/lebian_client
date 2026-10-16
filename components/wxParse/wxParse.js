@@ -46,27 +46,6 @@ function wxParse(bindName = 'wxParseData', type='html', data='<div class="color:
   that.wxParseImgLoad = wxParseImgLoad;
   that.wxParseImgTap = wxParseImgTap;
 }
-function wxParse2(bindName = 'wxParseData', type='html', data='<div class="color:red;">数据不能为空</div>', target,imagePadding) {
-  var that = target;
-  var transData = {};//存放转化后的数据
-  if (type == 'html') {
-    transData = HtmlToJson.html2json(data, bindName);
-  } else if (type == 'md' || type == 'markdown') {
-    var converter = new showdown.Converter();
-    var html = converter.makeHtml(data);
-    transData = HtmlToJson.html2json(html, bindName);
-  }
-  transData.view = {};
-  transData.view.imagePadding = 0;
-  if(typeof(imagePadding) != 'undefined'){
-    transData.view.imagePadding = imagePadding
-  }
-  var bindData = {};
-  bindData[bindName] = transData;
-  that.setData(bindData)
-  that.wxParseImgLoad = wxParseImgLoad;
-  that.wxParseImgTap = wxParseImgTap;
-}
 // 图片点击事件
 function wxParseImgTap(e) {
   var that = this;
@@ -166,10 +145,8 @@ function emojisInit(reg='',baseSrc="/wxParse/emojis/",emojis){
    HtmlToJson.emojisInit(reg,baseSrc,emojis);
 }
 
-
 module.exports = {
   wxParse: wxParse,
-  wxParse2: wxParse2,
   wxParseTemArray:wxParseTemArray,
   emojisInit:emojisInit,
   setImageDomain: HtmlToJson.setImageDomain,

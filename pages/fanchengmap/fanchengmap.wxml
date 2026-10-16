@@ -120,7 +120,7 @@
         <text class="signUp-tip-txt-protocol" bindtap="gotoxieyi">《用户须知》</text>
       </view>
     </view>
-    <import src="/pages/wxParse/wxParse" />
+    <import src="/components/wxParse/wxParse" />
     <view class="mask" catchtouchmove="true" wx:if="{{isshow}}">
       <view class="box_3">
         <scroll-view scroll-y="true" style="height:70vh;">
@@ -155,3 +155,4 @@
     <view>乘车人信息与乘车人数不匹配</view>
   </mp-dialog>
 </view>
+<kefu-float />

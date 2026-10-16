@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "站点上车"
+  "navigationBarTitleText": "站点上车",
+  "usingComponents": {
+    "kefu-float": "/components/kefu-float/kefu-float"
+  }
 }

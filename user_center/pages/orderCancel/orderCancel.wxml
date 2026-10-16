@@ -88,3 +88,4 @@
 <view class="btns {{gender?'':'disableBtn'}}">
   <view class="btn" bindtap="orderCancel" >确认取消</view>
 </view>
+<kefu-float />

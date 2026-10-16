@@ -11,7 +11,7 @@
             <text class="time">{{item.IdCard}}</text>
           </view>
           <view class="list-time font-32">
-            <image src="/user_center/assets/images/common_icon_phone.png"></image>
+            <image src="/user_center/assets/images/uc_common_icon_phone.png"></image>
             <text class="time">{{item.Phone}}</text>
           </view>
           <view class="btn-list">
@@ -34,3 +34,4 @@
  </view>
 </view>
 <daohang></daohang>
+<kefu-float />

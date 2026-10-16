@@ -87,3 +87,4 @@
     <view class="tips-p">4.为了绑定账号、登录小程序、收取车票站点或退票等短信通知，乘车人请填写真实手机号。</view>
   </view>
 </view>
+<kefu-float />

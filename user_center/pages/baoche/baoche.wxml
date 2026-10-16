@@ -79,8 +79,8 @@
     <!-- 确认支付并下单 -->
     <view class="btn" bind:tap="handletel" style="{{agree==true?'color:#fff;':'background:#eee;'}}">确认下单</view>
   </view>
-  <!-- <import src="/components/wxParse/wxParse" /> -->
-  <import src="/pages/wxParse/wxParse" />
+  
+  <import src="/components/wxParse/wxParse" />
     <view class="mask" catchtouchmove="true" wx:if="{{isshow}}">
       <view class="box_3">
         <scroll-view scroll-y="true" style="height:70vh;">
@@ -95,3 +95,4 @@
     <!-- 显示备注信息 -->
   <remarks bind:textareaValue="handleTextareaValue" wx:if="{{remark}}" remark="{{remark}}" />
 </view>
+<kefu-float />

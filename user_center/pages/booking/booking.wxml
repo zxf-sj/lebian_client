@@ -61,3 +61,4 @@
     <button class="next-btn" bindtap="goNext">确认</button>
   </view>
 </view>
+<kefu-float />

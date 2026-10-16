@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "新增乘车人"
+  "navigationBarTitleText": "新增乘车人",
+  "usingComponents": {
+    "kefu-float": "/components/kefu-float/kefu-float"
+  }
 }

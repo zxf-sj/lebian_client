@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "旅游包车",
-  "usingComponents": {}
+  "usingComponents": {
+    "kefu-float": "/components/kefu-float/kefu-float"
+  }
 }

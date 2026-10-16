@@ -17,7 +17,7 @@
     <block wx:if="{{detailData.DispatchListId_DriverId_Name}}">
       <view class="driver-info">
         <view class="left">
-          <image class="photo" src="{{detailData.driverCarInfo.driverHeadPicUrl || '/user_center/assets/images/driver.png'}}">
+          <image class="photo" src="{{detailData.driverCarInfo.driverHeadPicUrl || '/assets/images/driver.png'}}">
           </image>
           <view class="name"> {{driver_name}}师傅</view>
         </view>
@@ -201,3 +201,4 @@
     bind:confirm="onConfirm"
     bind:cancel="onCancel"
   />
+<kefu-float />
