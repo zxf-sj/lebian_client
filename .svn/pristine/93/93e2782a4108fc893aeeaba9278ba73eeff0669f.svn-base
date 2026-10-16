@@ -1,7 +1,0 @@
-{
-  "usingComponents": {
-    "slideCoupon":"/components/slideCoupon/slideCoupon",
-    "daohang":"/components/daohang/daohang"
-  },
-  "navigationBarTitleText": "乐遍包车"
-}

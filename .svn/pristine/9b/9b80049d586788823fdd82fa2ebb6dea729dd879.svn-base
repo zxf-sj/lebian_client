@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "行程中",
-  "usingComponents": {
-    "daohang":"/components/daohang/daohang"
-  }
-}

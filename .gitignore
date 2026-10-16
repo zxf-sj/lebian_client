@@ -12,3 +12,6 @@ $RECYCLE.BIN/
 
 # Node.js
 node_modules/
+
+# SVN（项目已改用 Git/GitHub 管理，不再跟踪 SVN 工作副本元数据）
+.svn/

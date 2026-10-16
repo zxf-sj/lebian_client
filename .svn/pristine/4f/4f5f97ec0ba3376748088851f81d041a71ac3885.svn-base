@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText":"余额管理",
-  "usingComponents": {
-    "daohang":"/components/daohang/daohang"
-  }
-}

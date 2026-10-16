@@ -1,9 +1,0 @@
-{
-  "backgroundTextStyle": "dark",
-  "navigationBarBackgroundColor": "#fff",
-  "navigationBarTitleText": "我的优惠劵",
-  "navigationBarTextStyle": "black",
-  "usingComponents": {
-    "daohang":"/components/daohang/daohang"
-  }
-}

@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "乘车人管理",
-  "usingComponents": {
-    "daohang":"/components/daohang/daohang"
-  }
-}
