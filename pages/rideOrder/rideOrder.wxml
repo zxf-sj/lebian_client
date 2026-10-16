@@ -1,13 +1,24 @@
 <view class="page">
-  <!-- 行程条：日期 | 线路+时间 | 价格 -->
+  <!-- 时间段：最上面一条，点击弹出底部弹框选择 -->
+  <view class="ch-timebar" bindtap="onOpenTimeSheet">
+    <text class="ctb-label">出发时间段</text>
+    <view class="ctb-val">
+      <text class="ctb-time">{{time || '请选择'}}</text>
+      <text class="chc-arrow">▾</text>
+    </view>
+  </view>
+
+  <!-- 行程条：日期（点击弹框） | 线路 | 价格 -->
   <view class="ch-trip">
-    <view class="ch-chip">
-      <text class="chc-label">{{dayLabel}}</text>
-      <text class="chc-md">{{md}}</text>
+    <view class="ch-chip tap" bindtap="onOpenDateSheet">
+      <text class="chc-label">{{dates[dateIdx].label}}</text>
+      <view class="chc-row">
+        <text class="chc-md">{{dates[dateIdx].md}}</text>
+        <text class="chc-arrow">▾</text>
+      </view>
     </view>
     <view class="ch-chip wide">
       <text class="chc-route">{{from}} → {{to}}</text>
-      <text class="chc-time">{{time}}</text>
     </view>
     <view class="ch-chip">
       <text class="chc-price">¥{{vehPrice}}</text>
@@ -21,18 +32,15 @@
         <view class="sta-dot-inner"></view>
       </view>
       <view class="sta-info">
-        <text class="sta-label">上车</text>
         <text class="sta-addr">{{stations[0].city}}市 {{stations[0].address}}</text>
       </view>
     </view>
     <view class="sta-line"></view>
-    <view class="sta-swap" bindtap="onSwapStations">⇅</view>
     <view class="sta-row" bindtap="onPickAddr" data-direction="ending">
       <view class="sta-dot off">
         <view class="sta-dot-inner"></view>
       </view>
       <view class="sta-info">
-        <text class="sta-label">下车</text>
         <text class="sta-addr">{{stations[1].city}}市 {{stations[1].address}}</text>
       </view>
     </view>
@@ -57,22 +65,6 @@
       <image src="{{item.img}}" mode="aspectFit" class="car_img"/>
     </view>
     <view class="veh-tag">{{item.tag}}</view>
-  </view>
-
-  <!-- 乘车人选择 -->
-  <view class="pass-tabs">
-    <view
-      wx:for="{{passengers}}" wx:key="name"
-      class="pass-tab {{paxIdx === index ? 'sel' : ''}}"
-      bindtap="onPaxTab" data-idx="{{index}}"
-    >
-      <text class="pass-tab-name">{{item.name}}</text>
-    </view>
-  </view>
-
-  <view class="pax-id-row">
-    <text class="pax-id-name">{{passengers[paxIdx].name}}</text>
-    <text class="pax-id-num">{{passengers[paxIdx].idCard}}</text>
   </view>
 
   <!-- 成人/儿童：拼车下单页显示 -->
@@ -135,4 +127,45 @@
 
   <view class="pay-btn" bindtap="onPay">预约支付</view>
   <view class="gap"></view>
+
+  <!-- 日期选择弹框（限今天起四天） -->
+  <view class="mask" wx:if="{{dateSheetOpen}}" bindtap="onCloseSheets">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-title">选择出行日期</view>
+      <scroll-view class="sheet-list" scroll-y>
+        <view
+          wx:for="{{dates}}"
+          wx:key="full"
+          class="sheet-item {{dateIdx === index ? 'on' : ''}}"
+          bindtap="onDateSheetTap"
+          data-idx="{{index}}"
+        >
+          <text class="si-label">{{item.label}}</text>
+          <text class="si-md">{{item.full}}</text>
+          <text class="si-check" wx:if="{{dateIdx === index}}">✓</text>
+        </view>
+      </scroll-view>
+      <view class="sheet-tip">仅支持选择今天起 4 天内的日期</view>
+    </view>
+  </view>
+
+  <!-- 时间段选择弹框（选项由后端返回，当前为模拟数据） -->
+  <view class="mask" wx:if="{{timeSheetOpen}}" bindtap="onCloseSheets">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-title">选择时间段</view>
+      <scroll-view class="sheet-list" scroll-y wx:if="{{charterTimes.length}}">
+        <view
+          wx:for="{{charterTimes}}"
+          wx:key="label"
+          class="sheet-item {{timeIdx === index ? 'on' : ''}}"
+          bindtap="onTimeSheetTap"
+          data-idx="{{index}}"
+        >
+          <text class="si-label">{{item.label}}</text>
+          <text class="si-check" wx:if="{{timeIdx === index}}">✓</text>
+        </view>
+      </scroll-view>
+      <view wx:else class="sheet-empty">当前日期暂无可选时间段</view>
+    </view>
+  </view>
 </view>

@@ -36,26 +36,30 @@
     </view>
     <view class="line"></view>
 
-    <!-- 乘车人列表 -->
+    <!-- 乘车人列表：多选，选中的人逐行显示明细 -->
     <view class="psg-head">
       <view class="psg-names">
         <view
           wx:for="{{passengers}}" wx:key="name"
-          class="psg-tag {{paxIdx === index ? 'on' : ''}}"
+          class="psg-tag {{item.selected ? 'on' : ''}}"
           bindtap="onPaxTab" data-idx="{{index}}"
         >
           {{item.name}}
+          <text wx:if="{{item.selected}}" class="psg-tick">✓</text>
           <text wx:if="{{item.isChild}}" class="psg-child">儿童</text>
         </view>
       </view>
       <view class="psg-add" bindtap="onAddUser">新增</view>
     </view>
-    <view class="psg-row">
-      <text class="psg-name">{{passengers[paxIdx].name}}</text>
-      <text class="psg-type">{{passengers[paxIdx].type}}</text>
-      <text class="psg-phone">{{passengers[paxIdx].idCard}}</text>
-      <text class="psg-price">¥{{platformPrice}}</text>
-    </view>
+    <block wx:for="{{passengers}}" wx:key="name">
+      <view wx:if="{{item.selected}}" class="psg-row">
+        <text class="psg-name">{{item.name}}</text>
+        <text class="psg-type">{{item.type}}</text>
+        <text class="psg-phone">{{item.idCard}}</text>
+        <text class="psg-price">¥{{platformPrice}}</text>
+      </view>
+    </block>
+    <view wx:if="{{!psgCount}}" class="psg-none">请选择乘车人</view>
   </view>
 
   <!-- 优惠方式 -->

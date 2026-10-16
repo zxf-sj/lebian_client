@@ -32,14 +32,25 @@
 
   <!-- 包车 tab 专用：通栏的三胶囊 + 上下车地址（在左右分栏之上） -->
   <view class="ch-top" wx:if="{{tab === 2}}">
+    <!-- 时间段：提到最上面，点击弹出底部弹框选择 -->
+    <view class="ch-timebar" bindtap="onOpenTimeSheet">
+      <text class="ctb-label">出发时间段</text>
+      <view class="ctb-val">
+        <text class="ctb-time">{{tripTime || '请选择'}}</text>
+        <text class="chc-arrow">▾</text>
+      </view>
+    </view>
+
     <view class="ch-trip">
-      <view class="ch-chip">
+      <view class="ch-chip tap" bindtap="onOpenDateSheet">
         <text class="chc-label">{{dates[dateIdx].label}}</text>
-        <text class="chc-md">{{dates[dateIdx].md}}</text>
+        <view class="chc-row">
+          <text class="chc-md">{{dates[dateIdx].md}}</text>
+          <text class="chc-arrow">▾</text>
+        </view>
       </view>
       <view class="ch-chip wide">
         <text class="chc-route">{{from}} → {{to}}</text>
-        <text class="chc-time">{{tripTime}}</text>
       </view>
       <view class="ch-chip">
         <text class="chc-price">¥{{vehPrice}}</text>
@@ -251,27 +262,181 @@
 
       <!-- ========== 4. 跨城跑腿 ========== -->
       <block wx:else>
-        <view
-          wx:for="{{errandList}}"
-          wx:key="id"
-          class="er-card {{errandSel === item.id ? 'sel' : ''}}"
-          bindtap="onErrandTap"
-          data-id="{{item.id}}"
-        >
-          <view class="er-left">
-            <text class="er-route">{{from}}→{{to}}</text>
-            <text class="er-desc">{{item.desc}}</text>
+        <!-- 子tab：城际捎货 / 城际跑腿 -->
+        <view class="er-sub">
+          <view class="er-sub-item {{errandSub === 0 ? 'on' : ''}}" bindtap="onErrandSubTap" data-idx="0">城际捎货</view>
+          <view class="er-sub-item {{errandSub === 1 ? 'on' : ''}}" bindtap="onErrandSubTap" data-idx="1">城际跑腿</view>
+        </view>
+        <view class="er-sub-tip">{{errandSub === 0 ? '按行李箱分类定价，提交后由客车捎带' : '代取 / 代点外卖，负责城际运输送达'}}</view>
+
+        <!-- ===== 城际捎货 ===== -->
+        <block wx:if="{{errandSub === 0}}">
+          <view class="sec-head"><view class="sec-num">1</view><text class="sec-title">捎货时效</text></view>
+          <view class="sec-label">时效 <text class="req">*</text></view>
+          <view class="radio-item {{cargoSpeed === 0 ? 'on' : ''}}" bindtap="onCargoSpeedTap" data-idx="0">
+            <view class="radio-dot"></view>
+            <text class="radio-text">普通捎货：无时效限制，当时达或次日上午。</text>
           </view>
-          <view class="er-right">
-            <text class="er-speed">{{item.speed}}</text>
-            <text class="er-price">¥{{item.price}}</text>
+          <view class="radio-item {{cargoSpeed === 1 ? 'on' : ''}}" bindtap="onCargoSpeedTap" data-idx="1">
+            <view class="radio-dot"></view>
+            <text class="radio-text">加急捎货：+30元，不含溢价，按乘客流单。一程内必达。</text>
+          </view>
+
+          <view class="sec-head"><view class="sec-num">2</view><text class="sec-title">货物信息</text></view>
+          <view class="sec-label">货物类别 <text class="req">*</text></view>
+          <view class="radio-item {{cargoType === index ? 'on' : ''}}" wx:for="{{cargoTypes}}" wx:key="name" bindtap="onCargoTypeTap" data-idx="{{index}}">
+            <view class="radio-dot"></view>
+            <text class="radio-text">{{item.name}}</text>
+          </view>
+          <view class="sec-label">货物名称 <text class="req">*</text></view>
+          <input class="er-input" placeholder="如：身份证、文件、小件衣物等。" value="{{cargoName}}" bindinput="onErInput" data-k="cargoName" />
+          <view class="sec-label">货物照片 <text class="req">*</text></view>
+          <view class="er-imgs">
+            <view class="er-img" wx:for="{{cargoImgs}}" wx:key="*this">
+              <image src="{{item}}" mode="aspectFill" class="er-img-pic" />
+              <view class="er-img-del" bindtap="onCargoImgDel" data-idx="{{index}}">×</view>
+            </view>
+            <view class="er-img-add" wx:if="{{cargoImgs.length < 3}}" bindtap="onCargoImgAdd">
+              <text class="er-img-add-icon">📷</text>
+              <text>拍照/相册</text>
+              <text class="er-img-count">{{cargoImgs.length}}/3</text>
+            </view>
+          </view>
+          <view class="er-tip">捎货单必填至少 1 张物品照片，最多 3 张</view>
+
+          <view class="sec-head"><view class="sec-num">3</view><text class="sec-title">寄件信息</text></view>
+          <view class="er-cols">
+            <view class="er-col">
+              <view class="sec-label">称呼 <text class="req">*</text></view>
+              <input class="er-input" placeholder="如：张先生" value="{{senderName}}" bindinput="onErInput" data-k="senderName" />
+            </view>
+            <view class="er-col">
+              <view class="sec-label">电话 <text class="req">*</text></view>
+              <input class="er-input" type="number" maxlength="11" placeholder="11位电话号码" value="{{senderPhone}}" bindinput="onErInput" data-k="senderPhone" />
+            </view>
+          </view>
+          <view class="sec-label">取件地址 <text class="req">*</text></view>
+          <input class="er-input" placeholder="如：太原市小店区XX路XX号" value="{{senderAddr}}" bindinput="onErInput" data-k="senderAddr" />
+
+          <view class="sec-head"><view class="sec-num">4</view><text class="sec-title">收件信息</text></view>
+          <view class="er-cols">
+            <view class="er-col">
+              <view class="sec-label">称呼 <text class="req">*</text></view>
+              <input class="er-input" placeholder="如：张先生" value="{{receiverName}}" bindinput="onErInput" data-k="receiverName" />
+            </view>
+            <view class="er-col">
+              <view class="sec-label">电话 <text class="req">*</text></view>
+              <input class="er-input" type="number" maxlength="11" placeholder="11位电话号码" value="{{receiverPhone}}" bindinput="onErInput" data-k="receiverPhone" />
+            </view>
+          </view>
+          <view class="sec-label">取件地址 <text class="req">*</text></view>
+          <input class="er-input" placeholder="如：太原市小店区XX路XX号" value="{{receiverAddr}}" bindinput="onErInput" data-k="receiverAddr" />
+
+          <view class="sec-head"><view class="sec-num">5</view><text class="sec-title">备注选填</text></view>
+          <input class="er-input" placeholder="补充说明，如：到达后电话联系" value="{{cargoRemark}}" bindinput="onErInput" data-k="cargoRemark" />
+        </block>
+
+        <!-- ===== 城际跑腿 ===== -->
+        <block wx:else>
+          <view class="sec-head"><view class="sec-num">1</view><text class="sec-title">服务类型</text></view>
+          <view class="radio-item {{runType === index ? 'on' : ''}}" wx:for="{{runTypes}}" wx:key="name" bindtap="onRunTypeTap" data-idx="{{index}}">
+            <view class="radio-dot"></view>
+            <text class="radio-text">{{item.name}}</text>
+            <text class="radio-price">¥{{item.price}}</text>
+          </view>
+
+          <view class="sec-head"><view class="sec-num">2</view><text class="sec-title">点餐信息</text></view>
+          <view class="sec-label">点餐店铺 <text class="req">*</text></view>
+          <input class="er-input" placeholder="如：太原市XX餐厅" value="{{shopName}}" bindinput="onErInput" data-k="shopName" />
+          <view class="sec-label">餐品要求 <text class="req">*</text></view>
+          <input class="er-input" placeholder="如：两份牛肉面，少辣，打包" value="{{foodReq}}" bindinput="onErInput" data-k="foodReq" />
+
+          <view class="sec-head"><view class="sec-num">3</view><text class="sec-title">送达信息</text></view>
+          <view class="er-cols">
+            <view class="er-col">
+              <view class="sec-label">称呼 <text class="req">*</text></view>
+              <input class="er-input" placeholder="如：张先生" value="{{runName}}" bindinput="onErInput" data-k="runName" />
+            </view>
+            <view class="er-col">
+              <view class="sec-label">电话 <text class="req">*</text></view>
+              <input class="er-input" type="number" maxlength="11" placeholder="11位电话号码" value="{{runPhone}}" bindinput="onErInput" data-k="runPhone" />
+            </view>
+          </view>
+          <view class="sec-label">取件地址 <text class="req">*</text></view>
+          <input class="er-input" placeholder="如：太原市小店区XX路XX号" value="{{runAddr}}" bindinput="onErInput" data-k="runAddr" />
+
+          <view class="sec-head"><view class="sec-num">4</view><text class="sec-title">下单信息</text></view>
+          <view class="sec-label">下单人联系电话 <text class="req">*</text></view>
+          <input class="er-input" type="number" maxlength="11" placeholder="11位电话号码" value="{{orderPhone}}" bindinput="onErInput" data-k="orderPhone" />
+
+          <view class="sec-head"><view class="sec-num">5</view><text class="sec-title">备注选填</text></view>
+          <input class="er-input" placeholder="补充说明，如：到达后电话联系" value="{{runRemark}}" bindinput="onErInput" data-k="runRemark" />
+        </block>
+
+        <!-- 费用卡：基础/加急 + 合计 -->
+        <view class="er-fee">
+          <view class="er-fee-main">
+            <view class="er-fee-row"><text>基础费用</text><text>{{erBase}}元</text></view>
+            <view class="er-fee-row"><text>加急费用</text><text>{{erUrgent}}元</text></view>
+          </view>
+          <view class="er-fee-right">
+            <text class="er-fee-ct">合计</text>
+            <text class="er-fee-num">{{erTotal}}元</text>
           </view>
         </view>
-        <view class="pay-btn" bindtap="onErrandOrder">立即下单</view>
+
+        <view class="agree" bindtap="onErAgreeTap">
+          <view class="agree-box {{erAgree ? 'on' : ''}}">{{erAgree ? '✓' : ''}}</view>
+          <text class="agree-text">下单即同意本服务条款</text>
+          <text class="agree-link">《用户须知》</text>
+        </view>
+
+        <view class="er-pay-btn" bindtap="onErrandPay">确 认 下 单</view>
         <view class="gap"></view>
       </block>
 
     </scroll-view>
+    </view>
+  </view>
+
+  <!-- 包车：日期选择弹框（限今天起四天） -->
+  <view class="mask" wx:if="{{dateSheetOpen}}" bindtap="onCloseSheets">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-title">选择出行日期</view>
+      <scroll-view class="sheet-list" scroll-y>
+        <view
+          wx:for="{{dates}}"
+          wx:key="full"
+          class="sheet-item {{dateIdx === index ? 'on' : ''}}"
+          bindtap="onDateSheetTap"
+          data-idx="{{index}}"
+        >
+          <text class="si-label">{{item.label}}</text>
+          <text class="si-md">{{item.full}}</text>
+          <text class="si-check" wx:if="{{dateIdx === index}}">✓</text>
+        </view>
+      </scroll-view>
+      <view class="sheet-tip">仅支持选择今天起 4 天内的日期</view>
+    </view>
+  </view>
+
+  <!-- 包车：时间段选择弹框（选项由后端返回） -->
+  <view class="mask" wx:if="{{timeSheetOpen}}" bindtap="onCloseSheets">
+    <view class="sheet" catchtap="noop">
+      <view class="sheet-title">选择时间段</view>
+      <scroll-view class="sheet-list" scroll-y wx:if="{{charterTimes.length}}">
+        <view
+          wx:for="{{charterTimes}}"
+          wx:key="label"
+          class="sheet-item {{timeIdx === index ? 'on' : ''}}"
+          bindtap="onTimeSheetTap"
+          data-idx="{{index}}"
+        >
+          <text class="si-label">{{item.label}}</text>
+          <text class="si-check" wx:if="{{timeIdx === index}}">✓</text>
+        </view>
+      </scroll-view>
+      <view wx:else class="sheet-empty">{{timeLoading ? '时间段加载中…' : '当前日期暂无可选时间段'}}</view>
     </view>
   </view>
 </view>

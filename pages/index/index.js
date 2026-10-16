@@ -129,8 +129,8 @@ getLineList() {
     const ds = e.currentTarget.dataset;
     const route = ds.route;
     this.setData({
-      fromCity: route.StatingLocation_Name,
-      toCity: route.EndLocation_Name,
+      fromCity: route.startName,
+      toCity: route.endName,
       selectedKey: ds.group + '-' + ds.index,
     });
     this.saveCity();
@@ -145,6 +145,8 @@ getLineList() {
 
   onSearch() {
     // 出发地与目的地相同不允许查询
+    console.log(this.data.fromCity)
+    console.log(this.data.toCity)
     if (this.data.fromCity === this.data.toCity) {
       wx.showToast({
         title: '出发地和目的地不能相同',

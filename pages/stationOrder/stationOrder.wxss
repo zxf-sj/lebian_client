@@ -134,6 +134,19 @@ page { background: #f4f6f9; }
   font-size: 28rpx;
   color: #2f7cf6;
 }
+/* 多选选中角标（左上，儿童标在右上，互不冲突） */
+.psg-tick {
+  position: absolute;
+  top: -14rpx;
+  left: -10rpx;
+  font-size: 18rpx;
+  color: #fff;
+  background: #2f7cf6;
+  border-radius: 8rpx 0 8rpx 8rpx;
+  padding: 0 8rpx;
+  line-height: 26rpx;
+}
+.psg-none { padding: 8rpx 0 24rpx; font-size: 26rpx; color: #999; text-align: center; }
 
 /* 乘车人明细行 */
 .psg-row {

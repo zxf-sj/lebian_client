@@ -40,12 +40,11 @@ Page({
     psgCount: 1,
     total: 10,
 
-    // 乘车人
+    // 乘车人：selected 为多选状态，选中的人按顺序逐行显示明细
     passengers: [
-      { name: '张一', type: '成人', idCard: '140***********1234', isChild: false },
-      { name: '王二', type: '成人', idCard: '140***********5678', isChild: false },
+      { name: '张一', type: '成人', idCard: '140***********1234', isChild: false, selected: true },
+      { name: '王二', type: '成人', idCard: '140***********5678', isChild: false, selected: false },
     ],
-    paxIdx: 0,
 
     agree: false,
     detailOpen: false,
@@ -71,6 +70,8 @@ Page({
     }
     // 根据初始 mark 反推 upStation / downStation
     this._syncStationLabels();
+    // 按初始选中乘车人重算人数与总价
+    this._recalcPsg();
   },
 
   // 根据 stations 里的 mark 同步 upStation / downStation
@@ -159,10 +160,18 @@ Page({
     });
   },
 
-  // 切换乘车人
+  // 多选乘车人：点一下选中、再点取消，明细行与总价随之刷新
   onPaxTab(e) {
     const idx = Number(e.currentTarget.dataset.idx);
-    this.setData({ paxIdx: idx });
+    const key = `passengers[${idx}].selected`;
+    this.setData({ [key]: !this.data.passengers[idx].selected });
+    this._recalcPsg();
+  },
+
+  // 按选中人数重算 psgCount 与 total
+  _recalcPsg() {
+    const n = this.data.passengers.filter(p => p.selected).length;
+    this.setData({ psgCount: n, total: this.data.platformPrice * n });
   },
 
   onAddUser() {
@@ -190,6 +199,10 @@ Page({
     }
     if (!this.data.upStation || !this.data.downStation) {
       wx.showToast({ title: '请先选择上/下车点', icon: 'none' });
+      return;
+    }
+    if (this.data.psgCount < 1) {
+      wx.showToast({ title: '请至少选择一位乘车人', icon: 'none' });
       return;
     }
     // TODO 接入下单支付接口

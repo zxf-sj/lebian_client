@@ -7,8 +7,15 @@ Page({
     to: '太原',
     dayLabel: '今天',
     md: '10/12',
-    time: '19:00~20:00',
+    dates: [],       // 固定四天：今天/明天/后天/第4天
+    dateIdx: 0,
 
+    // 时间段：后端定好几点到几点，当前先用模拟数据，接口通了换掉
+    time: '19:00~20:00',
+    charterTimes: [],   // [{ label, start, end }]
+    timeIdx: -1,
+    dateSheetOpen: false,   // 日期底部弹框
+    timeSheetOpen: false,   // 时间段底部弹框,
     // 车型：origin 有值则显示"限时特惠"，无值只显示价格
     // 拼车下单页：6座高级包车 ¥80 → 限时特惠 ¥59.9（带成人/儿童选择）
     // 包车下单页：无特惠、无成人/儿童行
@@ -61,15 +68,112 @@ Page({
       { name: '7座中级包车', seats: '1-6人', price: 240, tag: '舒适', img: '/assets/images/car2.png' },
     ];
 
+    // 固定四天（今天/明天/后天/第4天），与 ride 页一致
+    const dates = this.buildDates(new Date());
+    // 列表页带入的日期落在哪天选哪天，默认第 1 天
+    let idx = 0;
+    if (query.date) {
+      const hit = dates.findIndex(d => d.full === query.date);
+      if (hit >= 0) idx = hit;
+    }
+
     this.setData({
       mode,
       from: query.from ? decodeURIComponent(query.from) : this.data.from,
       to: query.to ? decodeURIComponent(query.to) : this.data.to,
-      dayLabel: query.dayLabel || this.data.dayLabel,
-      md: query.md || this.data.md,
+      dates,
+      dateIdx: idx,
+      dayLabel: dates[idx].label,
+      md: dates[idx].md,
       time: query.time || this.data.time,
       vehicles,
       vehPrice: vehicles[0].price,
+    });
+    this.fetchCharterTimes(idx);
+  },
+
+  // 生成固定四天：今天/明天/后天 + 第4天显示周几（与 ride 页一致）
+  buildDates(base) {
+    const WEEK = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    const pad = n => String(n).padStart(2, '0');
+    const arr = [];
+    const fixed = ['今天', '明天', '后天'];
+    for (let i = 0; i < 4; i++) {
+      const d = new Date(base.getTime());
+      d.setDate(base.getDate() + i);
+      arr.push({
+        label: fixed[i] || WEEK[d.getDay()],
+        md: `${d.getMonth() + 1}/${d.getDate()}`,
+        full: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
+      });
+    }
+    return arr;
+  },
+
+  /* ===== 日期 / 时间段 底部弹框（与 ride 页一致） ===== */
+  onOpenDateSheet() {
+    this.setData({ dateSheetOpen: true, timeSheetOpen: false });
+  },
+
+  onOpenTimeSheet() {
+    this.setData({ timeSheetOpen: true, dateSheetOpen: false });
+  },
+
+  onCloseSheets() {
+    this.setData({ dateSheetOpen: false, timeSheetOpen: false });
+  },
+
+  noop() {},
+
+  onDateSheetTap(e) {
+    const idx = Number(e.currentTarget.dataset.idx);
+    const d = this.data.dates[idx];
+    if (!d) return;
+    this.setData({
+      dateIdx: idx,
+      dayLabel: d.label,
+      md: d.md,
+      dateSheetOpen: false,
+    });
+    this.fetchCharterTimes(idx);
+  },
+
+  onTimeSheetTap(e) {
+    const idx = Number(e.currentTarget.dataset.idx);
+    const item = this.data.charterTimes[idx];
+    if (!item) return;
+    this.setData({
+      timeIdx: idx,
+      time: item.label,
+      timeSheetOpen: false,
+    });
+  },
+
+  // 获取包车可选时间段（后端定好的"几点到几点"）
+  // TODO 接口就绪后改用：
+  // wx.request({ url: baseUrl + '/api/DispatchMobile/GetCharterTimeListForDate?time=' + d.full + '&lineId=' + lineId, ... })
+  // 返回 res.data[i].RunTimeShow（如 "08:00-09:00"）
+  fetchCharterTimes(dateIdx) {
+    const d = this.data.dates[dateIdx];
+    if (!d) return;
+
+    // ---- 模拟数据：后端定好的时间段 ----
+    const mockLabels = [
+      '08:00~09:00', '09:00~10:00', '10:00~11:00', '11:00~12:00',
+      '13:00~14:00', '15:00~16:00', '17:00~18:00', '19:00~20:00', '20:00~21:00',
+    ];
+    const charterTimes = mockLabels.map(label => {
+      const parts = label.split('~');
+      return { label, start: parts[0], end: parts[1] };
+    });
+
+    // 保持已选：原 time 还在列表里就继续选中，否则清空
+    const cur = this.data.time;
+    const keepIdx = charterTimes.findIndex(t => t.label === cur);
+    this.setData({
+      charterTimes,
+      timeIdx: keepIdx,
+      time: keepIdx >= 0 ? cur : '',
     });
   },
 
@@ -78,20 +182,7 @@ Page({
     this.setData({ vehSel: idx, vehPrice: this.data.vehicles[idx].price });
   },
 
-  // 互换上下车站
-  onSwapStations() {
-    const s = this.data.stations.slice();
-    [s[0], s[1]] = [s[1], s[0]];
-    this.setData({ stations: s });
-  },
-
-  // 切换乘车人
-  onPaxTab(e) {
-    const idx = Number(e.currentTarget.dataset.idx);
-    this.setData({ paxIdx: idx });
-  },
-
-  // 以下四个操作的是当前选中的乘客
+  // 成人/儿童数量仍作用于 passengers[paxIdx]（默认第 1 位）
   onAdultMinus() {
     const p = this.data.passengers[this.data.paxIdx];
     if (p.adults > 1) {

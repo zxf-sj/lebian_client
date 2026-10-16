@@ -234,7 +234,22 @@ page { background: #f4f6f9; }
 /* 包车 tab 顶部通栏：三胶囊 + 地址框（在左右分栏之上） */
 .ch-top { padding: 12rpx 16rpx 0; }
 
-/* 行程条三胶囊 */
+/* 时间段条：包车顶部独立一条，点击弹框 */
+.ch-timebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eaf1fb;
+  border-radius: 16rpx;
+  padding: 18rpx 22rpx;
+  margin-bottom: 12rpx;
+}
+.ch-timebar:active { background: #dbe8fa; }
+.ctb-label { font-size: 27rpx; color: #4a525c; margin-right: 16rpx; }
+.ctb-val { display: flex; align-items: center; }
+.ctb-time { font-size: 30rpx; font-weight: 700; color: #2ba9e8; }
+
+/* 行程条三胶囊（日期 / 路线 / 价格 同一行） */
 .ch-trip {
   display: flex;
   align-items: stretch;
@@ -243,6 +258,7 @@ page { background: #f4f6f9; }
 }
 .ch-chip {
   flex: 1;
+  min-width: 0;
   background: #eaf1fb;
   border-radius: 16rpx;
   padding: 14rpx 12rpx;
@@ -252,11 +268,50 @@ page { background: #f4f6f9; }
   justify-content: center;
 }
 .ch-chip.wide { flex: 1.8; }
+.ch-chip.tap:active { background: #dbe8fa; }
 .chc-label { font-size: 28rpx; font-weight: 700; color: #1a1a1a; }
-.chc-md { font-size: 26rpx; color: #4a525c; margin-top: 4rpx; }
+.chc-row { display: flex; align-items: center; margin-top: 4rpx; }
+.chc-md { font-size: 26rpx; color: #4a525c; }
 .chc-route { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
-.chc-time { font-size: 24rpx; color: #4a525c; margin-top: 4rpx; }
+.chc-arrow { font-size: 22rpx; color: #7b8593; margin-left: 6rpx; }
 .chc-price { font-size: 34rpx; font-weight: 700; color: #1a1a1a; }
+
+/* 底部弹框：日期 / 时间段 */
+.mask {
+  position: fixed;
+  left: 0; right: 0; top: 0; bottom: 0;
+  background: rgba(0, 0, 0, .45);
+  display: flex;
+  align-items: flex-end;
+  z-index: 20;
+}
+.sheet {
+  width: 100%;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 30rpx 30rpx 40rpx;
+  box-sizing: border-box;
+}
+.sheet-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 20rpx;
+  color: #1a1a1a;
+}
+.sheet-list { max-height: 560rpx; }
+.sheet-item {
+  display: flex;
+  align-items: center;
+  padding: 26rpx 10rpx;
+  border-bottom: 2rpx solid #f0f2f5;
+}
+.sheet-item.on .si-label, .sheet-item.on .si-md { color: #2ba9e8; font-weight: 700; }
+.si-label { font-size: 30rpx; color: #1a1a1a; }
+.si-md { font-size: 28rpx; color: #6b7480; margin-left: 16rpx; }
+.si-check { margin-left: auto; font-size: 30rpx; font-weight: 700; color: #2ba9e8; }
+.sheet-tip { margin-top: 18rpx; font-size: 24rpx; color: #9aa3ad; text-align: center; }
+.sheet-empty { padding: 50rpx 0; text-align: center; font-size: 28rpx; color: #9aa3ad; }
 
 /* 上下车地址 */
 .ch-addr { background: #e8f1fd; border-radius: 18rpx; padding: 8rpx 24rpx; margin-bottom: 24rpx; }
@@ -349,17 +404,110 @@ page { background: #f4f6f9; }
 }
 .kefu-img { width: 100%; height: 100%; }
 
-/* ===== 4. 跨城跑腿 ===== */
-.er-card {
-  display: flex; align-items: center;
-  background: #e8f1fd; border-radius: 18rpx;
-  padding: 28rpx; margin-bottom: 22rpx;
-  border: 3rpx solid transparent;
+/* ===== 4. 跨城跑腿：城际捎货 / 城际跑腿 ===== */
+.er-sub { display: flex; gap: 16rpx; margin-bottom: 12rpx; }
+.er-sub-item {
+  flex: 1;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  background: #fff;
+  border-radius: 14rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1a1a1a;
 }
-.er-card.sel { border-color: #2ba9e8; background: #dcecfd; }
-.er-left { flex: 1; display: flex; flex-direction: column; }
-.er-route { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
-.er-desc { font-size: 25rpx; color: #6b7480; margin-top: 8rpx; }
-.er-right { display: flex; flex-direction: column; align-items: flex-end; }
-.er-speed { font-size: 24rpx; color: #2ba9e8; }
-.er-price { font-size: 34rpx; font-weight: 700; color: #e64340; margin-top: 6rpx; }
+.er-sub-item.on { background: #2ba9e8; color: #fff; box-shadow: 0 6rpx 16rpx rgba(43,169,232,.35); }
+.er-sub-tip { font-size: 24rpx; color: #9aa3ad; margin-bottom: 16rpx; }
+
+/* 分节头：圆圈数字 + 标题 */
+.sec-head { display: flex; align-items: center; margin: 26rpx 0 14rpx; }
+.sec-num {
+  width: 36rpx; height: 36rpx; border-radius: 50%;
+  background: #2ba9e8; color: #fff;
+  font-size: 24rpx; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  margin-right: 12rpx;
+}
+.sec-title { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
+.sec-label { font-size: 26rpx; color: #4a525c; margin: 16rpx 0 10rpx; }
+.req { color: #e64340; }
+
+/* 单选行 */
+.radio-item {
+  display: flex; align-items: flex-start;
+  background: #fff; border-radius: 14rpx;
+  padding: 20rpx 18rpx; margin-bottom: 14rpx;
+}
+.radio-dot {
+  width: 30rpx; height: 30rpx; border-radius: 50%;
+  border: 3rpx solid #c3cede; flex: none;
+  margin-right: 14rpx; margin-top: 4rpx;
+  box-sizing: border-box;
+}
+.radio-item.on .radio-dot {
+  border-color: #2ba9e8;
+  background: radial-gradient(circle, #2ba9e8 0 10rpx, #fff 11rpx 100%);
+}
+.radio-text { flex: 1; font-size: 27rpx; color: #1a1a1a; line-height: 40rpx; }
+.radio-price { font-size: 28rpx; font-weight: 700; color: #e64340; margin-left: 12rpx; }
+
+/* 输入框与两列 */
+.er-input {
+  background: #eaf1fb; border-radius: 14rpx;
+  height: 76rpx; line-height: 76rpx;
+  padding: 0 24rpx; font-size: 27rpx;
+}
+.er-cols { display: flex; gap: 20rpx; }
+.er-col { flex: 1; min-width: 0; }
+
+/* 货物照片 */
+.er-imgs { display: flex; flex-wrap: wrap; gap: 16rpx; }
+.er-img, .er-img-add {
+  width: 150rpx; height: 150rpx;
+  border-radius: 12rpx; position: relative;
+}
+.er-img-pic { width: 100%; height: 100%; border-radius: 12rpx; }
+.er-img-del {
+  position: absolute; top: -12rpx; right: -12rpx;
+  width: 36rpx; height: 36rpx; border-radius: 50%;
+  background: rgba(0,0,0,.55); color: #fff;
+  font-size: 26rpx; line-height: 36rpx; text-align: center;
+}
+.er-img-add {
+  background: #eaf1fb; border: 2rpx dashed #b9c6d8;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-size: 22rpx; color: #6b7480;
+}
+.er-img-add-icon { font-size: 36rpx; margin-bottom: 4rpx; }
+.er-img-count { font-size: 20rpx; color: #9aa3ad; margin-top: 2rpx; }
+.er-tip { font-size: 24rpx; color: #2ba9e8; margin-top: 12rpx; }
+
+/* 费用卡 */
+.er-fee {
+  display: flex; align-items: center;
+  background: #fff; border-radius: 16rpx;
+  padding: 22rpx 26rpx; margin-top: 30rpx;
+}
+.er-fee-main { flex: 1; }
+.er-fee-row {
+  display: flex; justify-content: space-between;
+  font-size: 27rpx; color: #1a1a1a;
+  width: 260rpx; line-height: 48rpx;
+}
+.er-fee-right { display: flex; flex-direction: column; align-items: center; margin-left: 30rpx; }
+.er-fee-ct { font-size: 27rpx; color: #1a1a1a; }
+.er-fee-num { font-size: 32rpx; font-weight: 700; color: #e64340; margin-top: 4rpx; }
+
+/* 确认下单：渐变胶囊按钮 */
+.er-pay-btn {
+  width: 320rpx; height: 88rpx; line-height: 88rpx;
+  margin: 34rpx auto 0;
+  border-radius: 44rpx;
+  background: linear-gradient(90deg, #7fb2ff, #b6e3d2);
+  color: #1a1a1a; font-size: 30rpx; font-weight: 700;
+  text-align: center;
+  box-shadow: 0 8rpx 18rpx rgba(127,178,255,.4);
+}
+.er-pay-btn:active { opacity: .85; }
