@@ -91,14 +91,9 @@ Page({
     })
   },
   editUser(e){
-    var item = e.currentTarget.dataset.item;
-    wx.navigateTo({
-      url: '/pages/addUser2/addUser2?item='+JSON.stringify(item),
-    })
+    wx.showToast({ title: '功能暂未开放', icon: 'none' });
   },
   addUser(){
-    wx.navigateTo({
-      url: '/pages/addUser2/addUser2',
-    })
+    wx.showToast({ title: '功能暂未开放', icon: 'none' });
   },
 })
