@@ -48,11 +48,12 @@ getCity() {
   })
 },
   onPick(e) {
-    const city = e.currentTarget.dataset.city;
-    this.setData({ selected: city });
+    const item = e.currentTarget.dataset.item;
+    this.setData({ selected: item.LineName });
     if (this.ec && typeof this.ec.emit === 'function') {
       this.ec.emit('citySelected', {
-        cityName: city
+        cityName: item.LineName,
+        cityId:item.Id
       });
       // 留一点时间让选中态可见，再返回
     setTimeout(() => wx.navigateBack(), 200);

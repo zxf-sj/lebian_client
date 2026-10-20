@@ -7,7 +7,9 @@ var baseUrl = BASE_URL.BASE_URL //配置基础url
 Page({
   data: {
     fromCity: '孝义市',
+    fromCityId:null,
     toCity: '太原市',
+    toCityId:null,
     date: '',
     dateLabel: '',
     dateStart: '',
@@ -91,14 +93,17 @@ getLineList() {
       url: `/pages/city/city?from=${type}&current=${type === 'from' ? this.data.fromCity : this.data.toCity}`,
       events: {
         citySelected: (data) => {
+          console.log(data)
           if (type === 'from') {
             this.setData({
               fromCity: data.cityName,
+              fromCityId:data.cityId,
               selectedKey: '',
             });
           } else {
             this.setData({
               toCity: data.cityName,
+              toCityId:data.cityId,
               selectedKey: '',
             });
           }
@@ -130,7 +135,9 @@ getLineList() {
     const route = ds.route;
     this.setData({
       fromCity: route.startName,
+      fromCityId:route.startId,
       toCity: route.endName,
+      toCityId:route.endId,
       selectedKey: ds.group + '-' + ds.index,
     });
     this.saveCity();
@@ -145,8 +152,6 @@ getLineList() {
 
   onSearch() {
     // 出发地与目的地相同不允许查询
-    console.log(this.data.fromCity)
-    console.log(this.data.toCity)
     if (this.data.fromCity === this.data.toCity) {
       wx.showToast({
         title: '出发地和目的地不能相同',
@@ -156,7 +161,9 @@ getLineList() {
     }
     const query = [
       'from=' + encodeURIComponent(this.data.fromCity),
+      'fromId=' + this.data.fromCityId,
       'to=' + encodeURIComponent(this.data.toCity),
+      'toId=' + this.data.toCityId,
       'date=' + this.data.date,
     ].join('&');
     wx.navigateTo({

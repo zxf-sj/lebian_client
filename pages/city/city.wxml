@@ -6,7 +6,7 @@
       wx:for="{{cities}}"
       wx:key="*this"
       bindtap="onPick"
-      data-city="{{item.LineName}}"
+      data-item="{{item}}"
     >{{item.LineName}}</view>
   </view>
 </view>

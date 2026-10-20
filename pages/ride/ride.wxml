@@ -24,6 +24,7 @@
       class="date-cell {{dateIdx === index ? 'on' : ''}}"
       bindtap="onDateTap"
       data-idx="{{index}}"
+      data-item="{{item}}"
     >
       <text class="dc-label">{{item.label}}</text>
       <text class="dc-md">{{item.md}}</text>
@@ -75,9 +76,9 @@
       <view
         wx:for="{{tabs}}"
         wx:key="name"
-        class="side-item {{tab === index ? 'on' : ''}} {{item.badge ? 'has-badge' : ''}}"
+        class="side-item {{tab === item.id ? 'on' : ''}} {{item.badge ? 'has-badge' : ''}}"
         bindtap="onTabTap"
-        data-idx="{{index}}"
+        data-item="{{item}}"
       >
         <text wx:if="{{item.badge}}" class="side-badge">{{item.badge}}</text>
         <text class="side-name">{{item.name}}</text>
@@ -102,7 +103,7 @@
             class="hot-pill {{item.sel ? 'on' : ''}}"
             bindtap="onHotTap"
             data-idx="{{index}}"
-          >{{item.name}}</view>
+          >{{item.Name}}</view>
         </view>
       </view>
       <view class="hot-link" bindtap="onOpenStationPage">点击进入选择上下车站点</view>
@@ -116,6 +117,7 @@
           class="period {{periodIdx === index ? 'on' : ''}}"
           bindtap="onPeriodTap"
           data-idx="{{index}}"
+          data-item="{{item}}"
         >{{item}}</view>
       </view>
     </view>
@@ -127,20 +129,21 @@
         <view wx:for="{{stationRoutes}}" wx:key="time" class="st-card" bindtap="onBookStation" data-idx="{{index}}">
           <view class="st-main">
             <view class="st-head">
-              <text class="st-time">{{item.time}}</text>
-              <text class="st-type">{{item.type}}</text>
+              <text class="st-time">{{item.Time}}</text>
+              <text class="st-type" wx:if="{{item.IsStart}}">首发</text>
+              <text class="st-type" wx:if="{{!item.IsStart}}">途径</text>
             </view>
             <view class="st-line">
               <view class="st-stop">
                 <view class="st-dot blue"></view>
-                <text class="st-stop-name">{{item.start}}</text>
+                <text class="st-stop-name">{{item.StartSiteName}}</text>
               </view>
               <view class="st-mids">
-                <view wx:for="{{item.mids}}" wx:for-item="m" wx:key="index" class="st-pill">{{m}}</view>
+                <view wx:for="{{item.HotSiteList}}" wx:for-item="m" wx:key="index" class="st-pill">{{m.Name}}</view>
               </view>
               <view class="st-stop">
                 <view class="st-dot red"></view>
-                <text class="st-stop-name">{{item.end}}</text>
+                <text class="st-stop-name">{{item.EndSiteName}}</text>
               </view>
             </view>
           </view>
@@ -149,21 +152,21 @@
               <view class="st-vgroup">
                 <text class="st-vcol">场站售票</text>
                 <view class="st-vcol st-vnumcol">
-                  <text class="st-vnum">{{item.stationPrice}}</text>
+                  <text class="st-vnum">{{item.SitePrice}}</text>
                   <text class="st-vunit">元 /位</text>
                 </view>
               </view>
               <view class="st-vgroup plat">
                 <text class="st-vcol">平台售票</text>
                 <view class="st-vcol st-vnumcol">
-                  <text class="st-vnum">{{item.platformPrice}}</text>
+                  <text class="st-vnum">{{item.TicketPrice}}</text>
                   <text class="st-vunit">元 /位</text>
                 </view>
               </view>
             </view>
             <view class="st-ticket {{item.tickets <= 5 ? 'low' : ''}}">
               <text class="st-ticket-label">余票</text>
-              <text class="st-ticket-num">{{item.tickets}}</text>
+              <text class="st-ticket-num">{{item.EmptySeat}}</text>
             </view>
           </view>
         </view>
@@ -176,18 +179,17 @@
           wx:key="id"
           class="cp-card {{item.sold ? 'sold' : ''}} {{carpoolSel === item.id ? 'sel' : ''}}"
           bindtap="onCarpoolTap"
-          data-id="{{item.id}}"
-          data-sold="{{item.sold}}"
+          data-item="{{item}}"
         >
           <view class="cp-left">
             <text class="cp-route">{{from}}→{{to}}</text>
-            <text class="cp-time">{{item.time}}</text>
+            <text class="cp-time">{{item.StartTime}} ~ {{item.EndTime}}</text>
           </view>
           <view class="cp-right">
             <text class="cp-seats-label">余座</text>
-            <text class="cp-seats">{{item.seats}}</text>
+            <text class="cp-seats">{{item.SeatNum}}</text>
           </view>
-          <view wx:if="{{item.sold}}" class="stamp">SOLD OUT</view>
+          <view wx:if="{{item.SeatNum == 0}}" class="stamp">SOLD OUT</view>
         </view>
       </block>
 
