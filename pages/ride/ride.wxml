@@ -176,10 +176,11 @@
       <block wx:elif="{{tab === 1}}">
         <view
           wx:for="{{carpoolShow}}"
-          wx:key="id"
-          class="cp-card {{item.sold ? 'sold' : ''}} {{carpoolSel === item.id ? 'sel' : ''}}"
+          wx:key=index"
+          class="cp-card {{item.sold ? 'sold' : ''}} {{carpoolSel === item.StartTime ? 'sel' : ''}}"
           bindtap="onCarpoolTap"
           data-item="{{item}}"
+          data-index="{{index}}"
         >
           <view class="cp-left">
             <text class="cp-route">{{from}}→{{to}}</text>

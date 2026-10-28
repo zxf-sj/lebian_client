@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "确认订单",
   "usingComponents": {
-    "kefu-float": "/components/kefu-float/kefu-float"
+    "kefu-float": "/components/kefu-float/kefu-float",
+    "slideCoupon": "/components/slideCoupon/slideCoupon"
   }
 }

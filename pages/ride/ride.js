@@ -119,7 +119,7 @@ Page({
     addrFrom: '煤管局住宅区吕梁市孝义市振兴街',
     addrTo: '煤管局住宅区吕梁市孝义市振兴街2',
     // 时间段：后端定好几点到几点，当前先用模拟数据，接口通了换掉
-    tripTime: '19:00~20:00',
+    tripTime: '',
     charterTimes: [], // [{ label, start, end }]
     timeIdx: -1,
     lineId: '',
@@ -251,9 +251,7 @@ Page({
     });
     this.applyDate(idx);
     this.filterCarpool();
-    // 拉包车可选时间段（后端定义几点到几点）
-    this.fetchCharterTimes(idx);
-    //获取线路Id
+    //获取线路Id；时间段接口依赖线路 Id，在 getLineId 成功回调里再拉
     this.getLineId()
   },
   //获取线路Id
@@ -263,8 +261,8 @@ Page({
     })
     let _this = this;
     let data = {
-      startId: _this.data.fromId,
-      endId: _this.data.toId,
+      startId: _this.data.fromId != 'null' ? _this.data.fromId : 1,
+      endId: _this.data.toId != 'null' ? _this.data.toId : 2,
       today: _this.data.today
     };
     wx.request({
@@ -272,8 +270,20 @@ Page({
       data: data,
       method: "GET",
       success: (res) => {
+        console.log(res.data.data)
+        let data = res.data.data;
         if (res.data.code == 0) {
-          let data = res.data.data
+          let storageSync = {
+            EndLocation_Latitude: data.SedanEndLatLng.Lat,
+            EndLocation_Longitude: data.SedanEndLatLng.Long,
+            StatingLocation_Latitude: data.SedanStartLatLng.Lat,
+            StatingLocation_Longitude: data.SedanStartLatLng.Long,
+            lineId: data.Sedan_LineId,
+          }
+          wx.setStorageSync('storageSync', storageSync)
+          wx.setStorageSync('lineId', data.Sedan_LineId)
+          // 线路 Id 就绪后再拉包车可选时间段（后端定义几点到几点）
+          _this.fetchCharterTimes(_this.data.dateIdx);
           if (data.BusState) {
             if (data.Bus_HotSiteList) {
               let Bus_HotSiteList = data.Bus_HotSiteList
@@ -448,6 +458,7 @@ Page({
     const idx = Number(e.currentTarget.dataset.idx);
     const item = this.data.charterTimes[idx];
     if (!item) return;
+    console.log(item.label)
     this.setData({
       timeIdx: idx,
       tripTime: item.label,
@@ -455,37 +466,50 @@ Page({
     });
   },
 
-  // 获取包车可选时间段（后端定好的"几点到几点"）
-  // TODO 接口就绪后改用：
-  // wx.request({ url: baseUrl + '/api/DispatchMobile/GetCharterTimeListForDate?time=' + d.full + '&lineId=' + this.data.lineId, ... })
-  // 返回 res.data[i].RunTimeShow（如 "08:00-09:00"）
+  // 获取包车可选时间段：GetCharterTimeListForDate 返回 res.data[i].RunTimeShow（如 "08:00-09:00"）
   fetchCharterTimes(dateIdx) {
     const d = this.data.dates[dateIdx];
     if (!d) return;
-
-    // ---- 模拟数据：后端定好的时间段 ----
-    const mockLabels = [
-      '08:00~09:00', '09:00~10:00', '10:00~11:00', '11:00~12:00',
-      '13:00~14:00', '15:00~16:00', '17:00~18:00', '19:00~20:00', '20:00~21:00',
-    ];
-    const charterTimes = mockLabels.map(function (label) {
-      const parts = label.split('~');
-      return {
-        label: label,
-        start: parts[0],
-        end: parts[1]
-      };
-    });
-
-    // 保持已选：原 tripTime 还在列表里就继续选中，否则清空
-    const cur = this.data.tripTime;
-    const keepIdx = charterTimes.findIndex(t => t.label === cur);
+    const lineId = (wx.getStorageSync('storageSync') || {}).lineId;
+    if (!lineId) return;
     this.setData({
-      charterTimes: charterTimes,
-      timeIdx: keepIdx,
-      tripTime: keepIdx >= 0 ? cur : '',
-      timeLoading: false,
+      timeLoading: true
     });
+    wx.request({
+      url: baseUrl + '/api/DispatchMobile/GetCharterTimeListForDate',
+      data: {
+        time: d.full,
+        lineId: lineId
+      },
+      method: "GET",
+      success: (res) => {
+        const list = res.data.code == 0 ? (res.data.data || []) : [];
+        // 后端用 "08:00-09:00"，本页统一成 "08:00~09:00"
+        const charterTimes = list.map(item => {
+          const parts = String(item.RunTimeShow || '').split('-');
+          return {
+            label: parts[0] + '~' + parts[1],
+            start: parts[0],
+            end: parts[1]
+          };
+        });
+        // 保持已选：原 tripTime 还在列表里就继续选中，否则清空
+        const cur = this.data.tripTime;
+        const keepIdx = charterTimes.findIndex(t => t.label === cur);
+        this.setData({
+          charterTimes: charterTimes,
+          timeIdx: keepIdx,
+          tripTime: keepIdx >= 0 ? cur : '',
+          timeLoading: false,
+        });
+      },
+      fail: (err) => {
+        console.error('网络异常:', err)
+        this.setData({
+          timeLoading: false
+        });
+      }
+    })
   },
 
   onTabTap(e) {
@@ -550,6 +574,8 @@ Page({
 
   // 选中班次并跳转下单页（仅拼车上门）
   onCarpoolTap(e) {
+    let _this = this;
+    console.log(e.currentTarget.dataset)
     let data = e.currentTarget.dataset.item
     console.log(data)
     if (data.SeatNum == 0) {
@@ -560,23 +586,25 @@ Page({
       return;
     }
     // const item = this.data.carpoolAll.find(c => c.id === id);
-    // const d = this.data.dates[this.data.dateIdx];
-    // this.setData({
-    //   carpoolSel: id
-    // });
-    // wx.navigateTo({
-    //   url: `/pages/rideOrder/rideOrder?mode=carpool` +
-    //     `&from=${encodeURIComponent(this.data.from)}` +
-    //     `&to=${encodeURIComponent(this.data.to)}` +
-    //     `&dayLabel=${d.label}&md=${d.md}&time=${item.time}&date=${d.full}`,
-    //   fail(err) {
-    //     wx.showModal({
-    //       title: '跳转失败',
-    //       content: String((err && err.errMsg) || err),
-    //       showCancel: false,
-    //     });
-    //   },
-    // });
+    const d = this.data.dates[this.data.dateIdx];
+    console.log(d)
+    this.setData({
+      carpoolSel: data.StartTime
+    });
+   
+    wx.navigateTo({
+      url: `/pages/rideOrder/rideOrder?mode=carpool` +
+        `&from=${encodeURIComponent(this.data.from)}` +
+        `&to=${encodeURIComponent(this.data.to)}` +
+        `&dayLabel=${d.label}&md=${d.md}&time=${data.StartTime + '~' + data.EndTime}&date=${d.full}` ,
+      fail(err) {
+        wx.showModal({
+          title: '跳转失败',
+          content: String((err && err.errMsg) || err),
+          showCancel: false,
+        });
+      },
+    });
   },
 
   /* ===== 包车出发：右侧直接下单 ===== */

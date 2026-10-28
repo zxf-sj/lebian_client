@@ -20,51 +20,47 @@
     <view class="ch-chip wide">
       <text class="chc-route">{{from}} → {{to}}</text>
     </view>
-    <view class="ch-chip">
-      <text class="chc-price">¥{{vehPrice}}</text>
-    </view>
   </view>
 
   <!-- 站点 -->
   <view class="sta-wrap">
-    <view class="sta-row" bindtap="onPickAddr" data-direction="starting">
+    <view class="sta-row" bindtap="onPickAddr" data-direction="starting" data-city="{{from}}">
       <view class="sta-dot on">
         <view class="sta-dot-inner"></view>
       </view>
       <view class="sta-info">
-        <text class="sta-addr">{{stations[0].city}}市 {{stations[0].address}}</text>
+        <text class="sta-addr">{{from}}市 {{startingAddress}}</text>
       </view>
     </view>
     <view class="sta-line"></view>
-    <view class="sta-row" bindtap="onPickAddr" data-direction="ending">
+    <view class="sta-row" bindtap="onPickAddr" data-direction="ending" data-city="{{to}}">
       <view class="sta-dot off">
         <view class="sta-dot-inner"></view>
       </view>
       <view class="sta-info">
-        <text class="sta-addr">{{stations[1].city}}市 {{stations[1].address}}</text>
+        <text class="sta-addr">{{to}}市 {{endingAddress}}</text>
       </view>
     </view>
   </view>
 
   <!-- 车型选择 -->
-  <view wx:for="{{vehicles}}" wx:key="name" class="veh-card {{vehSel === index ? 'sel' : ''}}" bindtap="onVehTap" data-idx="{{index}}">
+  <view wx:for="{{vehicles}}" wx:key="Id" class="veh-card {{vehSel === index ? 'sel' : ''}}  {{item.CarSeatState? '' : 'CarSeatState'}}" bindtap="onVehTap" data-idx="{{index}}">
     <view class="car_left">
       <view class="car_top">
-        <text class="veh-name">{{item.name}}</text>
+        <text class="veh-name">{{item.CarType_Name}}</text>
         <view class="veh-price">
           <text class="veh-cl">价格</text>
-          <text class="veh-origin">¥{{item.origin || item.price}}</text>
+          <text class="veh-origin">¥{{item.OriginalPrice}}</text>
         </view>
       </view>
-      <view wx:if="{{item.origin}}" class="veh-special">
+      <view wx:if="{{item.AdultTotalFare}}" class="veh-special">
         <text class="veh-hot">限时特惠</text>
-        <text class="veh-sp-price">¥{{item.price}}</text>
+        <text class="veh-sp-price">¥{{item.AdultTotalFare}}</text>
       </view>
     </view>
     <view class="veh-right">
-      <image src="{{item.img}}" mode="aspectFit" class="car_img"/>
+      <image src="{{baseUrl+item.Note}}" mode="aspectFit" class="car_img"/>
     </view>
-    <view class="veh-tag">{{item.tag}}</view>
   </view>
 
   <!-- 成人/儿童：拼车下单页显示 -->
@@ -102,30 +98,57 @@
     <text class="notice-line">※儿童是指3岁以下的小朋友，每位成人乘客仅可享受一位儿童价优惠票。</text>
   </view>
 
-  <view class="fee-row">
-    <text class="fee-label">优惠券</text>
-    <text class="fee-val link">可用3张></text>
+  <view class="fee-row" bindtap="showCoupon">
+    <text class="fee-label">次卡/优惠券</text>
+    <text class="fee-val link">{{couponText}}</text>
   </view>
-  <view class="fee-row">
-    <text class="fee-label">订单总额</text>
-    <text class="fee-val">¥{{vehPrice}}</text>
-  </view>
-  <view class="fee-row">
-    <text class="fee-label">基本票价</text>
-    <text class="fee-val">¥{{vehPrice}}</text>
-  </view>
-  <view class="fee-row total">
-    <text class="fee-label">合计</text>
-    <text class="fee-val price big">¥{{vehPrice}}</text>
+  <view class="details">
+    <view class="detailList">
+      <view class="detailList_l">订单总额</view>
+      <view class="detailList_r">{{TotalFare || 0}}</view>
+    </view>
+    <view class="detailList">
+      <view class="detailList_l">基本票价</view>
+      <view class="detailList_r">{{Price || 0}} X {{passengers[0].adults}}</view>
+    </view>
+    <view class="detailList" wx:if="{{passengers[paxIdx].children > 0 && ChildPrice}}">
+      <view class="detailList_l">儿童优惠票价</view>
+      <view class="detailList_r">{{ChildPrice}} X {{passengers[0].children}}</view>
+    </view>
+    
+    <view class="detailList" wx:if="{{rangfenceMapList.length > 0}}" wx:for="{{rangfenceMapList}}" wx:key="item">
+      <view class="detailList_l">{{item.Name}}超范围</view>
+      <view class="detailList_r">
+        <view class="additional">{{item.Price}} X {{passengers[0].adults + passengers[0].children}}</view>
+      </view>
+    </view>
+    <view class="detailList" wx:if="{{coupon_num > 0}}">
+      <view class="detailList_l">优惠券</view>
+      <view class="detailList_r">
+        <view class="additional">- {{coupon_num}} 张</view>
+      </view>
+    </view>
+    <view class="detailList" wx:if="{{membershipCard_num > 0}}">
+      <view class="detailList_l">次卡</view>
+      <view class="detailList_r">
+        <view class="additional">- {{membershipCard_num}} 张</view>
+      </view>
+    </view>
+    <view class="detailList">
+      <view class="detailList_l">合计</view>
+      <view class="detailList_r">{{TotalFare || 0}}</view>
+    </view>
   </view>
 
-  <view class="agree" bindtap="onAgreeTap">
-    <view class="agree-box {{agree ? 'on' : ''}}">{{agree ? '✓' : ''}}</view>
-    <text class="agree-text">下单即同意本</text>
-    <text class="agree-link">《服务条款》</text>
+  <view class="signUp-tip">
+    <view class="agree-box {{agree ? 'on' : ''}}" catchtap="onAgreeTap">{{agree ? '✓' : ''}}</view>
+    <view class="signUp-tip-txt">
+      下单即同意本服务条款
+      <text class="signUp-tip-txt-protocol" catchtap="gotoxieyi">《用户须知》</text>
+    </view>
   </view>
 
-  <view class="pay-btn" bindtap="onPay">预约支付</view>
+  <view class="pay-btn" bindtap="onPay" style="{{agree?'':'background:#eee;'}}">预约支付</view>
   <view class="gap"></view>
 
   <!-- 日期选择弹框（限今天起四天） -->
@@ -149,7 +172,7 @@
     </view>
   </view>
 
-  <!-- 时间段选择弹框（选项由后端返回，当前为模拟数据） -->
+  <!-- 时间段选择弹框（选项由接口返回） -->
   <view class="mask" wx:if="{{timeSheetOpen}}" bindtap="onCloseSheets">
     <view class="sheet" catchtap="noop">
       <view class="sheet-title">选择时间段</view>
@@ -166,6 +189,64 @@
         </view>
       </scroll-view>
       <view wx:else class="sheet-empty">当前日期暂无可选时间段</view>
+    </view>
+  </view>
+
+  <!-- 次卡/优惠券选择弹框（组件内部自行拉取，参考 pingche2） -->
+  <slideCoupon wx:if="{{showCoupon}}" class="slide-comp" params="{{slideCouponParams}}" hasChooseId="{{hasChooseId}}" showCoupon="{{showCoupon}}" bindCouponState="couponStateHandle" bindExchangeItem="onExchangeItem" person_number="{{actualAdultCount}}"></slideCoupon>
+
+  <!-- 用户须知弹框 -->
+  <import src="/components/wxParse/wxParse.wxml" />
+  <view class="mask-center" catchtouchmove="true" wx:if="{{isshow}}">
+    <view class="box_3">
+      <scroll-view scroll-y="true" style="height:70vh;">
+        <template is="wxParse" data="{{wxParseData:content.nodes}}" />
+      </scroll-view>
+    </view>
+    <view class="buttonsView">
+      <button class="buttons1" bind:tap="tongyi">同意</button>
+      <button class="buttons2" bind:tap="guanbi">取消</button>
+    </view>
+  </view>
+
+  <!-- 底部支付方式弹框 -->
+  <view class="pay-mask" wx:if="{{paySheetShow}}" catchtouchmove="noop" bind:tap="cancelPaySheet">
+    <view class="pay-sheet" catchtap="noop">
+      <view class="pay-sheet-head">
+        <view class="pay-sheet-title">请确认手机号</view>
+        <view class="pay-sheet-close" catchtap="cancelPaySheet">×</view>
+      </view>
+      <view class="pay-sheet-phone">{{phone}}</view>
+      <!-- 支付立减优惠 -->
+      <view class="pay-promo">
+        <view class="pay-promo-head">
+          <view class="pay-promo-icon">¥</view>
+          <view class="pay-promo-title">支付立减优惠</view>
+          <view class="pay-promo-detail" catchtap="togglePayPromoDetail">
+            <text>详情</text>
+            <text class="pay-promo-arrow {{payPromoDetailShow ? 'pay-promo-arrow-up' : ''}}">∨</text>
+          </view>
+        </view>
+        <view class="pay-promo-strip">云闪付支付｜至高立减20元｜每日名额有限</view>
+        <view class="pay-promo-list" wx:if="{{payPromoDetailShow}}">
+          <view class="pay-promo-item" wx:for="{{payPromoRules}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+      <view class="pay-sheet-label">支付方式</view>
+      <view class="pay-option {{payType === item.key ? 'pay-option-active' : ''}}" wx:for="{{payTypeList}}" wx:key="key" data-key="{{item.key}}" catchtap="onPayTypeChange">
+        <view class="pay-option-main">
+          <image src="{{item.img}}" class="pay-option-logo" mode="aspectFit"></image>
+          <view class="pay-option-left">
+            <view class="pay-option-name">{{item.name}}</view>
+            <view class="pay-option-tags" wx:if="{{item.tip || item.tag}}">
+              <text class="pay-option-tip" wx:if="{{item.tip}}">{{item.tip}}</text>
+              <text class="pay-option-tag" wx:if="{{item.tag}}">{{item.tag}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="pay-radio {{payType === item.key ? 'pay-radio-active' : ''}}"></view>
+      </view>
+      <view class="pay-sheet-btn" catchtap="confirmPaySheet">确认支付并下单</view>
     </view>
   </view>
 </view>

@@ -6,10 +6,10 @@ var baseUrl = BASE_URL.BASE_URL //配置基础url
 
 Page({
   data: {
-    fromCity: '孝义市',
-    fromCityId:null,
-    toCity: '太原市',
-    toCityId:null,
+    fromCity: '孝义',
+    fromCityId: null,
+    toCity: '太原',
+    toCityId: null,
     date: '',
     dateLabel: '',
     dateStart: '',
@@ -20,7 +20,9 @@ Page({
   },
 
   onLoad() {
-    
+    const accountInfo = wx.getAccountInfoSync();
+    const appId = accountInfo.miniProgram.appId;
+    wx.setStorageSync('appId', appId)
     const today = new Date();
     const maxDate = new Date(today.getTime());
     maxDate.setDate(maxDate.getDate() + 3);
@@ -29,7 +31,7 @@ Page({
       dateLabel: this.formatLabel(today),
       dateStart: this.formatDate(today),
       dateEnd: this.formatDate(maxDate),
-  
+
     });
     // 读取缓存的城市选择
     const saved = wx.getStorageSync('chengjiCity');
@@ -43,38 +45,39 @@ Page({
     }
     this.getLineList()
   },
-//获取路线列表
-getLineList() {
-  wx.showLoading({
-    title: '',
-  })
-  let _this = this;
-  
-  wx.request({
-    url: baseUrl + '/api/BusMobile/GetHotLineCityList',
-    data: {},
-    method: "GET",
-    success: (res) => {
-      
-      if (res.data.code == 0) {
-       console.log(res)
-        _this.setData({
-          hotRoutes:res.data.data
-        })
-      } else {
-        wx.showToast({
-          title: res.data.msg,
-          icon: "none"
-        })
+  //获取路线列表
+  getLineList() {
+    wx.showLoading({
+      title: '',
+    })
+    let _this = this;
+
+    wx.request({
+      url: baseUrl + '/api/BusMobile/GetHotLineCityList',
+      data: {},
+      method: "GET",
+      success: (res) => {
+
+        if (res.data.code == 0) {
+          console.log(res)
+          _this.setData({
+            hotRoutes: res.data.data
+          })
+        } else {
+          wx.showToast({
+            title: res.data.msg,
+            icon: "none"
+          })
+        }
+      },
+      fail(err) {
+        console.error('网络异常:', err)
+      },
+      complete() {
+        wx.hideLoading()
       }
-    },
-    fail(err) {
-      console.error('网络异常:', err)
-    },complete() {
-      wx.hideLoading()
-    }
-  })
-},
+    })
+  },
   formatDate(d) {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -97,13 +100,13 @@ getLineList() {
           if (type === 'from') {
             this.setData({
               fromCity: data.cityName,
-              fromCityId:data.cityId,
+              fromCityId: data.cityId,
               selectedKey: '',
             });
           } else {
             this.setData({
               toCity: data.cityName,
-              toCityId:data.cityId,
+              toCityId: data.cityId,
               selectedKey: '',
             });
           }
@@ -135,9 +138,9 @@ getLineList() {
     const route = ds.route;
     this.setData({
       fromCity: route.startName,
-      fromCityId:route.startId,
+      fromCityId: route.startId,
       toCity: route.endName,
-      toCityId:route.endId,
+      toCityId: route.endId,
       selectedKey: ds.group + '-' + ds.index,
     });
     this.saveCity();

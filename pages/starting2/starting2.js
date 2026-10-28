@@ -36,7 +36,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
- 
+    console.log(options)
     this.setData({
       xianzhi: options.xianzhi
     })
@@ -46,22 +46,17 @@ Page({
         wx.setNavigationBarTitle({
           title: '上车地点'
         });
-        this.setData({
-          city: storageSync.startingCity,
-          startingLati: storageSync.StatingLocation_Latitude + ',' + storageSync.StatingLocation_Longitude
-        })
+      
       } else if (options.direction == "ending") {
         wx.setNavigationBarTitle({
           title: '下车地点'
         });
-        this.setData({
-          city: storageSync.endingCity,
-          endingLati: storageSync.EndLocation_Latitude + ',' + storageSync.EndLocation_Longitude
-        })
+       
       }
       this.setData({
         direction: options.direction,
-        type: options.type
+        type: options.type,
+        city:options.city + '市'
       })
     }
     this.calculateScrollViewHeight()
@@ -87,9 +82,11 @@ Page({
     });
     BMap.regeocoding({
       success: function (res) {
+        console.log(res)
         let adRes = res.originalData.result;
         var data = res.wxMarkerData[0];
-  
+        console.log(adRes.addressComponent.city)
+        console.log(that.data.city)
         if (adRes.addressComponent.city == that.data.city && that.data.type != 'ly') {
           console.log('111')
           that.setData({
@@ -309,6 +306,7 @@ Page({
           BMap.regeocoding({
             location: res.latitude + ',' + res.longitude,
             success: function (res1) {
+              console.log(res1)
               let adRes = res1.originalData.result;
               if (that.data.isyun == 1) {
                 if (startCity != adRes.addressComponent.city) {
@@ -411,6 +409,7 @@ Page({
   //点击地址列表
   clickAddress(e) {
     let that = this;
+    console.log(e)
     let item = e.currentTarget.dataset.item
 
     let index = e.currentTarget.dataset.index
@@ -429,7 +428,7 @@ Page({
     if (that.data.direction == "starting") {
       var starInfo2 = {};
       starInfo2.startCity = that.data.city;
-      starInfo2.startAddress = item.address;
+      starInfo2.startAddress = item.name;
       starInfo2.startName = item.name + item.address;
       starInfo2.startLait = item.location.lat;
       starInfo2.startLont = item.location.lng;
@@ -439,7 +438,7 @@ Page({
     } else if (that.data.direction == "ending") {
       var endInfo2 = {};
       endInfo2.endCity = that.data.city;
-      endInfo2.endAddress = item.address;
+      endInfo2.endAddress = item.name;
       endInfo2.endName = item.name + item.address;
       endInfo2.endLait = item.location.lat;
       endInfo2.endLont = item.location.lng;
@@ -636,6 +635,21 @@ Page({
               url: '/driving_status/pages/lvyouList/lvyouList',
             })
           }
+        } else if(that.data.type == 'pc') {
+          // 下单页是从本页 navigateTo 打开的，用 navigateBack 返回原页面实例，
+          // 才能保留 onLoad 带入的 from / to；reLaunch 会重建页面把参数清空
+          wx.navigateBack({
+            delta: 1,
+            fail: () => {
+              // 页面栈里没有下单页（极少见），兜底重新打开，起终点城市从缓存取
+              let s = wx.getStorageSync('starInfo2') || {};
+              let en = wx.getStorageSync('endInfo2') || {};
+              wx.redirectTo({
+                url: '/pages/rideOrder/rideOrder?from=' + encodeURIComponent(s.startCity || '') +
+                  '&to=' + encodeURIComponent(en.endCity || '')
+              })
+            }
+          })
         }
       },
       fail(err) {

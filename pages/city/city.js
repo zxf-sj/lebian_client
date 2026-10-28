@@ -1,11 +1,5 @@
 // pages/city/city.js
-const CITIES = [
-  '太原市', '离市区', '榆次大学城',
-  '孝义市', '汾阳市', '文水县',
-  '交城县', '兴县', '临县',
-  '柳林县', '石楼县', '岚县',
-  '方山县', '中阳县', '交口县',
-];
+const CITIES = [];
 const BASE_URL = require("../../utils/BASE_URL");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 Page({

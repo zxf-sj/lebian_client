@@ -40,8 +40,7 @@ page { background: #f4f6f9; }
 .chc-row { display: flex; align-items: center; margin-top: 4rpx; }
 .chc-md { font-size: 26rpx; color: #4a525c; }
 .chc-route { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
-.chc-arrow { font-size: 22rpx; color: #7b8593; margin-left: 6rpx; }
-.chc-price { font-size: 34rpx; font-weight: 700; color: #1a1a1a; }
+.chc-arrow { font-size: 32rpx; color: #7b8593; margin-left: 6rpx; }
 
 /* ===== 底部弹框：日期 / 时间段 ===== */
 .mask {
@@ -89,7 +88,7 @@ page { background: #f4f6f9; }
   margin-bottom: 24rpx;
   box-shadow: 0 2rpx 12rpx rgba(0,0,0,.05);
 }
-.sta-row { display: flex; align-items: center; padding: 18rpx 0; }
+.sta-row { display: flex; align-items: center; padding: 30rpx 0; }
 .sta-dot {
   width: 28rpx; height: 28rpx; border-radius: 50%; flex: none;
   display: flex; align-items: center; justify-content: center;
@@ -99,9 +98,9 @@ page { background: #f4f6f9; }
 .sta-dot-inner { width: 12rpx; height: 12rpx; border-radius: 50%; background: #fff; }
 
 .sta-line {
-  position: absolute; left: 45rpx; top: 50%;
-  width: 2rpx; height: 40rpx; background: #d0d5dd;
-  transform: translateY(-50%);
+  height: 2rpx;
+  margin: 0 0 0 52rpx;
+  background: #d0d5dd;
 }
 .sta-info { flex: 1; margin-left: 24rpx; display: flex; flex-direction: column; }
 .sta-addr { font-size: 28rpx; color: #1a1a1a; font-weight: 500; }
@@ -140,12 +139,6 @@ page { background: #f4f6f9; }
   width: 100%;
   height: 170rpx;
 }
-.veh-tag {
-  position: absolute; top: 8rpx; right: 12rpx;
-  background: #fff; border-radius: 22rpx; padding: 2rpx 16rpx;
-  font-size: 22rpx; color: #6b7480; line-height: 34rpx;
-}
-.veh-card.sel .veh-tag { color: #2ba9e8; }
 
 /* ===== 成人/儿童 ===== */
 .pax-row { display: flex; align-items: center; margin: 30rpx 0 10rpx;justify-content: center; }
@@ -175,15 +168,36 @@ page { background: #f4f6f9; }
 .fee-label { font-size: 28rpx; color: #1a1a1a; }
 .fee-val { margin-left: auto; font-size: 28rpx; color: #1a1a1a; }
 .fee-val.link { color: #2ba9e8; }
-.fee-val.price { color: #1a1a1a; font-weight: 700; }
-.fee-val.price.big { font-size: 32rpx; }
-.fee-row.total .fee-label { font-weight: 700; font-size: 32rpx; }
 
-.agree { display: flex; align-items: center; justify-content: center; margin: 26rpx 0 20rpx; }
-.agree-box { width: 34rpx; height: 34rpx; border-radius: 6rpx; border: 2rpx solid #c3cede; display: flex; align-items: center; justify-content: center; font-size: 26rpx; color: #fff; margin-right: 10rpx; }
+/* ===== 费用明细（参考 pingche2） ===== */
+.details { box-sizing: border-box; padding: 0 20rpx; font-size: 24rpx; color: #999; }
+.detailList {
+  height: 60rpx;
+  line-height: 60rpx;
+  display: flex;
+  padding: 0 10rpx;
+  border-bottom: 2rpx solid #f0f2f5;
+}
+.detailList_l { height: 100%; width: 70%; text-align: left; font-size: 28rpx; color: #1a1a1a; }
+.detailList_r { height: 100%; flex: 1; text-align: right; font-weight: 500; font-size: 28rpx; color: #1a1a1a; }
+.additional { display: inline; color: #e64340; font-size: 24rpx; }
+
+/* ===== 服务条款 ===== */
+.signUp-tip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: #999;
+  height: 60rpx;
+  line-height: 60rpx;
+  width: 100%;
+  margin: 26rpx 0 20rpx;
+}
+.signUp-tip-txt { height: 60rpx; margin-top: 20rpx; line-height: 60rpx; }
+.signUp-tip-txt-protocol { font-size: 28rpx; color: #2ba9e8; }
+.agree-box { width: 34rpx; height: 34rpx; border-radius: 6rpx; border: 2rpx solid #c3cede; display: flex; align-items: center; justify-content: center; font-size: 26rpx; color: #fff; margin-right: 10rpx; flex: none; }
 .agree-box.on { background: #2ba9e8; border-color: #2ba9e8; }
-.agree-text { font-size: 26rpx; color: #1a1a1a; }
-.agree-link { font-size: 26rpx; color: #2ba9e8; font-weight: 700; }
 
 .pay-btn {
   height: 92rpx; line-height: 92rpx; text-align: center;
@@ -193,3 +207,140 @@ page { background: #f4f6f9; }
 }
 .pay-btn:active { opacity: .85; }
 .gap { height: 40rpx; }
+.CarSeatState {
+  background-color: #999999;
+}
+
+/* ===== 用户须知弹框（参考 pingche2） ===== */
+.mask-center {
+  position: fixed;
+  left: 0; right: 0; top: 0; bottom: 0;
+  background: rgba(0, 0, 0, .5);
+  z-index: 999;
+}
+.box_3 {
+  background: #fefefe;
+  width: 80%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 10%;
+  border-radius: 20rpx;
+  padding: 0 20rpx;
+}
+.buttonsView {
+  width: 80%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 85%;
+  display: flex;
+}
+.buttons1 { width: 130rpx; font-size: 28rpx; background: #d09c0a; color: #fff; }
+.buttons2 { width: 130rpx; font-size: 28rpx; background: #e60c0c; color: #fff; }
+
+/* ===== 底部支付方式弹框（参考 pingche2） ===== */
+.pay-mask {
+  position: fixed;
+  left: 0; top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+.pay-sheet {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 32rpx 32rpx calc(32rpx + env(safe-area-inset-bottom));
+}
+.pay-sheet-head { display: flex; align-items: center; justify-content: center; position: relative; }
+.pay-sheet-title { font-size: 34rpx; font-weight: 600; color: #010101; }
+.pay-sheet-close {
+  position: absolute;
+  right: 0;
+  top: -10rpx;
+  font-size: 48rpx;
+  line-height: 48rpx;
+  color: #999;
+  padding: 0 10rpx;
+}
+.pay-sheet-phone {
+  margin-top: 16rpx;
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #F08718;
+  letter-spacing: 2rpx;
+}
+.pay-sheet-label { margin: 32rpx 0 16rpx; font-size: 28rpx; color: #666; }
+
+/* 支付立减优惠卡片 */
+.pay-promo { margin-top: 24rpx; background: #fdf0ec; border-radius: 16rpx; padding: 20rpx 20rpx 22rpx; }
+.pay-promo-head { display: flex; align-items: center; }
+.pay-promo-icon {
+  width: 40rpx; height: 40rpx; line-height: 40rpx; text-align: center;
+  background: linear-gradient(135deg, #ff7a45 0%, #e60c0c 100%);
+  color: #fff; font-size: 26rpx; font-weight: 600; border-radius: 10rpx; flex-shrink: 0;
+}
+.pay-promo-title { margin-left: 12rpx; font-size: 28rpx; font-weight: 600; color: #e60c0c; }
+.pay-promo-detail { margin-left: auto; display: flex; align-items: center; font-size: 26rpx; color: #e60c0c; padding: 6rpx 0 6rpx 20rpx; }
+.pay-promo-arrow { margin-left: 6rpx; font-size: 24rpx; transition: transform 0.2s; }
+.pay-promo-arrow-up { transform: rotate(180deg); }
+.pay-promo-strip {
+  margin-top: 16rpx;
+  display: inline-block;
+  background: linear-gradient(90deg, #ff8a3d 0%, #f5402a 100%);
+  color: #fff; font-size: 24rpx; font-weight: 500; border-radius: 8rpx; padding: 8rpx 16rpx;
+}
+.pay-promo-list { margin-top: 16rpx; border-top: 2rpx dashed #f3c9bd; padding-top: 14rpx; }
+.pay-promo-item { position: relative; font-size: 24rpx; color: #b3341f; line-height: 44rpx; padding-left: 24rpx; }
+.pay-promo-item::before {
+  content: '';
+  position: absolute;
+  left: 6rpx;
+  top: 18rpx;
+  width: 8rpx; height: 8rpx; border-radius: 50%;
+  background: #e60c0c;
+}
+
+/* 支付方式选项 */
+.pay-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26rpx 24rpx;
+  border: 2rpx solid #eee;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  background: #fafafa;
+}
+.pay-option-active { border-color: #F08718; background: #fff8ee; }
+.pay-option-main { display: flex; align-items: center; }
+.pay-option-logo { width: 56rpx; height: 56rpx; margin-right: 20rpx; flex-shrink: 0; border-radius: 8rpx; }
+.pay-option-left { display: flex; flex-direction: column; }
+.pay-option-name { font-size: 30rpx; color: #010101; font-weight: 500; }
+.pay-option-tags { display: flex; align-items: center; margin-top: 10rpx; flex-wrap: wrap; }
+.pay-option-tip { font-size: 24rpx; color: #e60c0c; margin-right: 12rpx; }
+.pay-option-tag {
+  font-size: 22rpx; color: #fff;
+  background: linear-gradient(90deg, #ff6a3d 0%, #e60c0c 100%);
+  border-radius: 6rpx; padding: 2rpx 12rpx;
+}
+.pay-radio {
+  width: 40rpx; height: 40rpx; border-radius: 50%;
+  border: 2rpx solid #ccc; box-sizing: border-box; flex-shrink: 0;
+}
+.pay-radio-active { border: 12rpx solid #F08718; background: #fff; }
+.pay-sheet-btn {
+  margin-top: 24rpx;
+  height: 100rpx;
+  line-height: 100rpx;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(253, 209, 0, 1) 0%, rgba(240, 135, 24, 1) 100%);
+  color: #fff; font-size: 32rpx; border-radius: 20rpx;
+}
