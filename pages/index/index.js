@@ -173,4 +173,11 @@ Page({
       url: '/pages/ride/ride?' + query,
     });
   },
+
+  // 返程预约入口（同旧版首页 index.js 的 fancheng）
+  fancheng() {
+    wx.navigateTo({
+      url: '/pages/fancheng/fancheng'
+    })
+  },
 });

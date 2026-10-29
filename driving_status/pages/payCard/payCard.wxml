@@ -62,5 +62,44 @@
       <image src="{{imgbaseUrl + '/wxImg/20260130154711_465_369.jpg'}}" mode="widthFix"/>
     </view> -->
   </view>
+
+  <!-- 底部支付方式弹框 -->
+  <view class="pay-mask" wx:if="{{paySheetShow}}" catchtouchmove="noop" bind:tap="cancelPaySheet">
+    <view class="pay-sheet" catchtap="noop">
+      <view class="pay-sheet-head">
+        <view class="pay-sheet-title">请选择支付方式</view>
+        <view class="pay-sheet-close" bind:tap="cancelPaySheet">×</view>
+      </view>
+      <!-- 支付立减优惠 -->
+      <view class="pay-promo">
+        <view class="pay-promo-head">
+          <view class="pay-promo-icon">¥</view>
+          <view class="pay-promo-title">支付立减优惠</view>
+          <view class="pay-promo-detail" catchtap="togglePayPromoDetail">
+            <text>详情</text>
+            <text class="pay-promo-arrow {{payPromoDetailShow ? 'pay-promo-arrow-up' : ''}}">∨</text>
+          </view>
+        </view>
+        <view class="pay-promo-strip">云闪付支付｜至高立减20元｜每日名额有限</view>
+        <view class="pay-promo-list" wx:if="{{payPromoDetailShow}}">
+          <view class="pay-promo-item" wx:for="{{payPromoRules}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+      <view class="pay-option {{payType === item.key ? 'pay-option-active' : ''}}" wx:for="{{payTypeList}}" wx:key="key" data-key="{{item.key}}" bind:tap="onPayTypeChange">
+        <view class="pay-option-main">
+          <image src="{{item.img}}" class="pay-option-logo" mode="aspectFit"></image>
+          <view class="pay-option-left">
+            <view class="pay-option-name">{{item.name}}</view>
+            <view class="pay-option-tags" wx:if="{{item.tip || item.tag}}">
+              <text class="pay-option-tip" wx:if="{{item.tip}}">{{item.tip}}</text>
+              <text class="pay-option-tag" wx:if="{{item.tag}}">{{item.tag}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="pay-radio {{payType === item.key ? 'pay-radio-active' : ''}}"></view>
+      </view>
+      <view class="pay-sheet-btn" bind:tap="confirmPaySheet">确认支付并下单</view>
+    </view>
+  </view>
 </view>
 <kefu-float />

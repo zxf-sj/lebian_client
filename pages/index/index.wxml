@@ -38,6 +38,11 @@
     <view class="search-btn" bindtap="onSearch">
       <text class="search-btn-text">查询</text>
     </view>
+
+    <!-- 返程入口（同旧版首页 grid 的「返程」） -->
+    <view class="fancheng-entry" bindtap="fancheng">
+      <text class="fancheng-entry-text">⇄ 返程预约</text>
+    </view>
   </view>
 
   <!-- 历史线路 -->

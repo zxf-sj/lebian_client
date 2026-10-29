@@ -113,6 +113,25 @@ page {
   letter-spacing: 8rpx;
 }
 
+/* --- 返程入口 --- */
+.fancheng-entry {
+  margin-top: 20rpx;
+  height: 72rpx;
+  border: 2rpx solid #2ba9e8;
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.fancheng-entry-text {
+  color: #2ba9e8;
+  font-size: 28rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
 /* --- 线路区块 --- */
 .section {
   margin: 30rpx 24rpx 0;

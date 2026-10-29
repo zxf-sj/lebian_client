@@ -11,6 +11,7 @@
     "components/distanceNav/distanceNav",
     "components/modelComponent/modelComponent",
     "pages/routeDetail/routeDetail",
+    "pages/fancheng/fancheng",
     "pages/fanchengmap/fanchengmap",
     "pages/city/city",
     "pages/life/life",

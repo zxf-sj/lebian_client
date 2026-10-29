@@ -53,19 +53,17 @@
       <view class="ch-chip wide">
         <text class="chc-route">{{from}} → {{to}}</text>
       </view>
-      <view class="ch-chip">
-        <text class="chc-price">¥{{vehPrice}}</text>
-      </view>
+     
     </view>
 
     <view class="ch-addr">
       <view class="ch-addr-row" bindtap="onPickAddr" data-direction="starting">
         <text class="ch-addr-city">{{from}}</text>
-        <text class="ch-addr-text">{{addrFrom}}</text>
+        <text class="ch-addr-text {{addrFrom ? '' : 'ch-addr-ph'}}">{{addrFrom || '请选择上车位置'}}</text>
       </view>
       <view class="ch-addr-row" bindtap="onPickAddr" data-direction="ending">
         <text class="ch-addr-city">{{to}}</text>
-        <text class="ch-addr-text">{{addrTo}}</text>
+        <text class="ch-addr-text {{addrTo ? '' : 'ch-addr-ph'}}">{{addrTo || '请选择下车位置'}}</text>
       </view>
     </view>
   </view>
@@ -196,29 +194,31 @@
 
       <!-- ========== 3. 包车出发：右侧直接下单，不跳转 ========== -->
       <block wx:elif="{{tab === 2}}">
-        <!-- 车型选择 -->
-        <view wx:for="{{charterVeh}}" wx:key="name" class="veh-card {{vehSel === index ? 'sel' : ''}}" bindtap="onVehTap" data-idx="{{index}}">
+        <!-- 车型选择（getPriceListForLineId 返回） -->
+        <view wx:for="{{carTypeList}}" wx:key="index" class="veh-card {{carType === index ? 'sel' : ''}}" bindtap="onVehTap" data-index="{{index}}">
           <view class="car_left">
             <view class="car_top">
-              <text class="veh-name">{{item.name}}</text>
-              <text wx:if="{{item.hot}}" class="veh-hot">限时特惠</text>
+              <text class="veh-name">{{item.Name}}</text>
+              <text wx:if="{{item.PromotionDiscountType == 0}}" class="veh-origin">¥{{item.OriginalPrice}}</text>
+              <text wx:if="{{item.PromotionDiscountType == 0}}" class="veh-hot">限时特惠</text>
             </view>
             <view class="car_bot">
               <view class="veh-col">
                 <text class="veh-cl">可乘坐</text>
-                <text class="veh-cv">{{item.seats}}</text>
+                <text class="veh-cv">{{item.SeatNumber + 1}}座</text>
               </view>
               <view class="veh-col">
                 <text class="veh-cl">价格</text>
-                <text class="veh-cv price">¥{{item.price}}</text>
+                <text class="veh-cv price">¥{{item.PromotionDiscountType == 0 ? item.Price * item.PromotionDiscount : item.Price}}</text>
               </view>
             </view>
+            <view class="veh-ferry" wx:if="{{item.Version != 0 && item.Version != '0'}}">+摆渡价{{item.Version}}</view>
           </view>
           <view class="veh-right">
-            <image src="{{item.img}}" mode="aspectFit" class="car_img"/>
+            <image src="{{item.Note ? baseUrl + item.Note : '/assets/images/car1.png'}}" mode="aspectFit" class="car_img"/>
           </view>
-          <view class="veh-tag">{{item.tag}}</view>
         </view>
+        <view wx:if="{{!carTypeList.length && !timeLoading}}" class="city-empty">请先选择出发时间段查看车型</view>
 
         <view class="form-row">
           <text class="form-label">联系方式</text>
@@ -234,30 +234,32 @@
           <text class="notice-line">※儿童是指3岁以下的小朋友，每位成人乘客仅可享受一位儿童价优惠票。</text>
         </view>
 
-        <view class="fee-row">
-          <text class="fee-label">优惠券</text>
-          <text class="fee-val link">可用3张&gt;</text>
-        </view>
-        <view class="fee-row">
-          <text class="fee-label">订单总额</text>
-          <text class="fee-val">¥{{vehPrice}}</text>
-        </view>
-        <view class="fee-row">
-          <text class="fee-label">基本票价</text>
-          <text class="fee-val">¥{{vehPrice}}</text>
-        </view>
-        <view class="fee-row total">
-          <text class="fee-label">合计</text>
-          <text class="fee-val price big">¥{{vehPrice}}</text>
-        </view>
-
-        <view class="agree" bindtap="onAgreeTap">
-          <view class="agree-box {{agree ? 'on' : ''}}">{{agree ? '✓' : ''}}</view>
-          <text class="agree-text">下单即同意本</text>
-          <text class="agree-link">《服务条款》</text>
+        <view class="details">
+          <view class="detailList" wx:for="{{rangfenceMapList}}" wx:key="index">
+            <view class="detailList_l">{{item.Name}}超范围</view>
+            <view class="detailList_r">{{item.Price}}</view>
+          </view>
+          <view class="detailList">
+            <view class="detailList_l">基本票价</view>
+            <view class="detailList_r">{{initialPrice || 0}}</view>
+          </view>
+          <view class="detailList" wx:if="{{version > 0}}">
+            <view class="detailList_l">摆渡价</view>
+            <view class="detailList_r">{{version}}</view>
+          </view>
+          <view class="detailList">
+            <view class="detailList_l">合计</view>
+            <view class="detailList_r">{{price || 0}}</view>
+          </view>
         </view>
 
-        <view class="pay-btn" bindtap="onCharterPay">预约支付</view>
+        <view class="agree">
+          <view class="agree-box {{agree ? 'on' : ''}}" catchtap="onAgreeTap">{{agree ? '✓' : ''}}</view>
+          <text class="agree-text">下单即同意本服务条款</text>
+          <text class="agree-link" catchtap="gotoxieyi">《用户须知》</text>
+        </view>
+
+        <view class="pay-btn" bindtap="onCharterPay" style="{{agree ? '' : 'background:#eee;'}}">预约支付</view>
         <view class="gap"></view>
 
         
@@ -275,21 +277,21 @@
         <!-- ===== 城际捎货 ===== -->
         <block wx:if="{{errandSub === 0}}">
           <view class="sec-head"><view class="sec-num">1</view><text class="sec-title">捎货时效</text></view>
-          <view class="sec-label">时效 <text class="req">*</text></view>
-          <view class="radio-item {{cargoSpeed === 0 ? 'on' : ''}}" bindtap="onCargoSpeedTap" data-idx="0">
+          <!-- <view class="sec-label">时效 <text class="req">*</text></view> -->
+          <view class="sheet-empty" wx:if="{{cargoLoading}}">时效与规格加载中…</view>
+          <view class="sheet-empty" wx:elif="{{!cargoSpeedList.length}}">暂无可选时效，请确认线路已开通捎货</view>
+          <view class="radio-item {{cargoSpeed === index ? 'on' : ''}}" wx:for="{{cargoSpeedList}}" wx:key="Id" bindtap="onCargoSpeedTap" data-idx="{{index}}">
             <view class="radio-dot"></view>
-            <text class="radio-text">普通捎货：无时效限制，当时达或次日上午。</text>
-          </view>
-          <view class="radio-item {{cargoSpeed === 1 ? 'on' : ''}}" bindtap="onCargoSpeedTap" data-idx="1">
-            <view class="radio-dot"></view>
-            <text class="radio-text">加急捎货：+30元，不含溢价，按乘客流单。一程内必达。</text>
+            <text class="radio-text">{{item.Name}}</text>
+            <text class="radio-price" wx:if="{{item.Price}}">+¥{{item.Price}}</text>
           </view>
 
           <view class="sec-head"><view class="sec-num">2</view><text class="sec-title">货物信息</text></view>
-          <view class="sec-label">货物类别 <text class="req">*</text></view>
-          <view class="radio-item {{cargoType === index ? 'on' : ''}}" wx:for="{{cargoTypes}}" wx:key="name" bindtap="onCargoTypeTap" data-idx="{{index}}">
+          <!-- <view class="sec-label">货物类别 <text class="req">*</text></view> -->
+          <view class="radio-item {{cargoType === index ? 'on' : ''}}" wx:for="{{cargoSpecList}}" wx:key="Id" bindtap="onCargoTypeTap" data-idx="{{index}}">
             <view class="radio-dot"></view>
-            <text class="radio-text">{{item.name}}</text>
+            <text class="radio-text">{{item.Name}}</text>
+            <text class="radio-price">¥{{item.Price}}</text>
           </view>
           <view class="sec-label">货物名称 <text class="req">*</text></view>
           <input class="er-input" placeholder="如：身份证、文件、小件衣物等。" value="{{cargoName}}" bindinput="onErInput" data-k="cargoName" />
@@ -307,35 +309,43 @@
           </view>
           <view class="er-tip">捎货单必填至少 1 张物品照片，最多 3 张</view>
 
-          <view class="sec-head"><view class="sec-num">3</view><text class="sec-title">寄件信息</text></view>
-          <view class="er-cols">
-            <view class="er-col">
-              <view class="sec-label">称呼 <text class="req">*</text></view>
-              <input class="er-input" placeholder="如：张先生" value="{{senderName}}" bindinput="onErInput" data-k="senderName" />
+          <view class="sec-head"><view class="sec-num">3</view><text class="sec-title">上下车位置</text></view>
+          <view class="ch-addr">
+            <view class="ch-addr-row" bindtap="onPickAddr" data-direction="starting">
+              <text class="ch-addr-city">{{from}}</text>
+              <text class="ch-addr-text {{addrFrom ? '' : 'ch-addr-ph'}}">{{addrFrom || '请选择出发乘车位置'}}</text>
             </view>
+            <view class="ch-addr-row" bindtap="onPickAddr" data-direction="ending">
+              <text class="ch-addr-city">{{to}}</text>
+              <text class="ch-addr-text {{addrTo ? '' : 'ch-addr-ph'}}">{{addrTo || '请选择下车位置'}}</text>
+            </view>
+          </view>
+
+          <view class="sec-head"><view class="sec-num">4</view><text class="sec-title">寄件信息</text></view>
+          <view class="er-cols">
+            <!-- <view class="er-col">
+              <view class="sec-label">称呼</view>
+              <input class="er-input" placeholder="选填，如：张先生" value="{{senderName}}" bindinput="onErInput" data-k="senderName" />
+            </view> -->
             <view class="er-col">
-              <view class="sec-label">电话 <text class="req">*</text></view>
+              <view class="sec-label">联系方式 <text class="req">*</text></view>
               <input class="er-input" type="number" maxlength="11" placeholder="11位电话号码" value="{{senderPhone}}" bindinput="onErInput" data-k="senderPhone" />
             </view>
           </view>
-          <view class="sec-label">取件地址 <text class="req">*</text></view>
-          <input class="er-input" placeholder="如：太原市小店区XX路XX号" value="{{senderAddr}}" bindinput="onErInput" data-k="senderAddr" />
 
-          <view class="sec-head"><view class="sec-num">4</view><text class="sec-title">收件信息</text></view>
+          <view class="sec-head"><view class="sec-num">5</view><text class="sec-title">收件信息</text></view>
           <view class="er-cols">
+            <!-- <view class="er-col">
+              <view class="sec-label">称呼</view>
+              <input class="er-input" placeholder="选填，如：张先生" value="{{receiverName}}" bindinput="onErInput" data-k="receiverName" />
+            </view> -->
             <view class="er-col">
-              <view class="sec-label">称呼 <text class="req">*</text></view>
-              <input class="er-input" placeholder="如：张先生" value="{{receiverName}}" bindinput="onErInput" data-k="receiverName" />
-            </view>
-            <view class="er-col">
-              <view class="sec-label">电话 <text class="req">*</text></view>
+              <view class="sec-label">联系方式 <text class="req">*</text></view>
               <input class="er-input" type="number" maxlength="11" placeholder="11位电话号码" value="{{receiverPhone}}" bindinput="onErInput" data-k="receiverPhone" />
             </view>
           </view>
-          <view class="sec-label">取件地址 <text class="req">*</text></view>
-          <input class="er-input" placeholder="如：太原市小店区XX路XX号" value="{{receiverAddr}}" bindinput="onErInput" data-k="receiverAddr" />
 
-          <view class="sec-head"><view class="sec-num">5</view><text class="sec-title">备注选填</text></view>
+          <view class="sec-head"><view class="sec-num">6</view><text class="sec-title">寄件备注</text></view>
           <input class="er-input" placeholder="补充说明，如：到达后电话联系" value="{{cargoRemark}}" bindinput="onErInput" data-k="cargoRemark" />
         </block>
 
@@ -440,6 +450,61 @@
         </view>
       </scroll-view>
       <view wx:else class="sheet-empty">{{timeLoading ? '时间段加载中…' : '当前日期暂无可选时间段'}}</view>
+    </view>
+  </view>
+
+  <!-- 包车：用户须知弹框（参考 baoche 页） -->
+  <import src="/components/wxParse/wxParse.wxml" />
+  <view class="mask-center" catchtouchmove="true" wx:if="{{isshow}}">
+    <view class="box_3">
+      <scroll-view scroll-y="true" style="height:70vh;">
+        <template is="wxParse" data="{{wxParseData:content.nodes}}" />
+      </scroll-view>
+    </view>
+    <view class="buttonsView">
+      <button class="buttons1" bind:tap="tongyi">同意</button>
+      <button class="buttons2" bind:tap="guanbi">取消</button>
+    </view>
+  </view>
+
+  <!-- 包车：底部支付方式弹框（参考 baoche 页） -->
+  <view class="pay-mask" wx:if="{{paySheetShow}}" catchtouchmove="noop" bind:tap="cancelPaySheet">
+    <view class="pay-sheet" catchtap="noop">
+      <view class="pay-sheet-head">
+        <view class="pay-sheet-title">请确认手机号</view>
+        <view class="pay-sheet-close" catchtap="cancelPaySheet">×</view>
+      </view>
+      <view class="pay-sheet-phone">{{paySheetPhone}}</view>
+      <!-- 支付立减优惠 -->
+      <view class="pay-promo">
+        <view class="pay-promo-head">
+          <view class="pay-promo-icon">¥</view>
+          <view class="pay-promo-title">支付立减优惠</view>
+          <view class="pay-promo-detail" catchtap="togglePayPromoDetail">
+            <text>详情</text>
+            <text class="pay-promo-arrow {{payPromoDetailShow ? 'pay-promo-arrow-up' : ''}}">∨</text>
+          </view>
+        </view>
+        <view class="pay-promo-strip">云闪付支付｜至高立减20元｜每日名额有限</view>
+        <view class="pay-promo-list" wx:if="{{payPromoDetailShow}}">
+          <view class="pay-promo-item" wx:for="{{payPromoRules}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+      <view class="pay-sheet-label">支付方式</view>
+      <view class="pay-option {{payType === item.key ? 'pay-option-active' : ''}}" wx:for="{{payTypeList}}" wx:key="key" data-key="{{item.key}}" catchtap="onPayTypeChange">
+        <view class="pay-option-main">
+          <image src="{{item.img}}" class="pay-option-logo" mode="aspectFit"></image>
+          <view class="pay-option-left">
+            <view class="pay-option-name">{{item.name}}</view>
+            <view class="pay-option-tags" wx:if="{{item.tip || item.tag}}">
+              <text class="pay-option-tip" wx:if="{{item.tip}}">{{item.tip}}</text>
+              <text class="pay-option-tag" wx:if="{{item.tag}}">{{item.tag}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="pay-radio {{payType === item.key ? 'pay-radio-active' : ''}}"></view>
+      </view>
+      <view class="pay-sheet-btn" catchtap="confirmPaySheet">确认支付并下单</view>
     </view>
   </view>
 </view>
