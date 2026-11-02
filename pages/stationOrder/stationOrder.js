@@ -8,7 +8,7 @@ var baseUrl = BASE_URL.BASE_URL //配置基础url
 // 儿童字典值（与 userList / addPassenger 一致）
 const CHILD = '100004-0000010001';
 
-function toCols(name, time, mark, city, locationId) {
+function toCols(name, time, mark, city, locationId, group) {
   const [h, m] = time.split(':');
   return {
     name,
@@ -18,6 +18,8 @@ function toCols(name, time, mark, city, locationId) {
     timeM: m,
     mark: mark || '',          // up=上车点 down=下车点 ''=未选
     locationId: locationId || '', // 下单 Statinglocation/EndLocation 用
+    group: group || '',        // up=属于上车点分组 down=属于下车点分组
+    split: false,              // 是否为下车点分组的第一列（该列左侧画分割线）
   };
 }
 
@@ -100,6 +102,8 @@ Page({
       try {
         const list = JSON.parse(decodeURIComponent(options.stations));
         if (Array.isArray(list) && list.length) {
+          this._markGroups(list, this.data.upCity);
+          this._applyDefaultMarks(list);
           this.setData({ stations: list });
         }
       } catch (e) {}
@@ -210,12 +214,14 @@ Page({
         }
         if (!Array.isArray(list) || !list.length) return;
 
-        let stations = list.map(s => toCols(
+        const upCount = upList.length;
+        let stations = list.map((s, i) => toCols(
           s.LocationName || s.SiteName || s.Name || '',
           (s.ArrivalTime || s.Time || '00:00').slice(0, 5),
-          '',                       // 初始不预置上下车，交给用户点选
+          '',                       // 默认选中在下方 _applyDefaultMarks 里统一处理
           s.County || s.CityName || s.City || '', // 文水站点 County=文水县，太原站点 County 为空用 City
-          s.LocationId
+          s.LocationId,
+          upCount ? (i < upCount ? 'up' : 'down') : ''  // 前半段上车点，后半段下车点
         ));
         console.log(stations)
 
@@ -227,6 +233,10 @@ Page({
           if (upCity) patch.upCity = upCity;
           if (downCity) patch.downCity = downCity;
         }
+        // 补齐分组标记（接口没给出分组时按城市推断），并标出下车点分组的第一列
+        _this._markGroups(stations, patch.upCity || _this.data.upCity);
+        // 默认选中：第一站为上车点，最后一站为下车点
+        _this._applyDefaultMarks(stations);
         _this.setData(patch);
         _this._syncStationLabels();
       },
@@ -237,6 +247,32 @@ Page({
         wx.hideLoading();
       }
     });
+  },
+
+  // 标记分组：group=up/down，并给下车点分组的第一列打 split（该列左侧画分割线）
+  _markGroups(list, upCity) {
+    if (!Array.isArray(list)) return list;
+    list.forEach((s) => {
+      if (!s.group) s.group = (upCity && s.city === upCity) ? 'up' : 'down';
+      s.split = false;
+    });
+    // 下车点分组的第一列（前面已有上车点时才画分割线）
+    let idx = -1;
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].group === 'down') { idx = i; break; }
+    }
+    if (idx > 0 && list[idx]) list[idx].split = true;
+    return list;
+  },
+
+  // 默认选中：第一站为上车点，最后一站为下车点（用户/上级已选过的不覆盖）
+  _applyDefaultMarks(list) {
+    if (!Array.isArray(list) || !list.length) return list;
+    const hasUp = list.some((s) => s.mark === 'up');
+    const hasDown = list.some((s) => s.mark === 'down');
+    if (!hasUp) list[0].mark = 'up';
+    if (!hasDown && list.length > 1) list[list.length - 1].mark = 'down';
+    return list;
   },
 
   // 根据 stations 里的 mark 同步 upStation / downStation（并记录下单用的 LocationId）

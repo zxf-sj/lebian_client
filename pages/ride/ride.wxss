@@ -140,40 +140,60 @@ page { background: #f4f6f9; }
 .st-dot.red { background: #e64340; }
 .st-stop-name { font-size: 28rpx; font-weight: 700; color: #1a1a1a; }
 
-.st-mids { display: flex; flex-wrap: wrap; margin: 14rpx 0 14rpx 36rpx; }
+/* 途经站点：强制一行横向排列（inline-block + nowrap），超出可左右滑动 */
+.st-mids {
+  margin: 14rpx 0 10rpx 36rpx;
+  white-space: nowrap;
+}
 .st-pill {
+  display: inline-block;
+  vertical-align: top;
   background: #fff;
   border-radius: 26rpx;
-  padding: 8rpx 0;
+  padding: 8rpx 20rpx;
   font-size: 25rpx;
+  line-height: 34rpx;
   color: #1a1a1a;
   text-align: center;
-  width: 150rpx;
-  margin: 0 16rpx 14rpx 0;
+  white-space: nowrap;
+  margin: 0 12rpx 0 0;
 }
 
-.st-side { width: 148rpx; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 6rpx 0; }
-.st-vprices { display: flex; flex-direction: row; align-items: stretch; }
-.st-vgroup { display: flex; flex-direction: row; align-items: flex-start; }
-.st-vgroup + .st-vgroup {
-  border-left: 2rpx solid #c3cede;
-  margin-left: 8rpx;
-  padding-left: 8rpx;
+.st-side { width: 216rpx; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 6rpx 0; }
+/* 价格块：一行横排，放不下自动换行（优惠价 + 原价） */
+.st-vprices {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  width: 100%;
 }
-.st-vcol {
-  width: 24rpx;
-  font-size: 22rpx;
-  line-height: 28rpx;
-  text-align: center;
-  word-break: break-all;
-  color: #1a1a1a;
-  margin-right: 6rpx;
+.st-vitem { display: flex; flex-direction: row; align-items: baseline; white-space: nowrap; }
+.st-vitem + .st-vitem { margin-left: 10rpx; }
+/* 价格文字标签 */
+.st-vlabel {
+  font-size: 18rpx;
+  line-height: 24rpx;
+  color: #8f98a3;
+  margin-right: 4rpx;
 }
-.st-vcol:last-child { margin-right: 0; }
-.st-vnumcol { width: auto; display: flex; flex-direction: column; align-items: center; }
-.st-vnum { font-size: 22rpx; line-height: 28rpx; color: #1a1a1a; white-space: nowrap; }
-.st-vunit { font-size: 22rpx; line-height: 28rpx; text-align: center; word-break: break-all; color: #1a1a1a; width: 24rpx; }
-.st-vgroup.plat .st-vcol, .st-vgroup.plat .st-vnum, .st-vgroup.plat .st-vunit { color: #e64340; }
+.st-vlabel.now { color: #e64340; font-weight: 600; }
+/* 优惠价：大号小红字 */
+.st-price-now {
+  font-size: 42rpx;
+  font-weight: 700;
+  line-height: 48rpx;
+  color: #e64340;
+  letter-spacing: -1rpx;
+}
+/* 原价：小号灰字 + 删除线 */
+.st-price-old {
+  font-size: 20rpx;
+  line-height: 24rpx;
+  color: #8f98a3;
+  text-decoration: line-through;
+}
 .st-ticket { display: flex; flex-direction: column; align-items: center; margin-top: 16rpx; }
 .st-ticket-label { font-size: 26rpx; color: #1a1a1a; }
 .st-ticket-num { font-size: 30rpx; font-weight: 700; color: #1a1a1a; margin-top: 6rpx; }

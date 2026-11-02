@@ -52,13 +52,13 @@
       <text class="section-sub">最近使用</text>
     </view>
     <view class="route-list">
-      <view class="route-chip {{selectedKey=='history-'+index?'selected':''}}" wx:for="{{historyRoutes}}" wx:key="index" bindtap="onChipTap" data-route="{{item}}" data-group="history" data-index="{{index}}">
+      <!-- <view class="route-chip {{selectedKey=='history-'+index?'selected':''}}" wx:for="{{historyRoutes}}" wx:key="index" bindtap="onChipTap" data-route="{{item}}" data-group="history" data-index="{{index}}">
         <text class="chip-route">{{item.StatingLocation_Name}}→{{item.EndLocation_Name}}</text>
         <view class="chip-price">
           <text class="chip-label">最低</text>
           <text class="chip-amount">¥{{item.price}}</text>
         </view>
-      </view>
+      </view> -->
     </view>
   </view>
 

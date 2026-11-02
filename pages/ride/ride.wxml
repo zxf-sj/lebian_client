@@ -141,9 +141,9 @@
                 <view class="st-dot blue"></view>
                 <text class="st-stop-name">{{item.StartSiteName}}</text>
               </view>
-              <view class="st-mids">
+              <scroll-view class="st-mids" scroll-x enhanced show-scrollbar="{{false}}">
                 <view wx:for="{{item.HotSiteList}}" wx:for-item="m" wx:key="index" class="st-pill">{{m.Name}}</view>
-              </view>
+              </scroll-view>
               <view class="st-stop">
                 <view class="st-dot red"></view>
                 <text class="st-stop-name">{{item.EndSiteName}}</text>
@@ -152,19 +152,13 @@
           </view>
           <view class="st-side">
             <view class="st-vprices">
-              <view class="st-vgroup">
-                <text class="st-vcol">平台售票</text>
-                <view class="st-vcol st-vnumcol">
-                  <text class="st-vnum">{{item.SitePrice}}</text>
-                  <text class="st-vunit">元 /位</text>
-                </view>
+              <view class="st-vitem">
+                <text class="st-vlabel now">优惠价</text>
+                <text class="st-price-now">¥{{item.TicketPrice > 0 ? item.TicketPrice : item.SitePrice}}</text>
               </view>
-              <view class="st-vgroup plat">
-                <text class="st-vcol">特价售票</text>
-                <view class="st-vcol st-vnumcol">
-                  <text class="st-vnum">{{item.TicketPrice}}</text>
-                  <text class="st-vunit">元 /位</text>
-                </view>
+              <view class="st-vitem" wx:if="{{item.TicketPrice > 0 && item.SitePrice > item.TicketPrice}}">
+                <text class="st-vlabel">原价</text>
+                <text class="st-price-old">¥{{item.SitePrice}}</text>
               </view>
             </view>
             <view class="st-ticket {{item.tickets <= 5 ? 'low' : ''}}">

@@ -11,6 +11,30 @@ page { background: #f4f6f9; }
 .sta-row { display: flex; }
 .sta-col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; }
 
+/* 上车点 / 下车点分组：分界处画一条竖向虚线（不占宽度，不影响圆点与时间对齐） */
+.sta-col.col-split { position: relative; }
+.sta-col.col-split::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-left: 2rpx dashed #c8cdd4;
+}
+
+/* 图例 */
+.sta-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 12rpx 0;
+}
+.lg-item { display: flex; align-items: center; }
+.lg-dot { width: 14rpx; height: 14rpx; border-radius: 50%; margin-right: 10rpx; box-sizing: border-box; }
+.lg-dot.up { border: 3rpx solid #1aad19; }
+.lg-dot.down { border: 3rpx solid #e64340; }
+.lg-txt { font-size: 22rpx; color: #8a94a2; }
+
 /* 站名：竖排，每列一字；固定高度使下方圆圈对齐 */
 .sta-name {
   height: 232rpx;

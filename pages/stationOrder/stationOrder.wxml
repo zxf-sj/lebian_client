@@ -2,7 +2,10 @@
   <!-- 顶部站点纵览 -->
   <view class="sta-wrap">
     <view class="sta-row">
-      <view class="sta-col" wx:for="{{stations}}" wx:key="index">
+      <view
+        class="sta-col {{item.group === 'up' ? 'col-up' : 'col-down'}} {{item.split ? 'col-split' : ''}}"
+        wx:for="{{stations}}" wx:key="index"
+      >
         <view class="sta-name {{item.mark === 'up' ? 'green' : ''}} {{item.mark === 'down' ? 'red' : ''}}">
           <text wx:for="{{item.chars}}" wx:for-item="c" wx:key="index" class="sta-char">{{c}}</text>
         </view>
@@ -14,10 +17,18 @@
     </view>
     <view class="sta-dash"></view>
     <view class="sta-row">
-      <view class="sta-col" wx:for="{{stations}}" wx:key="index">
+      <view
+        class="sta-col {{item.group === 'up' ? 'col-up' : 'col-down'}} {{item.split ? 'col-split' : ''}}"
+        wx:for="{{stations}}" wx:key="index"
+      >
         <view class="sta-time">{{item.timeH}}</view>
         <view class="sta-time">{{item.timeM}}</view>
       </view>
+    </view>
+    <!-- 图例：区分上车点 / 下车点 -->
+    <view class="sta-legend">
+      <view class="lg-item"><view class="lg-dot up"></view><text class="lg-txt">上车点 · {{upCity}}</text></view>
+      <view class="lg-item"><view class="lg-dot down"></view><text class="lg-txt">下车点 · {{downCity}}</text></view>
     </view>
   </view>
 
