@@ -173,35 +173,47 @@ Page({
       },
       method: "POST",
       success: (res) => {
+        const d = res.data || {};
+        // 业务失败（如 430）必须提示，不能直接往下走支付
+        if (d.code != 0) {
+          wx.showToast({
+            title: d.msg || '下单失败，请稍后重试',
+            icon: 'none',
+            duration: 2500
+          });
+          return;
+        }
+        if (!d.data) {
+          wx.showToast({ title: '下单失败：未返回订单号', icon: 'none' });
+          return;
+        }
+        const orderId = d.data;
         let appid = wx.getStorageSync('appId');
         let userInfo = wx.getStorageSync('userInfo');
-        _this.setData({
-          orderId:res.data.data
-        })
+        _this.setData({ orderId });
         wx.request({
           url: baseUrl + '/api/BusMobile/GoUnionPay',
           data: {
             appid: appid,
-            Id: res.data.data,
+            Id: orderId,
             MemberInfoId: userInfo.Id
           },
           method: "GET",
           success: (payRes) => {
-            if (payRes.data.code === 0) {
-              const payData = payRes.data.data
+            const payData = payRes.data || {};
+            if (payData.code === 0 && payData.data) {
+              const info = payData.data
               wx.requestPayment({
-                timeStamp: payData.TimeStamp,
-                nonceStr: payData.NonceStr,
-                package: payData.Package,
-                signType: payData.SignType,
-                paySign: payData.PaySign,
+                timeStamp: info.TimeStamp,
+                nonceStr: info.NonceStr,
+                package: info.Package,
+                signType: info.SignType,
+                paySign: info.PaySign,
                 success: () => {
                   this._handleOrderSuccess(_this.data.orderId);
                 },
                 fail: (err) => {
                   console.log('支付失败', err);
-                  // this._clearStorageAndRedirect(orderId);
-                  // resolve(); // 支付失败也结束流程，避免卡死
                   setTimeout(() => {
                     wx.reLaunch({
                       url: `/user_center/pages/payDetail2/payDetail2?orderId=${_this.data.orderId}&from=orderList`
@@ -209,17 +221,23 @@ Page({
                   }, 1000);
                 }
               });
-            } else if (payRes.code === 400 && payRes.msg === "已付款") {
-              this._handleOrderSuccess(orderId);
-              resolve();
+            } else if (payData.code === 400 && payData.msg === "已付款") {
+              this._handleOrderSuccess(_this.data.orderId);
             } else {
               wx.showToast({
-                title: payRes.msg,
-                icon: 'none'
+                title: payData.msg || '获取支付信息失败，请稍后重试',
+                icon: 'none',
+                duration: 2500
               });
             }
+          },
+          fail: () => {
+            wx.showToast({ title: '网络异常，请稍后重试', icon: 'none' });
           }
         })
+      },
+      fail: () => {
+        wx.showToast({ title: '网络异常，请稍后重试', icon: 'none' });
       },
     });
 

@@ -1,0 +1,392 @@
+.page {
+  background-color: rgba(0,0,0,0.000000);
+  position: relative;
+  width: 750rpx;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-center;
+}
+.block_1 {
+  background-color: rgba(0,0,0,0.000000);
+  height: 88rpx;
+  margin-top: 2rpx;
+  display: flex;
+  flex-direction: column;
+  width: 750rpx;
+  position: relative;
+}
+.box_1 {
+  background-color: rgba(248,248,248,1.000000);
+  width: 750rpx;
+  height: 88rpx;
+  flex-direction: row;
+  display: flex;
+}
+.text_1 {
+  width: 470rpx;
+  height: 38rpx;
+  overflow-wrap: break-word;
+  color: rgba(0,0,0,1.000000);
+  font-size: 32rpx;
+  font-family: Roboto-Bold;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 60rpx;
+  margin: 14rpx 0 0 140rpx;
+}
+.group_1 {
+  background-color: rgba(0,0,0,0.000000);
+  width: 2rpx;
+  height: 60rpx;
+  display: flex;
+  flex-direction: column;
+  margin: 14rpx 4rpx 0 134rpx;
+}
+.box_2 {
+  background-color: rgba(0,0,0,0.000000);
+  position: absolute;
+  left: -2000rpx;
+  top: -2002rpx;
+  width: 2rpx;
+  height: 2rpx;
+  display: flex;
+  flex-direction: column;
+}
+.block_2 {
+  background-color: rgba(245,245,245,1.000000);
+  position: relative;
+  width: 750rpx;
+  height: 1790rpx;
+  margin-bottom: 2rpx;
+  display: flex;
+  flex-direction: column;
+}
+.box_3 {
+  background-color: rgba(255,255,255,1.000000);
+  height: 800rpx;
+  border-radius:20rpx;
+}
+.text-group_1 {
+  width: 576rpx;
+  height: 158rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 48rpx 0 0 58rpx;
+}
+.text_2 {
+  width: 576rpx;
+  height: 102rpx;
+  overflow-wrap: break-word;
+  color: rgba(51,51,51,1.000000);
+  font-size: 72rpx;
+  font-family: Roboto-Bold;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 72rpx;
+}
+.text_3 {
+  width: 302rpx;
+  height: 40rpx;
+  overflow-wrap: break-word;
+  color: rgba(102,102,102,1.000000);
+  font-size: 28rpx;
+  font-family: Roboto-Regular;
+  font-weight: normal;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 28rpx;
+  margin: 16rpx 0 0 136rpx;
+}
+.image_1 {
+  width: 610rpx;
+  height: 400rpx;
+  margin: 38rpx 0 0 40rpx;
+}
+.section_1 {
+  background-color: rgba(0,0,0,0.000000);
+  width: 2rpx;
+  height: 2rpx;
+  margin-left: 40rpx;
+  display: flex;
+  flex-direction: column;
+}
+.image-text_1 {
+  width: 464rpx;
+  height: 40rpx;
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+  margin: 60rpx 0 0 46rpx;
+}
+.thumbnail_1 {
+  width: 30rpx;
+  height: 30rpx;
+  margin-top: 2rpx;
+}
+.text-group_2 {
+  width: 430rpx;
+  height: 40rpx;
+  overflow-wrap: break-word;
+  color: rgba(51,51,51,1.000000);
+  font-size: 28rpx;
+  font-family: Roboto-Regular;
+  font-weight: normal;
+  text-align: left;
+  white-space: nowrap;
+  line-height: 28rpx;
+}
+.thumbnail_2 {
+  width: 30rpx;
+  height: 30rpx;
+  margin: 24rpx 0 0 46rpx;
+}
+.text_4 {
+  width: 424rpx;
+  height: 40rpx;
+  overflow-wrap: break-word;
+  color: rgba(51,51,51,1.000000);
+  font-size: 28rpx;
+  font-family: Roboto-Regular;
+  font-weight: normal;
+  text-align: left;
+  white-space: nowrap;
+  line-height: 28rpx;
+  margin: -32rpx 0 0 110rpx;
+}
+.box_4 {
+  width: 402rpx;
+  height: 40rpx;
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+  margin: 22rpx 0 890rpx 76rpx;
+}
+.thumbnail_3 {
+  width: 30rpx;
+  height: 30rpx;
+  margin-top: 2rpx;
+}
+.text_5 {
+  width: 368rpx;
+  height: 40rpx;
+  overflow-wrap: break-word;
+  color: rgba(51,51,51,1.000000);
+  font-size: 28rpx;
+  font-family: Roboto-Regular;
+  font-weight: normal;
+  text-align: left;
+  white-space: nowrap;
+  line-height: 28rpx;
+}
+.box_5 {
+  background-color: rgba(255,255,255,1.000000);
+  position: absolute;
+  left: 30rpx;
+  top: 860rpx;
+  width: 690rpx;
+  height: 900rpx;
+  display: flex;
+  flex-direction: column;
+}
+.text_6 {
+  width: 144rpx;
+  height: 52rpx;
+  overflow-wrap: break-word;
+  color: rgba(51,51,51,1.000000);
+  font-size: 36rpx;
+  font-family: Roboto-Bold;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+  line-height: 36rpx;
+  margin: 42rpx 0 0 40rpx;
+}
+.text_7 {
+  width: 56rpx;
+  height: 40rpx;
+  overflow-wrap: break-word;
+  color: rgba(51,51,51,1.000000);
+  font-size: 28rpx;
+  font-family: Roboto-Regular;
+  font-weight: normal;
+  text-align: left;
+  white-space: nowrap;
+  line-height: 28rpx;
+  margin: 40rpx 0 0 40rpx;
+}
+.box_6 {
+  background-color: rgba(255,255,255,1.000000);
+  position: relative;
+  width: 610rpx;
+  height: 88rpx;
+  border: 1px solid rgba(229,229,229,1);
+  display: flex;
+  flex-direction: row;
+  margin: 14rpx 0 0 40rpx;
+}
+.text_8 {
+  width: 196rpx;
+  height: 40rpx;
+  overflow-wrap: break-word;
+  color: rgba(128,128,128,1.000000);
+  font-size: 28rpx;
+  font-family: Roboto-Regular;
+  font-weight: normal;
+  text-align: left;
+  white-space: nowrap;
+  line-height: 28rpx;
+  margin: 24rpx 0 0 26rpx;
+}
+.section_2 {
+  background-color: rgba(0,0,0,0.000000);
+  border-radius: 4rpx;
+  position: absolute;
+  left: 26rpx;
+  top: 2rpx;
+  width: 558rpx;
+  height: 84rpx;
+  display: flex;
+  flex-direction: column;
+}
+.text_9 {
+  width: 112rpx;
+  height: 40rpx;
+  overflow-wrap: break-word;
+  color: rgba(51,51,51,1.000000);
+  font-size: 28rpx;
+  font-family: Roboto-Regular;
+  font-weight: normal;
+  text-align: left;
+  white-space: nowrap;
+  line-height: 28rpx;
+  margin: 32rpx 0 0 40rpx;
+}
+.box_7 {
+  background-color: rgba(255,255,255,1.000000);
+  position: relative;
+  width: 610rpx;
+  height: 88rpx;
+  border: 1px solid rgba(229,229,229,1);
+  display: flex;
+  flex-direction: row;
+  margin: 14rpx 0 0 40rpx;
+}
+.text_10 {
+  width: 252rpx;
+  height: 40rpx;
+  overflow-wrap: break-word;
+  color: rgba(128,128,128,1.000000);
+  font-size: 28rpx;
+  font-family: Roboto-Regular;
+  font-weight: normal;
+  text-align: left;
+  white-space: nowrap;
+  line-height: 28rpx;
+  margin: 24rpx 0 0 26rpx;
+}
+.group_2 {
+  background-color: rgba(0,0,0,0.000000);
+  border-radius: 4rpx;
+  position: absolute;
+  left: 26rpx;
+  top: 2rpx;
+  width: 558rpx;
+  height: 84rpx;
+  display: flex;
+  flex-direction: column;
+}
+.text_11 {
+  width: 112rpx;
+  height: 40rpx;
+  overflow-wrap: break-word;
+  color: rgba(51,51,51,1.000000);
+  font-size: 28rpx;
+  font-family: Roboto-Regular;
+  font-weight: normal;
+  text-align: left;
+  white-space: nowrap;
+  line-height: 28rpx;
+  margin: 32rpx 0 0 40rpx;
+}
+.text-wrapper_1 {
+  background-color: rgba(255,255,255,1.000000);
+  height: 88rpx;
+  border: 1px solid rgba(229,229,229,1);
+  display: flex;
+  flex-direction: column;
+  width: 610rpx;
+  justify-content: center;
+  margin: 14rpx 0 0 40rpx;
+}
+.text_12 {
+  width: 196rpx;
+  height: 88rpx;
+  overflow-wrap: break-word;
+  color: rgba(51,51,51,1.000000);
+  font-size: 28rpx;
+  font-family: Roboto-Regular;
+  font-weight: normal;
+  text-align: left;
+  line-height: 88rpx;
+  margin-left: 26rpx;
+}
+.text-wrapper_2 {
+  background-color: rgba(25,118,210,1.000000);
+  height: 88rpx;
+  display: flex;
+  flex-direction: column;
+  width: 610rpx;
+  margin: 40rpx 0 148rpx 40rpx;
+  z-index: 9999;
+}
+.text_13 {
+  width: 128rpx;
+  height: 88rpx;
+  overflow-wrap: break-word;
+  color: rgba(255,255,255,1.000000);
+  font-size: 32rpx;
+  font-family: Roboto-Regular;
+  font-weight: normal;
+  text-align: center;
+  line-height: 88rpx;
+  margin-left: 242rpx;
+}
+.box_8 {
+  background-color: rgba(0,0,0,0.000000);
+  border-radius: 10rpx;
+  height: 176rpx;
+  display: flex;
+  flex-direction: column;
+  width: 1220rpx;
+  position: absolute;
+  left: 70rpx;
+  top: 1524rpx;
+}
+.text-wrapper_3 {
+  background-color: rgba(255,255,255,1.000000);
+  height: 88rpx;
+  border: 1px solid rgba(25,118,210,1);
+  margin-top: 108rpx;
+  display: flex;
+  flex-direction: column;
+  width: 610rpx;
+}
+.text_14 {
+  width: 128rpx;
+  height: 88rpx;
+  overflow-wrap: break-word;
+  color: rgba(25,118,210,1.000000);
+  font-size: 32rpx;
+  font-family: Roboto-Regular;
+  font-weight: normal;
+  text-align: center;
+  line-height: 88rpx;
+  margin-left: 242rpx;
+}
+.dateView{
+ margin-left: 30rpx;
+}

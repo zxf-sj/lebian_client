@@ -279,9 +279,9 @@ Page({
     this.applyDate(idx);
     this.filterCarpool();
     this.getNews(); //获取用户须知
-    // 未选址时先回显上次订单地址（会更新线路 Id），再拉线路、时间段、车型
-    this.getLastOrderAddress(() => {
-      this.getLineId();
+    // 先拿到轿车线路 Id（写入 storage.lineId），再回显上次订单地址，避免接口带空 LineId
+    this.getLineId(() => {
+      this.getLastOrderAddress();
     });
   },
   // ===== 缓存同步：时间段接口、价格接口与下单都从这两个缓存取值 =====
@@ -325,6 +325,12 @@ Page({
       return;
     }
     const lineId = wx.getStorageSync('lineId') || '';
+    // 没有轿车线路 Id 时不发请求：后端会直接返回 400「请选择路线路」。
+    // lineId 由 getLineId() 从 GetIntercityLineList 的 Sedan_LineId 写入，onLoad 里已保证先执行。
+    if (!lineId) {
+      cb && cb();
+      return;
+    }
     wx.request({
       url: baseUrl + '/api/CarPromotion/GetLastOrderAddress',
       data: {
@@ -424,8 +430,8 @@ Page({
       agree: false
     })
   },
-  //获取线路Id
-  getLineId() {
+  //获取线路Id（cb 在请求结束后执行，供「先拿线路 Id 再取上次地址」的顺序调用）
+  getLineId(cb) {
     wx.showLoading({
       title: '',
     })
@@ -443,7 +449,7 @@ Page({
         console.log(res.data)
         let data = res.data.data;
         if (res.data.code == 0) {
-          
+          // ① 巴士（站点上车）
           if (data.BusState) {
             if (data.Bus_HotSiteList) {
               let Bus_HotSiteList = data.Bus_HotSiteList
@@ -456,36 +462,49 @@ Page({
             } else {
               console.log('没有班次')
             }
+          }
 
-          } else {
+          // ② 轿车（拼车上门 / 包车出发 / 跨城跑腿）：只在接口返回 SedanState 时才有数据
+          if (data.SedanState) {
+            const sedanStart = data.SedanStartLatLng || {}
+            const sedanEnd = data.SedanEndLatLng || {}
             // 合并写入：保留 syncDateCache 已写入的 startDate，整体覆盖会丢失出行日期
-          let oldSync = wx.getStorageSync('storageSync') || {};
-          let storageSync = {
-            ...oldSync,
-            EndLocation_Latitude: data.SedanEndLatLng.Lat,
-            EndLocation_Longitude: data.SedanEndLatLng.Long,
-            StatingLocation_Latitude: data.SedanStartLatLng.Lat,
-            StatingLocation_Longitude: data.SedanStartLatLng.Long,
-            lineId: data.Sedan_LineId,
-          }
-          wx.setStorageSync('storageSync', storageSync)
-          wx.setStorageSync('lineId', data.Sedan_LineId)
-          // 线路 Id 就绪后再拉包车可选时间段（后端定义几点到几点）
-          _this.fetchCharterTimes(_this.data.dateIdx);
-            let periods = []
-            data.Sedan_ShiftList.forEach((item) => {
-              periods.push(item.TimeName)
+            let oldSync = wx.getStorageSync('storageSync') || {};
+            wx.setStorageSync('storageSync', {
+              ...oldSync,
+              EndLocation_Latitude: sedanEnd.Lat,
+              EndLocation_Longitude: sedanEnd.Long,
+              StatingLocation_Latitude: sedanStart.Lat,
+              StatingLocation_Longitude: sedanStart.Long,
+              lineId: data.Sedan_LineId,
             })
-            let tabs = TABS.slice(1);
+            wx.setStorageSync('lineId', data.Sedan_LineId)
+            // 线路 Id 就绪后再拉包车可选时间段（后端定义几点到几点）
+            _this.fetchCharterTimes(_this.data.dateIdx);
+
+            const sedanShifts = data.Sedan_ShiftList || []
+            const patch = {
+              periods: sedanShifts.map(item => item.TimeName),
+              carpool: sedanShifts,
+              carpoolShow: sedanShifts[0] ? (sedanShifts[0].Sedan_ShiftList || []) : []
+            }
+            if (data.BusState) {
+              // 巴士 + 轿车都有：保留全部 tab
+              patch.tabs = TABS
+            } else {
+              patch.tabs = TABS.slice(1)
+              patch.tab = 1
+            }
+            _this.setData(patch)
+          } else {
+            // 该线路没开通轿车（拼车/包车/跑腿），只保留「站点上车」，
+            // 避免切过去看到空列表（如 文水→太原 目前只有巴士班次）
             _this.setData({
-              tabs,
-              tab: 1,
-              periods,
-              carpool:data.Sedan_ShiftList,
-              carpoolShow:data.Sedan_ShiftList[0].Sedan_ShiftList
+              tabs: [TABS[0]],
+              tab: 0
             })
-            console.log(_this.data.carpoolShow)
           }
+
           _this.setData({
             stationRoutes: data.Bus_ShiftList
           })
@@ -501,6 +520,7 @@ Page({
       },
       complete() {
         wx.hideLoading()
+        cb && cb()
       }
     })
   },
@@ -827,10 +847,10 @@ Page({
 
   onBookStation(e) {
     let item = e.currentTarget.dataset.item
-    
+    console.log(item)
     // DepartureTime 含空格与冒号，需转码；ScheduleId 取班次 id（原写法误传了 DepartureTime）
     wx.navigateTo({
-      url: '/pages/stationOrder/stationOrder?DepartureTime=' + encodeURIComponent(item.DepartureTime) + "&ScheduleId=" + item.Id + '&LineId=' + item.LineId + "&price=" + item.SitePrice
+      url: '/pages/stationOrder/stationOrder?DepartureTime=' + encodeURIComponent(item.DepartureTime) + "&ScheduleId=" + item.Id + '&LineId=' + item.LineId + "&price=" + item.TicketPrice
     });
   },
 
@@ -1331,6 +1351,17 @@ Page({
       return;
     }
     const lineId = wx.getStorageSync('lineId') || '';
+    // 同上：没有线路 Id 时后端只会返回「请选择路线路」，这里直接提示，不发无效请求
+    if (!lineId) {
+      this.setData({
+        cargoLoading: false
+      });
+      wx.showToast({
+        title: '请先选择出发地和目的地',
+        icon: 'none'
+      });
+      return;
+    }
     this.setData({
       cargoLoading: true
     });

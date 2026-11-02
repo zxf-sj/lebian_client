@@ -65,13 +65,6 @@
     </view>
   </view>
 
-  <!-- 协议 -->
-  <view class="agree" bindtap="onAgree">
-    <view class="cb {{agree ? 'on' : ''}}">{{agree ? '✓' : ''}}</view>
-    <text class="agree-txt">我已阅读并同意</text>
-    <text class="agree-link">《吕客行用户隐私政策》</text>
-  </view>
-
   <!-- 保存 -->
   <view class="btn" bindtap="onSave">保 存</view>
 

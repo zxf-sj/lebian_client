@@ -70,6 +70,11 @@
 
   <!-- 乘车须知 -->
   <view class="card notice">
+    <!-- 服务合同勾选放在须知最上面，默认已勾选 -->
+    <view class="notice-agree" bindtap="onAgree">
+      <view class="cb {{agree ? 'on' : ''}}">{{agree ? '✓' : ''}}</view>
+      <text class="agree-txt">我接受服务合同</text>
+    </view>
     <view class="notice-title">乘车安全须知：</view>
     <view class="notice-p">感谢您使用本平台!为了您和他人的安全，请务必仔细阅读，感谢配合!</view>
     <view class="notice-h">车辆行驶规定:</view>
@@ -85,10 +90,6 @@
     <view class="notice-h">禁止携带物品:</view>
     <view class="notice-p">按照《反恐怖主义法》和《危险化学品安全管理条例》等法律法规，严禁携带易燃、易爆、有毒、有放射性、腐蚀性等危险品及国家明令禁止的其它物品乘车。</view>
     <view class="notice-p">行李限重:免费携带品的重量/规格:每件外部尺寸长、宽、高之和不超过160厘米，重量不超过20千克。超长、超宽物品需另行办理托运。</view>
-    <view class="notice-agree" bindtap="onAgree">
-      <view class="cb {{agree ? 'on' : ''}}">{{agree ? '✓' : ''}}</view>
-      <text class="agree-txt">我接受服务合同</text>
-    </view>
   </view>
 
   <!-- 底部支付栏 -->
@@ -109,6 +110,48 @@
       <view class="sheet-title">费用明细</view>
       <view class="sheet-row"><text>平台售票</text><text>¥{{platformPrice}} × {{psgCount}}</text></view>
       <view class="sheet-row total"><text>合计</text><text>¥{{total}}</text></view>
+    </view>
+  </view>
+
+  <!-- 底部支付方式弹框（微信支付 / 云闪付） -->
+  <view class="pay-mask" wx:if="{{paySheetShow}}" catchtouchmove="noop" bind:tap="cancelPaySheet">
+    <view class="pay-sheet" catchtap="noop">
+      <view class="pay-sheet-head">
+        <view class="pay-sheet-title">确认支付</view>
+        <view class="pay-sheet-close" catchtap="cancelPaySheet">×</view>
+      </view>
+      <view class="pay-sheet-phone">¥{{total}}</view>
+
+      <view class="pay-promo">
+        <view class="pay-promo-head">
+          <view class="pay-promo-icon">¥</view>
+          <view class="pay-promo-title">支付立减优惠</view>
+          <view class="pay-promo-detail" catchtap="togglePayPromoDetail">
+            <text>详情</text>
+            <text class="pay-promo-arrow {{payPromoDetailShow ? 'pay-promo-arrow-up' : ''}}">∨</text>
+          </view>
+        </view>
+        <view class="pay-promo-strip">云闪付支付｜至高立减20元｜每日名额有限</view>
+        <view class="pay-promo-list" wx:if="{{payPromoDetailShow}}">
+          <view class="pay-promo-item" wx:for="{{payPromoRules}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="pay-sheet-label">支付方式</view>
+      <view class="pay-option {{payType === item.key ? 'pay-option-active' : ''}}" wx:for="{{payTypeList}}" wx:key="key" data-key="{{item.key}}" catchtap="onPayTypeChange">
+        <view class="pay-option-main">
+          <image src="{{item.img}}" class="pay-option-logo" mode="aspectFit"></image>
+          <view class="pay-option-left">
+            <view class="pay-option-name">{{item.name}}</view>
+            <view class="pay-option-tags" wx:if="{{item.tip}}">
+              <text class="pay-option-tip">{{item.tip}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="pay-radio {{payType === item.key ? 'pay-radio-active' : ''}}"></view>
+      </view>
+
+      <view class="pay-sheet-btn" catchtap="confirmPaySheet">确认支付并下单</view>
     </view>
   </view>
 </view>

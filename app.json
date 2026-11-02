@@ -23,7 +23,9 @@
     "pages/lvyouDetail/lvyouDetail",
     "pages/lvyouOrder/lvyouOrder",
     "pages/lvbao/lvbao",
-    "pages/daijia/daijia"
+    "pages/daijia/daijia",
+    "pages/zuche/zuche",
+    "pages/zuDetail/zuDetail"
   ],
   "subpackages": [
     {

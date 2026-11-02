@@ -15,7 +15,6 @@ Page({
     idcard: '',
     phone: '',
     isDefault: true,
-    agree: false,
 
     Ids: '', // 编辑时的记录 Id，新增为空
   },
@@ -70,12 +69,8 @@ Page({
     this.setData({ isDefault: e.detail.value });
   },
 
-  onAgree() {
-    this.setData({ agree: !this.data.agree });
-  },
-
   onSave() {
-    const { name, idcard, phone, agree, type, isDefault, Ids } = this.data;
+    const { name, idcard, phone, type, isDefault, Ids } = this.data;
     if (!name.trim()) {
       wx.showToast({ title: '请输入真实姓名', icon: 'none' });
       return;
@@ -86,10 +81,6 @@ Page({
     }
     if (!/^1[3456789]\d{9}$/.test(phone)) {
       wx.showToast({ title: '请输入正确的手机号', icon: 'none' });
-      return;
-    }
-    if (!agree) {
-      wx.showToast({ title: '请先阅读并同意隐私政策', icon: 'none' });
       return;
     }
     const userinfo = wx.getStorageSync('userInfo');

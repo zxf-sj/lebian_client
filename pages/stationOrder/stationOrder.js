@@ -2,6 +2,7 @@
 const BASE_URL = require("../../utils/BASE_URL");
 const http = require("../../utils/http.js");
 const orderStorage = require("../../utils/orderStorage.js");
+const unionPayWatcher = require("../../utils/unionPayWatcher.js");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 
 // 儿童字典值（与 userList / addPassenger 一致）
@@ -24,18 +25,7 @@ Page({
   data: {
     // 顶部站点纵览：左半属上车站城市（文水县），右半属下车站城市（太原市）
     // mark: up=上车点 down=下车点；green=灰色站点（途经/不可选）
-    stations: [
-      toCols('文水汽车站',   '06:00', '',    '文水县'),
-      toCols('南徐村',       '06:00', 'up',  '文水县'),
-      toCols('龙泉村',       '06:00', '',    '文水县'),
-      toCols('桑村营村',     '06:00', '',    '文水县'),
-      toCols('开栅高速口',   '06:00', '',    '文水县'),
-      toCols('罗城高速口',   '06:00', 'down','太原市'),
-      toCols('武宿机场',     '06:00', '',    '太原市'),
-      toCols('太原火车南站', '06:00', '',    '太原市'),
-      toCols('太原火车站',   '06:00', '',    '太原市'),
-      toCols('建南汽车站',   '06:00', '',    '太原市'),
-    ],
+    stations: [],
 
     // 上/下城市：由上级页面 onLoad 传入，未传时给默认占位
     upCity: '文水县',
@@ -61,8 +51,33 @@ Page({
     upLocationId: '',
     downLocationId: '',
 
-    agree: false,
+    agree: true, // 服务合同默认勾选（勾选框在乘车安全须知上方）
     detailOpen: false,
+
+    // ===== 底部支付方式弹框（微信支付 / 云闪付）=====
+    paySheetShow: false,
+    payType: 'wechat', // union=云闪付 wechat=微信
+    payPromoDetailShow: false,
+    payPromoRules: [
+      '满5元立减1元',
+      '满10元立减2元',
+      '满50元立减10元',
+      '满100元立减20元'
+    ],
+    payTypeList: [
+      {
+        img: '/assets/images/yunshanfu.png',
+        key: 'union',
+        name: '云闪付支付',
+        tip: '选择云闪付支付随机立减'
+      },
+      {
+        img: '/assets/images/wechat.png',
+        key: 'wechat',
+        name: '微信支付',
+        tip: ''
+      }
+    ],
   },
 
   onLoad(options) {
@@ -73,6 +88,7 @@ Page({
       LineId:options.LineId
     })
     // 上级页面传入：城市、站点列表、价格
+    this._cityFromQuery = !!(options.upCity || options.downCity);
     if (options.upCity)   this.setData({ upCity: options.upCity });
     if (options.downCity) this.setData({ downCity: options.downCity });
     if (options.price) {
@@ -95,6 +111,7 @@ Page({
 
     // ride 页班次卡片带入：查该班次的站点时刻信息
     if (options.ScheduleId) {
+      console.log(options.ScheduleId)
       this.setData({
         scheduleId: options.ScheduleId,
         lineId: options.LineId || '',
@@ -165,6 +182,7 @@ Page({
 
   // 班次站点时刻：POST /api/BusMobile/GetBusLineSiteTimeInfo
   getSiteTimeInfo({ ScheduleId, DepartureTime, LineId }) {
+    console.log('没进来？')
     let _this = this;
     wx.showLoading({ title: '' });
     wx.request({
@@ -177,26 +195,40 @@ Page({
       method: "POST",
       success(res) {
         console.log(res.data);
-        if (res.data.code == 0) {
-          let d = res.data.data;
-          console.log(d)
-          // 站点列表结构以接口实际返回为准，能对上时覆盖顶部站点纵览
-          let list = d && (d.SiteList || d.Sites || (Array.isArray(d) ? d : null));
-          if (Array.isArray(list) && list.length) {
-            console.log(list)
-            let stations = list.map(s => toCols(
-              s.SiteName || s.Name,
-              (s.ArrivalTime || s.Time || '').slice(0, 5),
-              s.Mark || '',
-              s.CityName || s.City || '',
-              s.LocationId
-            ));
-            _this.setData({ stations });
-            _this._syncStationLabels();
-          }
-        } else {
+        if (res.data.code != 0) {
           wx.showToast({ title: res.data.msg, icon: 'none' });
+          return;
         }
+        const d = res.data.data || {};
+        // 接口实际结构：StartSiteList = 去程（上车）站点，EndSiteList = 返程（下车）站点
+        const upList = d.StartSiteList || [];
+        const downList = d.EndSiteList || [];
+        let list = upList.concat(downList);
+        if (!list.length) {
+          // 兼容旧结构：data.SiteList / data.Sites / data 本身是数组
+          list = d.SiteList || d.Sites || (Array.isArray(d) ? d : []);
+        }
+        if (!Array.isArray(list) || !list.length) return;
+
+        let stations = list.map(s => toCols(
+          s.LocationName || s.SiteName || s.Name || '',
+          (s.ArrivalTime || s.Time || '00:00').slice(0, 5),
+          '',                       // 初始不预置上下车，交给用户点选
+          s.County || s.CityName || s.City || '', // 文水站点 County=文水县，太原站点 County 为空用 City
+          s.LocationId
+        ));
+        console.log(stations)
+
+        const patch = { stations };
+        // 上级没传城市时，用接口返回的城市兜底，保证左右两列能正常点选
+        if (!_this._cityFromQuery) {
+          const upCity = (upList[0] && (upList[0].County || upList[0].City)) || '';
+          const downCity = (downList[0] && (downList[0].County || downList[0].City)) || '';
+          if (upCity) patch.upCity = upCity;
+          if (downCity) patch.downCity = downCity;
+        }
+        _this.setData(patch);
+        _this._syncStationLabels();
       },
       fail(err) {
         console.error('网络异常:', err);
@@ -210,6 +242,7 @@ Page({
   // 根据 stations 里的 mark 同步 upStation / downStation（并记录下单用的 LocationId）
   _syncStationLabels() {
     let up = '', down = '', upLoc = '', downLoc = '';
+    console.log(this.data.stations)
     this.data.stations.forEach((s) => {
       if (s.mark === 'up')   {
         up   = s.name;
@@ -220,8 +253,9 @@ Page({
         downLoc = s.locationId;
       }
     });
-    
+    console.log(upLoc,downLoc)
     this.setData({ upStation: up, downStation: down, upLocationId: upLoc, downLocationId: downLoc });
+
   },
 
   // 点击圆圈：左半区（上车站城市）只在 空↔上 切换；右半区（下车站城市）只在 空↔下 切换
@@ -328,7 +362,7 @@ Page({
   },
 
   onCoupon() {
-    wx.showToast({ title: '优惠方式（待接入）', icon: 'none' });
+    wx.showToast({ title: '暂无优惠方式', icon: 'none' });
   },
 
   onAgree() {
@@ -342,7 +376,6 @@ Page({
   noop() {},
 
   onPay() {
-    let _this = this;
     if (!this.data.agree) {
       wx.showToast({ title: '请先接受服务合同', icon: 'none' });
       return;
@@ -355,77 +388,184 @@ Page({
       wx.showToast({ title: '请至少选择一位乘车人', icon: 'none' });
       return;
     }
-    // TODO 接入下单支付接口
-    let userinfo = wx.getStorageSync('userInfo')
+    // 弹出支付方式（微信支付 / 云闪付），确认后再下单
+    this.setData({ paySheetShow: true });
+  },
+
+  // 支付方式弹框：展开/收起立减说明
+  togglePayPromoDetail() {
+    this.setData({ payPromoDetailShow: !this.data.payPromoDetailShow });
+  },
+  onPayTypeChange(e) {
+    this.setData({ payType: e.currentTarget.dataset.key });
+  },
+  cancelPaySheet() {
+    this.setData({ paySheetShow: false });
+  },
+  confirmPaySheet() {
+    const payType = this.data.payType;
+    this.setData({ paySheetShow: false });
+    this.submitOrder(payType);
+  },
+
+  // 下单（Create）→ 按支付方式拉起支付
+  submitOrder(payType) {
+    let _this = this;
+    let userinfo = wx.getStorageSync('userInfo') || {};
+    if (!userinfo.Id) {
+      wx.navigateTo({ url: '/user_center/pages/login/login' });
+      return;
+    }
     // 选中乘车人：格式 -> 姓名|手机号|证件号,姓名|手机号|证件号
     const PersonalIds = this.data.passengers
       .filter(p => p.selected)
       .map(p => [p.name, p.phone, p.idCard || ''].join('|'))
       .join(',');
+    wx.showLoading({ title: '下单中...', mask: true });
     wx.request({
       url: baseUrl + "/api/BusMobile/Create",
       data: {
         MemberId: userinfo.Id,
         LineId: _this.data.LineId,
-        ArrivalTime: _this.data.depTime ,
+        ArrivalTime: _this.data.depTime,
         ScheduleId: _this.data.scheduleId,
         PassengerPhone: '17601636466',
-        PersonalIds: PersonalIds,//选中乘车人 格式->  测试|18734560486|14325201006102532,测试儿童|18734560486|14325201006102532
-        Remark: '',//空值
-        Statinglocation: _this.data.upLocationId,//这里是选中站点的 LocationId
-        EndLocation: _this.data.downLocationId,//这里是选中站点的 LocationId
+        PersonalIds: PersonalIds,
+        Remark: '',
+        Statinglocation: _this.data.upLocationId, // 选中站点的 LocationId
+        EndLocation: _this.data.downLocationId,   // 选中站点的 LocationId
       },
       method: "POST",
       success: (res) => {
-        let appid = wx.getStorageSync('appId');
-        let userInfo = wx.getStorageSync('userInfo');
-        _this.setData({
-          orderId:res.data.data
-        })
-        wx.request({
-          url: baseUrl + '/api/BusMobile/GoUnionPay',
-          data: {
-            appid: appid,
-            Id: res.data.data,
-            MemberInfoId: userInfo.Id
-          },
-          method: "GET",
-          success: (payRes) => {
-            if (payRes.data.code === 0) {
-              const payData = payRes.data.data
-              wx.requestPayment({
-                timeStamp: payData.TimeStamp,
-                nonceStr: payData.NonceStr,
-                package: payData.Package,
-                signType: payData.SignType,
-                paySign: payData.PaySign,
-                success: () => {
-                  this._handleOrderSuccess(_this.data.orderId);
-                },
-                fail: (err) => {
-                  console.log('支付失败', err);
-                  // this._clearStorageAndRedirect(orderId);
-                  // resolve(); // 支付失败也结束流程，避免卡死
-                  setTimeout(() => {
-                    wx.reLaunch({
-                      url: `/user_center/pages/payDetail2/payDetail2?orderId=${_this.data.orderId}&from=orderList`
-                    });
-                  }, 1000);
-                }
-              });
-            } else if (payRes.code === 400 && payRes.msg === "已付款") {
-              this._handleOrderSuccess(orderId);
-              resolve();
-            } else {
-              wx.showToast({
-                title: payRes.msg,
-                icon: 'none'
-              });
-            }
-          }
-        })
+        wx.hideLoading();
+        const d = res.data || {};
+        // 业务失败（如 430）必须提示，不能直接往下走支付
+        if (d.code != 0) {
+          wx.showToast({
+            title: d.msg || '下单失败，请稍后重试',
+            icon: 'none',
+            duration: 2500
+          });
+          return;
+        }
+        if (!d.data) {
+          wx.showToast({ title: '下单失败：未返回订单号', icon: 'none' });
+          return;
+        }
+        const orderId = d.data;
+        _this.setData({ orderId });
+        if (payType === 'union') {
+          _this._payByUnionPay(orderId, userinfo.Id);
+        } else {
+          _this._payByWechat(orderId, userinfo.Id);
+        }
+      },
+      fail: () => {
+        wx.hideLoading();
+        wx.showToast({ title: '网络异常，请稍后重试', icon: 'none' });
       },
     });
-    wx.showToast({ title: '下单成功', icon: 'success' });
+  },
+
+  // 微信支付
+  _payByWechat(orderId, memberId) {
+    let _this = this;
+    wx.request({
+      url: baseUrl + '/api/BusMobile/GoUnionPay',
+      data: {
+        appid: wx.getStorageSync('appId'),
+        Id: orderId,
+        MemberInfoId: memberId,
+        PaymentType: 1
+      },
+      method: "GET",
+      success: (payRes) => {
+        const payData = payRes.data || {};
+        if (payData.code === 0 && payData.data) {
+          const info = payData.data;
+          wx.requestPayment({
+            timeStamp: info.TimeStamp,
+            nonceStr: info.NonceStr,
+            package: info.Package,
+            signType: info.SignType,
+            paySign: info.PaySign,
+            success: () => {
+              _this._handleOrderSuccess(orderId);
+            },
+            fail: (err) => {
+              console.log('支付失败', err);
+              setTimeout(() => {
+                wx.reLaunch({
+                  url: `/user_center/pages/payDetail2/payDetail2?orderId=${orderId}&from=orderList`
+                });
+              }, 1000);
+            }
+          });
+        } else if (payData.code === 400 && payData.msg === "已付款") {
+          _this._handleOrderSuccess(orderId);
+        } else {
+          wx.showToast({
+            title: payData.msg || '获取支付信息失败，请稍后重试',
+            icon: 'none',
+            duration: 2500
+          });
+        }
+      },
+      fail: () => {
+        wx.showToast({ title: '网络异常，请稍后重试', icon: 'none' });
+      }
+    });
+  },
+
+  // 云闪付：跳外部小程序，返回后由 unionPayWatcher 查询支付结果
+  _payByUnionPay(orderId, memberId) {
+    wx.request({
+      url: baseUrl + '/api/BusMobile/GoUnionPay',
+      data: {
+        appid: wx.getStorageSync('appId'),
+        Id: orderId,
+        MemberInfoId: memberId,
+        PaymentType: 2
+      },
+      method: "GET",
+      success: (payRes) => {
+        const payData = payRes.data || {};
+        if (payData.code === 0 && payData.data) {
+          unionPayWatcher.mark(orderId, 'bus');
+          wx.navigateToMiniProgram({
+            appId: payData.data.CqpMpAppId,
+            path: payData.data.CqpMpPath,
+            fail(err) {
+              console.log('打开云闪付失败', err);
+              unionPayWatcher.clear();
+              wx.showModal({
+                title: '提示',
+                content: '无法打开云闪付，可稍后在订单页继续支付。',
+                confirmText: '查看订单',
+                cancelText: '知道了',
+                success(r) {
+                  if (r.confirm) {
+                    wx.reLaunch({
+                      url: `/user_center/pages/payDetail2/payDetail2?orderId=${orderId}&from=orderList`
+                    });
+                  }
+                }
+              });
+            }
+          });
+        } else if (payData.code === 400 && payData.msg === "已付款") {
+          this._handleOrderSuccess(orderId);
+        } else {
+          wx.showToast({
+            title: payData.msg || '获取支付信息失败，请稍后重试',
+            icon: 'none',
+            duration: 2500
+          });
+        }
+      },
+      fail: () => {
+        wx.showToast({ title: '网络异常，请稍后重试', icon: 'none' });
+      }
+    });
   },
 });
