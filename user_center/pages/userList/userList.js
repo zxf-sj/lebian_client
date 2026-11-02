@@ -94,6 +94,6 @@ Page({
     wx.showToast({ title: '功能暂未开放', icon: 'none' });
   },
   addUser(){
-    wx.showToast({ title: '功能暂未开放', icon: 'none' });
+    wx.navigateTo({ url: '/pages/addPassenger/addPassenger' });
   },
 })

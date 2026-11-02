@@ -55,7 +55,8 @@ Page({
     tab: 0,
 
     timeSlotIdx: 2,
-    hotStations: [],
+    /* 热门站点两行横滑：hotRows = [[第一行], [第二行]] */
+    hotRows: [],
     hotCount: 1,
     stationRoutes: [],
 
@@ -422,8 +423,8 @@ Page({
     })
     let _this = this;
     let data = {
-      startId: _this.data.fromId != 'null' ? _this.data.fromId : 1,
-      endId: _this.data.toId != 'null' ? _this.data.toId : 2,
+      startId: _this.data.fromId != 'null' ? _this.data.fromId : 2,
+      endId: _this.data.toId != 'null' ? _this.data.toId : 1,
       today: _this.data.today
     };
     wx.request({
@@ -442,7 +443,7 @@ Page({
                 item.sel = false; // 直接赋值添加新属性
               });
               _this.setData({
-                hotStations: Bus_HotSiteList
+                hotRows: _this.splitHotRows(Bus_HotSiteList)
               })
             } else {
               console.log('没有班次')
@@ -751,13 +752,61 @@ Page({
   },
 
   /* ===== 站点上车 ===== */
+  /* 一维列表切成两行（向上取整进第一行） */
+  splitHotRows(list) {
+    const half = Math.ceil(list.length / 2);
+    return [list.slice(0, half), list.slice(half)];
+  },
+
   onHotTap(e) {
-    const i = Number(e.currentTarget.dataset.idx);
-    const key = `hotStations[${i}].sel`;
-    const sel = !this.data.hotStations[i].sel;
+    const r = Number(e.currentTarget.dataset.row);
+    const c = Number(e.currentTarget.dataset.col);
+
+    // 多选：切换当前站点选中态，不影响其他已选站点
     this.setData({
-      [key]: sel,
-      hotCount: this.data.hotStations.filter(h => h.sel).length + (sel ? 1 : -1),
+      [`hotRows[${r}][${c}].sel`]: !this.data.hotRows[r][c].sel
+    }, () => {
+      const ids = [];
+      this.data.hotRows.forEach(row => row.forEach(h => { if (h.sel) ids.push(h.Id); }));
+      this.setData({ hotCount: ids.length });
+      // 选中的站点 Id 逗号拼接；全不选时传空，拉全部班次
+      this.getStationList(ids.join(','));
+    });
+  },
+
+  // 站点班次列表：POST，SearchSiteId 为热门站点 Id 的逗号分隔字符串（多选）
+  getStationList(searchSiteId) {
+    wx.showLoading({ title: '' });
+    let _this = this;
+    let data = {
+      startId: _this.data.fromId != 'null' ? _this.data.fromId : 1,
+      endId: _this.data.toId != 'null' ? _this.data.toId : 2,
+      today: _this.data.today,
+      SearchSiteId: searchSiteId || ''
+    };
+    wx.request({
+      url: baseUrl + '/api/BusMobile/GetBusIndexLineList',
+      data: data,
+      method: "POST",
+      success: (res) => {
+        console.log(res.data);
+        if (res.data.code == 0) {
+          _this.setData({
+            stationRoutes: res.data.data.Bus_ShiftList || []
+          });
+        } else {
+          wx.showToast({
+            title: res.data.msg,
+            icon: "none"
+          });
+        }
+      },
+      fail(err) {
+        console.error('网络异常:', err);
+      },
+      complete() {
+        wx.hideLoading();
+      }
     });
   },
 
@@ -769,9 +818,11 @@ Page({
   },
 
   onBookStation(e) {
-    const item = this.data.stationRoutes[Number(e.currentTarget.dataset.idx)];
+    let item = e.currentTarget.dataset.item
+    
+    // DepartureTime 含空格与冒号，需转码；ScheduleId 取班次 id（原写法误传了 DepartureTime）
     wx.navigateTo({
-      url: '/pages/stationOrder/stationOrder?price=' + item.platformPrice
+      url: '/pages/stationOrder/stationOrder?DepartureTime=' + encodeURIComponent(item.DepartureTime) + "&ScheduleId=" + item.Id + '&LineId=' + item.LineId + "&price=" + item.SitePrice
     });
   },
 

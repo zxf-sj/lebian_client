@@ -1,6 +1,25 @@
 page { background: #f4f6f9; }
 .page { padding: 16rpx 16rpx 60rpx; box-sizing: border-box; }
 
+/* 行程信息：纯文字展示卡 */
+.trip-card {
+  background: #e8f1fd;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+.trip-title {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #2f7cf6;
+  margin-bottom: 10rpx;
+}
+.trip-line {
+  font-size: 28rpx;
+  color: #1a1a1a;
+  line-height: 1.7;
+}
+
 .card {
   background: #fff;
   border-radius: 16rpx;

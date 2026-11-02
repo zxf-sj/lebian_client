@@ -91,21 +91,23 @@ page { background: #f4f6f9; }
 .hot-head { display: flex; align-items: baseline; }
 .hot-title { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
 .hot-count { font-size: 26rpx; color: #6b7480; margin-left: 16rpx; }
-.hot-pills { display: flex; flex-wrap: wrap; margin-top: 16rpx; }
+.hot-rows { margin-top: 16rpx; }
+.hot-row {
+  width: 100%;
+  white-space: nowrap;
+}
 .hot-pill {
-  width: 30.5%;
+  display: inline-block;
   box-sizing: border-box;
   background: #fff;
   border-radius: 30rpx;
-  padding: 12rpx 0;
+  padding: 12rpx 28rpx;
   text-align: center;
   font-size: 26rpx;
   color: #1a1a1a;
-  margin: 0 4% 16rpx 0;
+  margin: 0 16rpx 16rpx 0;
   white-space: nowrap;
-  overflow: hidden;
 }
-.hot-pill:nth-child(3n) { margin-right: 0; }
 .hot-pill.on { background: #2ba9e8; color: #fff; font-weight: 700; }
 .hot-link {
   margin: 20rpx 0 6rpx;
@@ -208,8 +210,8 @@ page { background: #f4f6f9; }
 .cp-card.sold .cp-route, .cp-card.sold .cp-time, .cp-card.sold .cp-seats-label, .cp-card.sold .cp-seats { color: #6b7480; }
 
 .cp-left { flex: 1; display: flex; flex-direction: column; }
-.cp-route { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
-.cp-time { font-size: 28rpx; color: #1a1a1a; margin-top: 8rpx; }
+.cp-route { font-size: 22rpx; color: #6b7480; }
+.cp-time { font-size: 38rpx; font-weight: 700; color: #1a1a1a; margin-top: 6rpx; }
 .cp-right { display: flex; flex-direction: column; align-items: center; }
 .cp-seats-label { font-size: 26rpx; color: #1a1a1a; }
 .cp-seats { font-size: 30rpx; font-weight: 700; color: #1a1a1a; margin-top: 4rpx; }

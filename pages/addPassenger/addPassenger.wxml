@@ -1,4 +1,10 @@
 <view class="page">
+  <!-- 行程信息：纯文字展示，非输入项 -->
+  <view class="trip-card" wx:if="{{tripLines.length}}">
+    <view class="trip-title">行程信息</view>
+    <view class="trip-line" wx:for="{{tripLines}}" wx:key="*this">{{item}}</view>
+  </view>
+
   <!-- 基础信息 -->
   <view class="card">
     <view class="card-head">
@@ -38,17 +44,8 @@
       </view>
       <text class="chev">›</text>
     </view>
-  </view>
-
-  <!-- 联系方式 -->
-  <view class="card">
-    <view class="row">
-      <view class="label">联系方式</view>
-      <view class="val">
-        <input class="ipt" value="{{contact}}" bindinput="onContact" maxlength="11" type="number" placeholder="用于接收行程信息" placeholder-class="ph" />
-      </view>
-    </view>
     <view class="line"></view>
+
     <view class="row">
       <view class="label"><text class="star">*</text>手机号</view>
       <view class="val">

@@ -40,9 +40,9 @@
     </view>
 
     <!-- 返程入口（同旧版首页 grid 的「返程」） -->
-    <view class="fancheng-entry" bindtap="fancheng">
+    <!-- <view class="fancheng-entry" bindtap="fancheng">
       <text class="fancheng-entry-text">⇄ 返程预约</text>
-    </view>
+    </view> -->
   </view>
 
   <!-- 历史线路 -->

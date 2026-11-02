@@ -40,7 +40,7 @@
     <view class="psg-head">
       <view class="psg-names">
         <view
-          wx:for="{{passengers}}" wx:key="name"
+          wx:for="{{passengers}}" wx:key="id"
           class="psg-tag {{item.selected ? 'on' : ''}}"
           bindtap="onPaxTab" data-idx="{{index}}"
         >
@@ -51,7 +51,7 @@
       </view>
       <view class="psg-add" bindtap="onAddUser">新增</view>
     </view>
-    <block wx:for="{{passengers}}" wx:key="name">
+    <block wx:for="{{passengers}}" wx:key="id">
       <view wx:if="{{item.selected}}" class="psg-row">
         <text class="psg-name">{{item.name}}</text>
         <text class="psg-type">{{item.type}}</text>

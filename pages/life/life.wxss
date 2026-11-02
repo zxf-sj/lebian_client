@@ -6,11 +6,13 @@
 }
 
 .life-logo {
-  font-size: 56rpx;
-  font-weight: 800;
-  color: #1a1a1a;
-  letter-spacing: 4rpx;
   padding: 24rpx 16rpx 40rpx;
+}
+
+.life-logo-img {
+  width: 240rpx;
+  height: 88rpx;
+  display: block;
 }
 
 .life-grid {
@@ -30,6 +32,7 @@
   border-radius: 32rpx;
   background: #e3ecfb;
   box-shadow: 0 6rpx 18rpx rgba(46, 120, 255, 0.08);
+  overflow: visible;
 }
 
 .life-card.on {
@@ -38,9 +41,11 @@
 }
 
 .life-card-img {
-  width: 88rpx;
-  height: 88rpx;
+  width: 120rpx;
+  height: 150rpx;
   flex-shrink: 0;
+  /* 图标放大并向上探出卡片顶边，贴合设计图 */
+  margin-top: -56rpx;
 }
 
 .life-card-name {
@@ -52,24 +57,4 @@
 
 .life-card.on .life-card-name {
   color: #fff;
-}
-
-.life-kefu {
-  position: fixed;
-  right: 32rpx;
-  bottom: 180rpx;
-  width: 96rpx;
-  height: 96rpx;
-  border-radius: 50%;
-  background: #ff5b5b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 6rpx 16rpx rgba(255, 91, 91, 0.4);
-  overflow: hidden;
-}
-
-.life-kefu image {
-  width: 64rpx;
-  height: 64rpx;
 }

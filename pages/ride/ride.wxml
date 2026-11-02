@@ -94,14 +94,19 @@
           <text class="hot-title">🚏 热门站点</text>
           <text class="hot-count">已选{{hotCount}}个</text>
         </view>
-        <view class="hot-pills">
-          <view
-            wx:for="{{hotStations}}"
-            wx:key="index"
-            class="hot-pill {{item.sel ? 'on' : ''}}"
-            bindtap="onHotTap"
-            data-idx="{{index}}"
-          >{{item.Name}}</view>
+        <view class="hot-rows">
+          <scroll-view
+            class="hot-row" scroll-x enhanced show-scrollbar="{{false}}"
+            wx:for="{{hotRows}}" wx:for-item="row" wx:for-index="rowIdx" wx:key="rowIdx"
+          >
+            <view
+              wx:for="{{row}}" wx:for-item="h" wx:for-index="colIdx" wx:key="colIdx"
+              class="hot-pill {{h.sel ? 'on' : ''}}"
+              bindtap="onHotTap"
+              data-row="{{rowIdx}}"
+              data-col="{{colIdx}}"
+            >{{h.Name}}</view>
+          </scroll-view>
         </view>
       </view>
       <view class="hot-link" bindtap="onOpenStationPage">点击进入选择上下车站点</view>
@@ -124,7 +129,7 @@
 
       <!-- ========== 1. 站点上车 ========== -->
       <block wx:if="{{tab === 0}}">
-        <view wx:for="{{stationRoutes}}" wx:key="time" class="st-card" bindtap="onBookStation" data-idx="{{index}}">
+        <view wx:for="{{stationRoutes}}" wx:key="time" class="st-card" bindtap="onBookStation" data-idx="{{index}}" data-item="{{item}}">
           <view class="st-main">
             <view class="st-head">
               <text class="st-time">{{item.Time}}</text>
@@ -148,14 +153,14 @@
           <view class="st-side">
             <view class="st-vprices">
               <view class="st-vgroup">
-                <text class="st-vcol">场站售票</text>
+                <text class="st-vcol">平台售票</text>
                 <view class="st-vcol st-vnumcol">
                   <text class="st-vnum">{{item.SitePrice}}</text>
                   <text class="st-vunit">元 /位</text>
                 </view>
               </view>
               <view class="st-vgroup plat">
-                <text class="st-vcol">平台售票</text>
+                <text class="st-vcol">特价售票</text>
                 <view class="st-vcol st-vnumcol">
                   <text class="st-vnum">{{item.TicketPrice}}</text>
                   <text class="st-vunit">元 /位</text>
