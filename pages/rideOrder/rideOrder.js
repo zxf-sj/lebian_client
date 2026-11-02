@@ -5,6 +5,7 @@ const BASE_URL = require("../../utils/BASE_URL");
 const throttle = require('../../utils/throttle.js').throttle;
 const debounce = require('../../utils/debounce.js');
 const http = require('../../utils/http.js');
+const orderStorage = require('../../utils/orderStorage.js');
 const unionPayWatcher = require('../../utils/unionPayWatcher.js');
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 Page({
@@ -131,6 +132,7 @@ Page({
   },
   onLoad(query) {
     let _this = this;
+    orderStorage.touchOrderDraft();
     const mode = query.mode === 'charter' ? 'charter' : 'carpool';
 
     // 固定四天（今天/明天/后天/第4天），与 ride 页一致
@@ -732,7 +734,9 @@ Page({
   },
 
   // 返回 ride 列表页（本页被弹出销毁）时，清掉选址链路留下的缓存，
-  // 避免下次进本页 onShow 读到上一次的旧地址
+  // 避免下次进本页 onShow 读到上一次的旧地址。
+  // 注意：这里只清地址两个键，日期/价格等缓存 ride 页还在用；
+  // 整条下单草稿在「回到首页」或「下单成功/支付结束」时统一清理（utils/orderStorage.js）。
   onUnload() {
     ['starInfo2', 'endInfo2'].forEach(key => {
       wx.removeStorageSync(key);
@@ -1140,8 +1144,7 @@ Page({
   },
   // 8. 支付失败：清缓存并跳订单详情继续支付
   _clearStorageAndRedirect(orderId) {
-    const keys = ['starInfo2', 'endInfo2', 'storageSync', 'pcTimeSync', 'personNum', 'pcTypeId', 'SeatNumber', 'textareaValue', 'lineId'];
-    keys.forEach(key => wx.removeStorageSync(key));
+    orderStorage.clearOrderDraft();
 
     setTimeout(() => {
       wx.reLaunch({

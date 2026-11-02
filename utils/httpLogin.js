@@ -1,4 +1,5 @@
 const BASE_URL = require("./BASE_URL")
+const auth = require("./auth")
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 /**
  * 供外部post请求调用  
@@ -25,6 +26,11 @@ function get(url, params, onSuccess, onFailed) {
  */
 
 function request(url, params, method, onSuccess, onFailed) {
+  // 依赖 MemberId 的接口，未登录时不发请求，先引导登录
+  if (auth.requestNeedsLogin(url, params) && !auth.requireLogin()) {
+    if (typeof onFailed === 'function') onFailed('未登录');
+    return;
+  }
   console.log("请求头：", wx.getStorageSync('header'))
   wx.request({
     url: baseUrl + url,

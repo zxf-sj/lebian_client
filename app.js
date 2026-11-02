@@ -1,11 +1,40 @@
 const BASE_URL = require("./utils/BASE_URL");
 var http = require('./utils/httpLogin');
 var httpReq = require('./utils/httpLogin'); 
+const auth = require('./utils/auth');
+const orderStorage = require('./utils/orderStorage');
 
 App({
 
   onLaunch(){
+    // 全局拦截「带 MemberId 但未登录」的请求：弹一次登录引导，不发脏请求
+    this.installRequestGuard();
+    // 冷启动清理超过 2 小时的下单草稿（App 被杀死等中断场景）
+    orderStorage.clearExpiredOrderDraft();
     this.hasUpdate();
+  },
+
+  /**
+   * 统一请求守卫
+   * 项目里有 http.js / httpLogin.js / 直接 wx.request 三种调用方式，
+   * 这里包一层 wx.request，保证任何地方只要请求参数里带 MemberId，
+   * 未登录时都会被拦下来，避免 MemberId=undefined 打到后端。
+   */
+  installRequestGuard() {
+    if (wx.__memberIdGuardInstalled) return;
+    const rawRequest = wx.request;
+    wx.request = function (options) {
+      options = options || {};
+      if (auth.requestNeedsLogin(options.url, options.data) && !auth.isLogin()) {
+        auth.requireLogin();
+        const err = { errMsg: 'request:fail 未登录' };
+        if (typeof options.fail === 'function') options.fail(err);
+        if (typeof options.complete === 'function') options.complete(err);
+        return;
+      }
+      return rawRequest.call(wx, options);
+    };
+    wx.__memberIdGuardInstalled = true;
   },
   onShow() {
     // var clientDriving=this.globalData.clientDriving

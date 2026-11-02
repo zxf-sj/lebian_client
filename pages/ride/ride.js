@@ -3,6 +3,7 @@
 const BASE_URL = require("../../utils/BASE_URL");
 const throttle = require('../../utils/throttle.js').throttle;
 const http = require('../../utils/http.js');
+const orderStorage = require('../../utils/orderStorage.js');
 const unionPayWatcher = require('../../utils/unionPayWatcher.js');
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 const WEEK = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
@@ -233,6 +234,11 @@ Page({
     }
   },
 
+  // 从本页返回（不下单）时清掉下单草稿，避免下次进来带着上次的地址/时间/人数
+  onUnload() {
+    orderStorage.clearOrderDraft();
+  },
+
   onPickAddr(e) {
     const direction = e.currentTarget.dataset.direction;
     const city = direction === 'starting' ? this.data.from : this.data.to;
@@ -243,6 +249,8 @@ Page({
   },
   onLoad(query) {
     console.log('query', query)
+    // 进入下单流程，记录草稿时间（用于冷启动清理超时草稿）
+    orderStorage.touchOrderDraft();
 
     // 出发地/目的地/日期由首页 index 页查询带入
     const from = query.from ? decodeURIComponent(query.from) : this.data.from;
@@ -1011,9 +1019,7 @@ Page({
   },
   // 下单成功后清理行程草稿缓存
   _clearOrderDraft() {
-    ['starInfo2', 'endInfo2', 'storageSync', 'pcTimeSync', 'personNum', 'pcTypeId', 'textareaValue', 'phoneStr', 'lineId'].forEach(function (key) {
-      wx.removeStorageSync(key);
-    });
+    orderStorage.clearOrderDraft();
   },
   _goPayDetail(orderId) {
     wx.reLaunch({

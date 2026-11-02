@@ -1,4 +1,5 @@
 const BASE_URL = require("./BASE_URL")
+const auth = require("./auth")
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 let timer = null;
 
@@ -30,6 +31,11 @@ function get(url, params, header, onSuccess, onFailed) {
 
 function request(url, params, method, header, onSuccess, onFailed) {
   let hasToast = false;
+  // 依赖 MemberId 的接口，未登录时不发请求，先引导登录
+  if (auth.requestNeedsLogin(url, params) && !auth.requireLogin()) {
+    if (typeof onFailed === 'function') onFailed('未登录');
+    return;
+  }
   // wx.showLoading({
   //   title: '加载中...'
   // })
@@ -60,7 +66,6 @@ function request(url, params, method, header, onSuccess, onFailed) {
         success() {
           hasToast = true;
           setTimeout(function () {
-            console.log(err)
             onFailed(error);
           }, 500)
         }

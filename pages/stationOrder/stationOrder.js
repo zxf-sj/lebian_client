@@ -1,6 +1,7 @@
 // pages/stationOrder/stationOrder.js  站点上车下单页
 const BASE_URL = require("../../utils/BASE_URL");
 const http = require("../../utils/http.js");
+const orderStorage = require("../../utils/orderStorage.js");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 
 // 儿童字典值（与 userList / addPassenger 一致）
@@ -66,6 +67,7 @@ Page({
 
   onLoad(options) {
     console.log(options)
+    orderStorage.touchOrderDraft();
     options = options || {};
     this.setData({
       LineId:options.LineId
@@ -109,6 +111,22 @@ Page({
   onShow() {
     // 从新增乘车人页返回后需要刷新列表
     this.getPassengers();
+  },
+
+  // 支付成功：清草稿并跳订单详情（原代码只调用了这里，但方法没实现）
+  _handleOrderSuccess(orderId) {
+    orderStorage.clearOrderDraft();
+    wx.showModal({
+      title: '预约成功',
+      content: '订单已预约成功，司机将会在您出发前一小时联系你',
+      showCancel: false,
+      confirmText: '我知道了',
+      success: () => {
+        wx.reLaunch({
+          url: `/user_center/pages/payDetail2/payDetail2?orderId=${orderId}&from=orderList`
+        });
+      }
+    });
   },
 
   // 乘车人列表：同 userList 页，GET /Api/Mobile/AddressList?MemberId=

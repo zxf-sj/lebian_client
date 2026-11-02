@@ -1,4 +1,5 @@
 const BASE_URL = require("../../../utils/BASE_URL");
+const orderStorage = require("../../../utils/orderStorage.js");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 import http from '../../../utils/http.js';
 import qqmapsdk from '../../../libs/qqMap';
@@ -52,6 +53,7 @@ Page({
   },
   onLoad: function (opt) {
     let _this = this;
+    orderStorage.touchOrderDraft();
     _this.getLineList();
     _this.mapCtx = wx.createMapContext("myMap");
     _this.getMyLocation();
@@ -419,19 +421,7 @@ Page({
             success(res) {
               var ress = res.data
               if (ress.code == '0') {
-                wx.removeStorageSync('lineIndex');
-                wx.removeStorageSync('lineItme');
-                wx.removeStorageSync('startInfo');
-                wx.removeStorageSync('endInfo');
-                wx.removeStorageSync('totalNum');
-                wx.removeStorageSync('personStr');
-                wx.removeStorageSync('note');
-                wx.removeStorageSync('startDate');
-                wx.removeStorageSync('startTime');
-                wx.removeStorageSync('timeIndex');
-                wx.removeStorageSync('timeArr');
-                wx.removeStorageSync('cartype');
-                wx.removeStorageSync('cartypelist');
+                orderStorage.clearOrderDraft();
                 wx.hideLoading();
                 that.setSubscribeMessage();
                 wx.reLaunch({
@@ -481,19 +471,7 @@ Page({
                   success(res) {
                     var ress = res.data
                     if (ress.code == '0') {
-                      wx.removeStorageSync('lineIndex');
-                      wx.removeStorageSync('lineItme');
-                      wx.removeStorageSync('startInfo');
-                      wx.removeStorageSync('endInfo');
-                      wx.removeStorageSync('totalNum');
-                      wx.removeStorageSync('personStr');
-                      wx.removeStorageSync('note');
-                      wx.removeStorageSync('startDate');
-                      wx.removeStorageSync('startTime');
-                      wx.removeStorageSync('timeIndex');
-                      wx.removeStorageSync('timeArr');
-                      wx.removeStorageSync('cartype');
-                      wx.removeStorageSync('cartypelist');
+                      orderStorage.clearOrderDraft();
                       wx.hideLoading();
                       that.setSubscribeMessage();
                       wx.reLaunch({

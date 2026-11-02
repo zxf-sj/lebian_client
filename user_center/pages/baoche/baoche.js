@@ -2,6 +2,7 @@
 const BASE_URL = require("../../../utils/BASE_URL");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 import http from '../../../utils/http.js';
+const orderStorage = require('../../../utils/orderStorage.js');
 const debounce = require('../../../utils/debounce');
 const app = getApp();
 const throttle = require('../../../utils/throttle.js').throttle;
@@ -27,6 +28,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+   orderStorage.touchOrderDraft()
    //获取用户须知
    this.getNews()
   },
@@ -343,15 +345,7 @@ Page({
             paySign: payData.PaySign,
                         success(res) {
                           console.log('回调',res)
-                          wx.removeStorageSync('starInfo2'); 
-                          wx.removeStorageSync('endInfo2');
-                          wx.removeStorageSync('storageSync')
-                          wx.removeStorageSync('pcTimeSync')
-                          wx.removeStorageSync('personNum')
-                          wx.removeStorageSync('pcTypeId');
-                          wx.removeStorageSync('textareaValue');
-                          wx.removeStorageSync('phoneStr')
-                          wx.removeStorageSync('lineId');
+                          orderStorage.clearOrderDraft();
                           console.log('拉起支付')
                           wx.showToast({
                             title: '支付成功',
@@ -472,15 +466,7 @@ Page({
             paySign: payData.PaySign,
                               success(res) {
                                 console.log('回调',res)
-                                wx.removeStorageSync('starInfo2'); 
-                                wx.removeStorageSync('endInfo2');
-                                wx.removeStorageSync('storageSync')
-                                wx.removeStorageSync('pcTimeSync')
-                                wx.removeStorageSync('personNum')
-                                wx.removeStorageSync('pcTypeId');
-                                wx.removeStorageSync('textareaValue');
-                                wx.removeStorageSync('phoneStr')
-                                wx.removeStorageSync('lineId');
+                                orderStorage.clearOrderDraft();
                                 console.log('支付成功')
                                 wx.showToast({
                                   title: '支付成功',
@@ -655,7 +641,7 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload() {
-    
+
   },
 
   /**

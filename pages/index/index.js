@@ -1,5 +1,6 @@
 const app = getApp();
 const BASE_URL = require("../../utils/BASE_URL");
+const orderStorage = require("../../utils/orderStorage.js");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 
 
@@ -17,6 +18,12 @@ Page({
     historyRoutes: [],
     hotRoutes: [],
     selectedKey: '',
+  },
+
+  // 回到首页 = 本轮下单流程结束（不管下没下单）：清掉下单草稿，登录态与城市偏好保留。
+  // 下单成功的清理由各下单页在支付成功回调里做，这里兜底「中途返回不下单」的场景。
+  onShow() {
+    orderStorage.clearOrderDraft();
   },
 
   onLoad() {

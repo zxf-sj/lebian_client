@@ -2,6 +2,7 @@
 // pages/order-confirm/order-confirm.js
 const BASE_URL = require("../../../utils/BASE_URL");
 const throttle = require('../../../utils/throttle.js').throttle;
+const orderStorage = require('../../../utils/orderStorage.js');
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 Page({
   data: {
@@ -31,6 +32,7 @@ Page({
   onLoad(options) {
     // 可以在这里接收上一页传参，动态修改 tripInfo
     console.log(options)
+    orderStorage.touchOrderDraft()
     let startingStation = JSON.parse(options.startingStation)
     let terminal = JSON.parse(options.terminal)
     let buslineId = options.buslineId
@@ -223,6 +225,7 @@ Page({
 
   }, 3000),
   _handleOrderSuccess(orderId) {
+    orderStorage.clearOrderDraft();
     wx.showModal({
       title: '预约成功',
       content: '订单已预约成功，司机将会在您出发前一小时联系你',
