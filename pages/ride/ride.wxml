@@ -1,6 +1,6 @@
 <view class="page">
-  <!-- 顶部：出发地 / 目的地 / 出发日期（包车 tab 下隐藏，由 ch-top 替代） -->
-  <view class="topbar" hidden="{{tab === 2}}">
+  <!-- 顶部：出发地 / 目的地 / 出发日期（四个 tab 始终显示，保证切换时顶部高度不变） -->
+  <view class="topbar">
     <view class="tb-col">
       <text class="tb-label">出发地</text>
       <text class="tb-value">{{from}}</text>
@@ -10,17 +10,19 @@
       <text class="tb-label">目的地</text>
       <text class="tb-value">{{to}}</text>
     </view>
-    <view class="tb-col">
+    <view class="tb-col" bindtap="onOpenDateSheet">
       <text class="tb-label">出发日期</text>
       <text class="tb-value">{{dateLabel}}</text>
     </view>
   </view>
 
-  <!-- 日期：今天/明天/后天/第4天显示周几，固定四天（包车 tab 下隐藏） -->
-  <view class="date-row" hidden="{{tab === 2}}">
+  <!-- 日期：今天/明天/后天/第4天显示周几，固定四天（四个 tab 始终显示） -->
+  <!-- 站点上车（tab=0）只允许选今天/明天 -->
+  <view class="date-row">
     <view
       wx:for="{{dates}}"
       wx:key="full"
+      wx:if="{{tab !== 0 || index < 2}}"
       class="date-cell {{dateIdx === index ? 'on' : ''}}"
       bindtap="onDateTap"
       data-idx="{{index}}"
@@ -28,43 +30,6 @@
     >
       <text class="dc-label">{{item.label}}</text>
       <text class="dc-md">{{item.md}}</text>
-    </view>
-  </view>
-
-  <!-- 包车 tab 专用：通栏的三胶囊 + 上下车地址（在左右分栏之上） -->
-  <view class="ch-top" wx:if="{{tab === 2}}">
-    <!-- 时间段：提到最上面，点击弹出底部弹框选择 -->
-    <view class="ch-timebar" bindtap="onOpenTimeSheet">
-      <text class="ctb-label">出发时间段</text>
-      <view class="ctb-val">
-        <text class="ctb-time">{{tripTime || '请选择'}}</text>
-        <text class="chc-arrow">▾</text>
-      </view>
-    </view>
-
-    <view class="ch-trip">
-      <view class="ch-chip tap" bindtap="onOpenDateSheet">
-        <text class="chc-label">{{dates[dateIdx].label}}</text>
-        <view class="chc-row">
-          <text class="chc-md">{{dates[dateIdx].md}}</text>
-          <text class="chc-arrow">▾</text>
-        </view>
-      </view>
-      <view class="ch-chip wide">
-        <text class="chc-route">{{from}} → {{to}}</text>
-      </view>
-     
-    </view>
-
-    <view class="ch-addr">
-      <view class="ch-addr-row" bindtap="onPickAddr" data-direction="starting">
-        <text class="ch-addr-city">{{from}}</text>
-        <text class="ch-addr-text {{addrFrom ? '' : 'ch-addr-ph'}}">{{addrFrom || '请选择上车位置'}}</text>
-      </view>
-      <view class="ch-addr-row" bindtap="onPickAddr" data-direction="ending">
-        <text class="ch-addr-city">{{to}}</text>
-        <text class="ch-addr-text {{addrTo ? '' : 'ch-addr-ph'}}">{{addrTo || '请选择下车位置'}}</text>
-      </view>
     </view>
   </view>
 
@@ -84,8 +49,37 @@
       </view>
     </scroll-view>
 
-    <!-- 右侧列：上面固定头部（仅站点上车），下面滚动内容 -->
+    <!-- 右侧列：上面固定头部（站点上车 / 拼车时段 / 包车行程），下面滚动内容 -->
     <view class="main-col">
+
+    <!-- 包车 tab：固定在右列顶部的行程块（不再挤动左侧 tab 栏） -->
+    <view class="ch-top" wx:if="{{tab === 2}}">
+      <!-- 时间段：点击弹出底部弹框选择 -->
+      <view class="ch-timebar" bindtap="onOpenTimeSheet">
+        <text class="ctb-label">出发时间段</text>
+        <view class="ctb-val">
+          <text class="ctb-time">{{tripTime || '请选择'}}</text>
+          <text class="chc-arrow">▾</text>
+        </view>
+      </view>
+
+      <!-- <view class="ch-trip">
+        <view class="ch-chip wide">
+          <text class="chc-route">{{from}} → {{to}}</text>
+        </view>
+      </view> -->
+
+      <view class="ch-addr">
+        <view class="ch-addr-row" bindtap="onPickAddr" data-direction="starting">
+          <text class="ch-addr-city">{{from}}</text>
+          <text class="ch-addr-text {{addrFrom ? '' : 'ch-addr-ph'}}">{{addrFrom || '请选择上车位置'}}</text>
+        </view>
+        <view class="ch-addr-row" bindtap="onPickAddr" data-direction="ending">
+          <text class="ch-addr-city">{{to}}</text>
+          <text class="ch-addr-text {{addrTo ? '' : 'ch-addr-ph'}}">{{addrTo || '请选择下车位置'}}</text>
+        </view>
+      </view>
+    </view>
 
     <!-- 站点上车 tab 下固定在顶部的热门站点块 -->
     <view class="station-fixed" wx:if="{{tab === 0}}">
@@ -125,7 +119,7 @@
       </view>
     </view>
 
-    <scroll-view class="main" scroll-y>
+    <scroll-view class="main" scroll-y scroll-top="{{mainScrollTop}}">
 
       <!-- ========== 1. 站点上车 ========== -->
       <block wx:if="{{tab === 0}}">
@@ -173,7 +167,7 @@
       <block wx:elif="{{tab === 1}}">
         <view
           wx:for="{{carpoolShow}}"
-          wx:key=index"
+          wx:key="index"
           class="cp-card {{item.sold ? 'sold' : ''}} {{carpoolSel === item.StartTime ? 'sel' : ''}}"
           bindtap="onCarpoolTap"
           data-item="{{item}}"
@@ -269,7 +263,7 @@
         <!-- 子tab：城际捎货 / 城际跑腿 -->
         <view class="er-sub">
           <view class="er-sub-item {{errandSub === 0 ? 'on' : ''}}" bindtap="onErrandSubTap" data-idx="0">城际捎货</view>
-          <view class="er-sub-item {{errandSub === 1 ? 'on' : ''}}" bindtap="onErrandSubTap" data-idx="1">城际跑腿</view>
+          <view class="er-sub-item er-sub-disabled" bindtap="onErrandSubTap" data-idx="1">城际跑腿<text class="er-sub-dev">开发中</text></view>
         </view>
         <view class="er-sub-tip">{{errandSub === 0 ? '按行李箱分类定价，提交后由客车捎带' : '代取 / 代点外卖，负责城际运输送达'}}</view>
 
@@ -419,6 +413,7 @@
         <view
           wx:for="{{dates}}"
           wx:key="full"
+          wx:if="{{tab !== 0 || index < 2}}"
           class="sheet-item {{dateIdx === index ? 'on' : ''}}"
           bindtap="onDateSheetTap"
           data-idx="{{index}}"
@@ -428,7 +423,7 @@
           <text class="si-check" wx:if="{{dateIdx === index}}">✓</text>
         </view>
       </scroll-view>
-      <view class="sheet-tip">仅支持选择今天起 4 天内的日期</view>
+      <view class="sheet-tip">仅支持选择今天起 {{tab === 0 ? 2 : 4}} 天内的日期</view>
     </view>
   </view>
 

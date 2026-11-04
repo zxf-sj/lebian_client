@@ -254,7 +254,8 @@ page { background: #f4f6f9; }
 /* ===== 3. 包车出发：右侧直接下单 ===== */
 
 /* 包车 tab 顶部通栏：三胶囊 + 地址框（在左右分栏之上） */
-.ch-top { padding: 12rpx 16rpx 0; }
+/* 包车行程块：固定在右列顶部，不参与滚动，也不影响左侧 tab 栏位置 */
+.ch-top { flex-shrink: 0; padding: 12rpx 16rpx 0; }
 
 /* 时间段条：包车顶部独立一条，点击弹框 */
 .ch-timebar {
@@ -440,6 +441,25 @@ page { background: #f4f6f9; }
   color: #1a1a1a;
 }
 .er-sub-item.on { background: #2ba9e8; color: #fff; box-shadow: 0 6rpx 16rpx rgba(43,169,232,.35); }
+/* 城际跑腿：开发中禁用态 */
+.er-sub-disabled {
+  position: relative;
+  background: #f2f3f5;
+  color: #b8bfc7;
+  pointer-events: auto;
+}
+.er-sub-dev {
+  position: absolute;
+  top: -12rpx;
+  right: -6rpx;
+  padding: 2rpx 10rpx;
+  background: #ff9500;
+  color: #fff;
+  font-size: 18rpx;
+  font-weight: 400;
+  line-height: 1.4;
+  border-radius: 10rpx 10rpx 10rpx 0;
+}
 .er-sub-tip { font-size: 24rpx; color: #9aa3ad; margin-bottom: 16rpx; }
 
 /* 分节头：圆圈数字 + 标题 */

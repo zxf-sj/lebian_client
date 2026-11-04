@@ -9,7 +9,7 @@
       <image src="../../../assets/images/cika.png" mode="" />
       <view class="item" style="border: 1px dashed {{index == 1 ? '#e3c048' : (index == 2 ? '#ef4e4e' : (index == 0?'#000':'#001fff'))}}">
         <view class="item" wx:if="{{index == 3}}" ></view>
-        <image src="/assets/images/image_704358267225789.png" wx:if="{{index == 0}}" mode="" />
+        <image src="/assets/images/image_704358267225789.jpg" wx:if="{{index == 0}}" mode="" />
         <image src="/assets/images/youhuiquan_bg_small_vip@2x.png" wx:if="{{index == 1}}" mode="" />
         <image src="/assets/images/youhuiquan_bg_small01.png" wx:if="{{index == 2}}" mode="" />
         <image src="/assets/images/image_568185988677864.jpg" wx:if="{{index == 3}}" mode="" />

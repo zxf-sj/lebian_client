@@ -54,6 +54,7 @@ Page({
 
     tabs: TABS,
     tab: 0,
+    mainScrollTop: 0, // 右侧列表滚动位置（切 tab 时归零）
 
     timeSlotIdx: 2,
     /* 热门站点两行横滑：hotRows = [[第一行], [第二行]] */
@@ -266,6 +267,8 @@ Page({
       const hit = dates.findIndex(d => d.full === query.date);
       if (hit >= 0) idx = hit;
     }
+    // 站点上车（默认 tab）只允许今天/明天：传入日期超出范围时回到今天
+    if (idx > 1) idx = 0;
     this.setData({
       from,
       to,
@@ -273,16 +276,14 @@ Page({
       toId: query.toId,
       dates,
       dateIdx: idx,
-      today: query.date
+      today: dates[idx].full
     });
     this.syncDateCache(dates[idx]);
     this.applyDate(idx);
     this.filterCarpool();
     this.getNews(); //获取用户须知
-    // 先拿到轿车线路 Id（写入 storage.lineId），再回显上次订单地址，避免接口带空 LineId
-    this.getLineId(() => {
-      this.getLastOrderAddress();
-    });
+    // getLineId 内部会先回显上次订单地址（有回显按回显坐标），再拉包车时间段与车型
+    this.getLineId();
   },
   // ===== 缓存同步：时间段接口、价格接口与下单都从这两个缓存取值 =====
   // storageSync.startDate：价格/下单/历史订单校验用；pcTimeSync.propsDay：优惠券查询用
@@ -479,21 +480,35 @@ Page({
               lineId: data.Sedan_LineId,
             })
             wx.setStorageSync('lineId', data.Sedan_LineId)
-            // 线路 Id 就绪后再拉包车可选时间段（后端定义几点到几点）
-            _this.fetchCharterTimes(_this.data.dateIdx);
+            // 询价前先确认回显：GetLastOrderAddress 有回显就写入回显坐标缓存，
+            // 没有回显则 getCarList 内部按线路起终点兜底（已手动选过址时该函数直接跳过）
+            _this.getLastOrderAddress(() => {
+              // 回显确认完再拉包车可选时间段（内部会带起 getCarList 询价车型）
+              _this.fetchCharterTimes(_this.data.dateIdx);
+            });
 
             const sedanShifts = data.Sedan_ShiftList || []
+            const periods = sedanShifts.map(item => item.TimeName)
+            // 保持原来选中的时间段（上午/中午/下午/晚上），新数据里没有该时段时才回到第一个
+            const prevPeriod = _this.data.periods[_this.data.periodIdx]
+            let pIdx = periods.indexOf(prevPeriod)
+            if (pIdx < 0) pIdx = 0
             const patch = {
-              periods: sedanShifts.map(item => item.TimeName),
+              periods,
               carpool: sedanShifts,
-              carpoolShow: sedanShifts[0] ? (sedanShifts[0].Sedan_ShiftList || []) : []
+              periodIdx: pIdx,
+              carpoolShow: sedanShifts[pIdx] ? (sedanShifts[pIdx].Sedan_ShiftList || []) : []
             }
             if (data.BusState) {
               // 巴士 + 轿车都有：保留全部 tab
               patch.tabs = TABS
             } else {
               patch.tabs = TABS.slice(1)
-              patch.tab = 1
+            }
+            // 刷新线路时保留当前 tab；仅当当前 tab 在新线路不可用（被移除）时才切到可用 tab，
+            // 避免切线路/换日期重拉时被强制跳到拼车
+            if (!patch.tabs.some(t => t.id === _this.data.tab)) {
+              patch.tab = data.BusState ? 0 : 1
             }
             _this.setData(patch)
           } else {
@@ -630,21 +645,22 @@ Page({
     const idx = Number(e.currentTarget.dataset.idx);
     this.setData({
       dateIdx: idx,
-      today:e.currentTarget.dataset.item.full
+      today: e.currentTarget.dataset.item.full
     });
     this.applyDate(idx);
-    if(this.data.tab == 0) {
-      // 换日期后重新拉站点上车时间段
-      this.getLineId()
-    }else if(this.data.tab == 1) {
-
-    }else if(this.data.tab == 2) {
-      // 换日期后重新拉包车时间段
-      this.syncDateCache(this.data.dates[idx]);
+    // 各 tab 换日期后统一同步缓存并重新拉取时间段/车型
+    this.syncDateCache(this.data.dates[idx]);
+    if (this.data.tab === 0) {
+      // 站点上车：重新拉线路与班次（含热门站点）
+      this.getLineId();
+    } else if (this.data.tab === 1) {
+      // 拼车上门：重新拉线路接口返回的时段与班次（Sedan_ShiftList）
+      this.getLineId();
+    } else if (this.data.tab === 2) {
+      // 包车出发：重新拉时间段（内部会带起重新询价车型）
       this.fetchCharterTimes(idx);
-    }else if(this.data.tab == 3) {
-      // 换日期后重新同步缓存并拉取捎货规格、时效与摆渡价
-      this.syncDateCache(this.data.dates[idx]);
+    } else if (this.data.tab === 3) {
+      // 换日期后重新拉取捎货规格、时效与摆渡价
       if (this.data.errandSub === 0) this.loadCargoOptions();
     }
   },
@@ -673,16 +689,22 @@ Page({
 
   noop() {},
 
-  // 弹框里选日期：dates 只有四天，天然限制在 今天~第4天
+  // 弹框里选日期：站点上车限今天/明天，其它 tab 限四天
   onDateSheetTap(e) {
     const idx = Number(e.currentTarget.dataset.idx);
     this.setData({
       dateIdx: idx,
+      today: this.data.dates[idx].full,
       dateSheetOpen: false
     });
     this.syncDateCache(this.data.dates[idx]);
     this.applyDate(idx);
-    this.fetchCharterTimes(idx);
+    // 站点上车/拼车：重拉线路（班次与时段）；包车/其它：重拉时间段与车型
+    if (this.data.tab === 0 || this.data.tab === 1) {
+      this.getLineId();
+    } else {
+      this.fetchCharterTimes(idx);
+    }
   },
 
   // 弹框里选时间段（选项由后端返回）
@@ -760,23 +782,70 @@ Page({
   },
 
   onTabTap(e) {
-    console.log(e.currentTarget.dataset)
-    this.setData({
-      tab: Number(e.currentTarget.dataset.item.id)
-    });
-    // 跨城跑腿下的城际捎货需要接口返回的规格与时效
-    if (this.data.tab === 3 && this.data.errandSub === 0) {
-      this.loadCargoOptions();
+    const tab = Number(e.currentTarget.dataset.item.id);
+    if (tab === this.data.tab) return;
+    // 站点上车仅支持今天/明天：从其它 tab 切过来时，超出范围的日期重置为今天并重拉
+    let dateReset = false;
+    const patch = {
+      tab,
+      // 切换 tab 后右侧列表回到顶部，避免停留在上一个 tab 的滚动位置
+      mainScrollTop: this.data.mainScrollTop === 0 ? 0.01 : 0
+    };
+    if (tab === 0 && this.data.dateIdx > 1) {
+      dateReset = true;
+      patch.dateIdx = 0;
+      patch.today = this.data.dates[0].full;
     }
+    this.setData(patch, () => {
+      if (dateReset) {
+        this.syncDateCache(this.data.dates[0]);
+        this.applyDate(0);
+        // 日期变了，站点上车的班次需要重拉
+        this.getLineId();
+      }
+      // 跨城跑腿下的城际捎货需要接口返回的规格与时效
+      if (tab === 3 && this.data.errandSub === 0) {
+        this.loadCargoOptions();
+      }
+    });
   },
 
 
 
+  // 交换出发地/目的地：对调城市与 Id；清空包车已选上下车位置（缓存同步删除），
+  // 重拉新线路的时间段与车型，完成后按新线路重新回显上次订单上下车位置
   onSwap() {
     this.setData({
       from: this.data.to,
-      to: this.data.from
+      to: this.data.from,
+      fromId: this.data.toId,
+      toId: this.data.fromId,
+      // 上下车具体位置属于旧线路，清空待重新选择/回显
+      addrFrom: '',
+      addrTo: '',
+      // 包车时间段与车型同样依赖线路，清空等重拉
+      charterTimes: [],
+      timeIdx: -1,
+      tripTime: '',
+      carTypeList: [],
+      carType: 0,
+      price: '',
+      initialPrice: '',
+      version: 0,
+      rangfenceMapList: [],
     });
+    // 已选位置缓存作废，避免新线路沿用旧坐标询价/下单
+    wx.removeStorageSync('starInfo2');
+    wx.removeStorageSync('endInfo2');
+    // 清掉旧时间段与车型选择缓存
+    let pcTimeSync = wx.getStorageSync('pcTimeSync') || {};
+    if (pcTimeSync.StartTime) {
+      delete pcTimeSync.StartTime;
+      wx.setStorageSync('pcTimeSync', pcTimeSync);
+    }
+    wx.removeStorageSync('pcTypeId');
+    // 重拉新线路：内部先回显上次订单地址（清过缓存必回显），再拉包车时间段与车型
+    this.getLineId();
   },
 
   /* ===== 站点上车 ===== */
@@ -1490,8 +1559,17 @@ Page({
 
   /* ===== 跨城跑腿：子tab与表单 ===== */
   onErrandSubTap(e) {
+    const idx = Number(e.currentTarget.dataset.idx);
+    // 城际跑腿暂未开放
+    if (idx === 1) {
+      wx.showToast({
+        title: '城际跑腿开发中，敬请期待',
+        icon: 'none'
+      });
+      return;
+    }
     this.setData({
-      errandSub: Number(e.currentTarget.dataset.idx)
+      errandSub: idx
     });
     this.calcErrandFee();
     // 切到城际捎货时按旧版链路重新拉取规格、时效与摆渡价（已选项按 Id 保留）

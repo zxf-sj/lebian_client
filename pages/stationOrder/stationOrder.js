@@ -458,6 +458,7 @@ Page({
       .map(p => [p.name, p.phone, p.idCard || ''].join('|'))
       .join(',');
     wx.showLoading({ title: '下单中...', mask: true });
+   
     wx.request({
       url: baseUrl + "/api/BusMobile/Create",
       data: {
@@ -465,7 +466,7 @@ Page({
         LineId: _this.data.LineId,
         ArrivalTime: _this.data.depTime,
         ScheduleId: _this.data.scheduleId,
-        PassengerPhone: '17601636466',
+        PassengerPhone: PersonalIds.split('|')[1],
         PersonalIds: PersonalIds,
         Remark: '',
         Statinglocation: _this.data.upLocationId, // 选中站点的 LocationId
