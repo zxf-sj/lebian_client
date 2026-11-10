@@ -12,29 +12,7 @@ const fs = wx.getFileSystemManager();
 const CHUNK_SIZE = 1.5 * 1024 * 1024; // 1.5MB 原始数据（Base64 后约 2MB）
 const UPLOAD_API = baseUrl + '/Api/UploadMobile/ImageChunk';
 
-// 服务类型 tab（价格为示例，实际由接口返回）
-const TABS = [{
-    name: '站点\n上车',
-    price: '¥18起',
-    id: 0
-  },
-  {
-    name: '拼车\n上门',
-    price: '¥49.9起',
-    id: 1
-  },
-  {
-    name: '包车\n出发',
-    price: '¥240起',
-    badge: '推荐',
-    id: 2
-  },
-  {
-    name: '跨城\n跑腿',
-    price: '¥30起',
-    id: 3
-  },
-];
+
 
 
 function pad(n) {
@@ -52,7 +30,7 @@ Page({
     dates: [], // 固定四天：今天/明天/后天/周几
     dateLabel: '', // 顶部出发日期文案，如 10月12日
 
-    tabs: TABS,
+    tabs: [],
     tab: 0,
     mainScrollTop: 0, // 右侧列表滚动位置（切 tab 时归零）
 
@@ -60,6 +38,8 @@ Page({
     /* 热门站点两行横滑：hotRows = [[第一行], [第二行]] */
     hotRows: [],
     hotCount: 1,
+    hotScrollLeft: 0, // 横滑提示用的轻推偏移
+    showHotTip: false, // 是否展示横滑提示
     stationRoutes: [],
 
     /* --- 拼车上门 / 包车出发：右侧共用同一套班次列表 --- */
@@ -237,6 +217,7 @@ Page({
 
   // 从本页返回（不下单）时清掉下单草稿，避免下次进来带着上次的地址/时间/人数
   onUnload() {
+    this.clearHotSwipeTimers();
     orderStorage.clearOrderDraft();
   },
 
@@ -449,6 +430,31 @@ Page({
       success: (res) => {
         console.log(res.data)
         let data = res.data.data;
+        console.log(this.data.tabs)
+        _this.setData({
+          tabs:[{
+            name: '站点\n上车',
+            price: `¥${data.BusPrice}起`,
+            id: 0
+          },
+          {
+            name: '拼车\n上门',
+            price: `¥${data.CarpoolPrice}起`,
+            id: 1
+          },
+          {
+            name: '包车\n出发',
+            price: `¥${data.CharteredPrice}起`,
+            badge: '推荐',
+            id: 2
+          },
+          {
+            name: '跨城\n跑腿',
+            price: `¥${data.CourierServicePrice}起`,
+            id: 3
+          },
+        ]
+        })
         if (res.data.code == 0) {
           // ① 巴士（站点上车）
           if (data.BusState) {
@@ -459,6 +465,8 @@ Page({
               });
               _this.setData({
                 hotRows: _this.splitHotRows(Bus_HotSiteList)
+              }, () => {
+                _this.playHotSwipeTip();
               })
             } else {
               console.log('没有班次')
@@ -501,9 +509,9 @@ Page({
             }
             if (data.BusState) {
               // 巴士 + 轿车都有：保留全部 tab
-              patch.tabs = TABS
+              patch.tabs = _this.data.tabs
             } else {
-              patch.tabs = TABS.slice(1)
+              patch.tabs = _this.data.tabs.slice(1)
             }
             // 刷新线路时保留当前 tab；仅当当前 tab 在新线路不可用（被移除）时才切到可用 tab，
             // 避免切线路/换日期重拉时被强制跳到拼车
@@ -515,7 +523,7 @@ Page({
             // 该线路没开通轿车（拼车/包车/跑腿），只保留「站点上车」，
             // 避免切过去看到空列表（如 文水→太原 目前只有巴士班次）
             _this.setData({
-              tabs: [TABS[0]],
+              tabs: [_this.data.tabs[0]],
               tab: 0
             })
           }
@@ -569,6 +577,7 @@ Page({
       success: (res) => {
         if (res.data.code == 0) {
           let list = res.data.data || [];
+          console.log(list)
           if (!list.length) {
             _this.setData({
               carTypeList: [],
@@ -855,6 +864,50 @@ Page({
     return [list.slice(0, half), list.slice(half)];
   },
 
+  // 热门站点横滑提示：仅当内容超出一屏时，轻推一下列表并展示提示约 2.5s
+  playHotSwipeTip() {
+    if (this._hotTipDone) return;
+    this._hotTipDone = true;
+    wx.nextTick(() => {
+      wx.createSelectorQuery().in(this)
+        .select('.hot-row').boundingClientRect()
+        .select('.hot-row-inner').boundingClientRect()
+        .exec((res) => {
+          const box = res && res[0];
+          const inner = res && res[1];
+          if (!box || !inner || inner.width <= box.width + 8) return; // 不够一屏无需提示
+          this.setData({
+            showHotTip: true
+          });
+          // 先向右轻推再回弹，直观示意可以横滑
+          this._hotTipPushTimer = setTimeout(() => {
+            this.setData({
+              hotScrollLeft: 70
+            });
+            this._hotTipBackTimer = setTimeout(() => {
+              this.setData({
+                hotScrollLeft: 0
+              });
+            }, 600);
+          }, 250);
+          this._hotTipTimer = setTimeout(() => {
+            this.setData({
+              showHotTip: false
+            });
+          }, 3800);
+        });
+    });
+  },
+
+  clearHotSwipeTimers() {
+    ['_hotTipPushTimer', '_hotTipBackTimer', '_hotTipTimer'].forEach(k => {
+      if (this[k]) {
+        clearTimeout(this[k]);
+        this[k] = null;
+      }
+    });
+  },
+
   onHotTap(e) {
     const r = Number(e.currentTarget.dataset.row);
     const c = Number(e.currentTarget.dataset.col);
@@ -917,9 +970,12 @@ Page({
   onBookStation(e) {
     let item = e.currentTarget.dataset.item
     console.log(item)
+    // 成人票价：有优惠价用优惠价，否则用原价；原价单独传，供儿童价（原价一半 vs 优惠价取低）计算
+    const adultPrice = item.TicketPrice > 0 ? item.TicketPrice : item.SitePrice
+    const originPrice = item.SitePrice > 0 ? item.SitePrice : adultPrice
     // DepartureTime 含空格与冒号，需转码；ScheduleId 取班次 id（原写法误传了 DepartureTime）
     wx.navigateTo({
-      url: '/pages/stationOrder/stationOrder?DepartureTime=' + encodeURIComponent(item.DepartureTime) + "&ScheduleId=" + item.Id + '&LineId=' + item.LineId + "&price=" + item.TicketPrice
+      url: '/pages/stationOrder/stationOrder?DepartureTime=' + encodeURIComponent(item.DepartureTime) + "&ScheduleId=" + item.Id + '&LineId=' + item.LineId + "&price=" + adultPrice + "&originPrice=" + originPrice
     });
   },
 

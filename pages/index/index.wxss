@@ -86,10 +86,14 @@ page {
 }
 
 .date-icon {
-  font-size: 36rpx;
   margin-right: 16rpx;
+  width: 36rpx;
+  height: 36rpx;
 }
-
+.date-icon image {
+  width: 36rpx;
+  height: 36rpx;
+}
 .date-text {
   font-size: 32rpx;
   color: #333;

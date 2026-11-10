@@ -29,6 +29,8 @@ Page({
     carTypeId: '', //选中车型Id
     Price: '', //基本票价
     ChildPrice: '', //儿童优惠票价
+    seatNumber: 0, //当前选中车型座位数（getPriceListForLineId 返回）
+    seatNumberMap: {}, //车型Id -> 座位数，换车型时校验用
     // ===== 次卡 / 优惠券（参考 pingche2） =====
     couponCount: 0, //可用张数
     coupon_num: 0, //已用优惠券张数
@@ -131,6 +133,7 @@ Page({
     });
   },
   onLoad(query) {
+    console.log(query)
     let _this = this;
     orderStorage.touchOrderDraft();
     const mode = query.mode === 'charter' ? 'charter' : 'carpool';
@@ -400,10 +403,17 @@ Page({
           const list = res.data.data || [];
           const item = list.find(v => v.Id === _this.data.carTypeId);
           if (item) {
+            // 记录各车型座位数，成人+儿童数量不能超过所选车型的 SeatNumber
+            const seatNumberMap = {};
+            list.forEach(v => {
+              if (v.SeatNumber != null) seatNumberMap[v.Id] = v.SeatNumber;
+            });
             _this.setData({
               TotalFare: item.TotalFare,
               ChildPrice: item.ChildPrice,
-              rangfenceMapList:item.rangfenceMapList
+              rangfenceMapList: item.rangfenceMapList,
+              seatNumber: item.SeatNumber || 0,
+              seatNumberMap,
             });
           }
         }
@@ -559,24 +569,34 @@ Page({
     const idx = Number(e.currentTarget.dataset.idx);
     const veh = this.data.vehicles[idx];
     if (!veh) return;
-    if (veh.CarSeatState) {
-      this.setData({
-        vehSel: idx,
-        Price: veh.Price,
-        carTypeId: veh.Id,
+    if (!veh.CarSeatState) {
+      wx.showToast({
+        title: '此车型已停运',
+        icon: "none"
+      })
+      return;
+    }
+    // 换车型时校验：当前人数不能超过新车型座位数
+    const limit = this.getSeatLimit(veh.Id) || veh.SeatNumber || 0;
+    const p = this.data.passengers[this.data.paxIdx];
+    if (limit > 0 && p.adults + p.children > limit) {
+      wx.showToast({
+        title: `该车型${limit}座，请减少乘车人数`,
+        icon: 'none'
       });
+      return;
+    }
+    this.setData({
+      vehSel: idx,
+      Price: veh.Price,
+      carTypeId: veh.Id,
+    });
       // 优惠券组件读 pcTypeId，需同步；换车型后原选中的券/次卡作废
       wx.setStorageSync('pcTypeId', veh.Id);
       this.clearCouponChoose();
       // 换了车型，优惠券按新车型 Id 重拉；总额由价格接口按新车型重算
       this.getCouponList();
       this.total_Price();
-    } else {
-      wx.showToast({
-        title: '此车型已停运',
-        icon: "none"
-      })
-    }
   },
 
   /* ===== 次卡 / 优惠券 弹框（参考 pingche2） ===== */
@@ -687,6 +707,25 @@ Page({
   },
 
   // 成人/儿童数量仍作用于 passengers[paxIdx]（默认第 1 位）
+  // 当前车型座位数上限（成人+儿童不能超过 SeatNumber）
+  getSeatLimit(carTypeId) {
+    if (carTypeId && this.data.seatNumberMap[carTypeId]) {
+      return this.data.seatNumberMap[carTypeId];
+    }
+    return this.data.seatNumber || 0;
+  },
+  checkSeatLimit(addCount) {
+    const p = this.data.passengers[this.data.paxIdx];
+    const limit = this.getSeatLimit(this.data.carTypeId);
+    if (limit > 0 && p.adults + p.children + addCount > limit) {
+      wx.showToast({
+        title: `成人+儿童不能超过${limit}人`,
+        icon: 'none'
+      });
+      return false;
+    }
+    return true;
+  },
   onAdultMinus() {
     const p = this.data.passengers[this.data.paxIdx];
     if (p.adults > 1) {
@@ -697,6 +736,7 @@ Page({
     }
   },
   onAdultPlus() {
+    if (!this.checkSeatLimit(1)) return;
     const p = this.data.passengers[this.data.paxIdx];
     this.setData({
       [`passengers[${this.data.paxIdx}].adults`]: p.adults + 1
@@ -713,6 +753,7 @@ Page({
     }
   },
   onChildPlus() {
+    if (!this.checkSeatLimit(1)) return;
     const p = this.data.passengers[this.data.paxIdx];
     this.setData({
       [`passengers[${this.data.paxIdx}].children`]: p.children + 1
@@ -779,6 +820,19 @@ Page({
     if (!this.data.carTypeId) {
       wx.showToast({
         title: '请选择车型',
+        icon: 'none'
+      });
+      return;
+    }
+    // 兜底：成人+儿童不能超过所选车型座位数
+    const pax = this.data.passengers[this.data.paxIdx] || {
+      adults: 1,
+      children: 0
+    };
+    const seatLimit = this.getSeatLimit(this.data.carTypeId);
+    if (seatLimit > 0 && pax.adults + pax.children > seatLimit) {
+      wx.showToast({
+        title: `成人+儿童不能超过${seatLimit}人`,
         icon: 'none'
       });
       return;

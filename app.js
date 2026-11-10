@@ -6,12 +6,32 @@ const orderStorage = require('./utils/orderStorage');
 
 App({
 
-  onLaunch(){
+  HOME_PATH: 'pages/index/index',
+
+  // 扫码进入的场景值白名单：1011/1012/1013 扫二维码，1047/1048/1049 扫小程序码
+  SCAN_SCENES: [1011, 1012, 1013, 1047, 1048, 1049],
+
+  onLaunch(options) {
     // 全局拦截「带 MemberId 但未登录」的请求：弹一次登录引导，不发脏请求
     this.installRequestGuard();
     // 冷启动清理超过 2 小时的下单草稿（App 被杀死等中断场景）
     orderStorage.clearExpiredOrderDraft();
     this.hasUpdate();
+    // 「重新进入小程序」会按最初进入的路径重启（如分享卡片进入的深层页面），
+    // 这里强制只允许从首页启动；扫码直达页面的场景除外
+    this.forceHomeEntry(options);
+  },
+
+  forceHomeEntry(options) {
+    const opt = options || {};
+    const entryPath = (opt.path || '').split('?')[0];
+    if (!entryPath || entryPath === this.HOME_PATH) return;
+    // 扫码进入指定页面属于正常业务，放行
+    if (this.SCAN_SCENES.indexOf(opt.scene) !== -1) return;
+    // 稍作延迟，避免和首页渲染时序冲突
+    setTimeout(() => {
+      wx.reLaunch({ url: '/' + this.HOME_PATH });
+    }, 0);
   },
 
   /**

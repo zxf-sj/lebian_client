@@ -91,7 +91,37 @@ page { background: #f4f6f9; }
 .hot-head { display: flex; align-items: baseline; }
 .hot-title { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
 .hot-count { font-size: 26rpx; color: #6b7480; margin-left: 16rpx; }
-.hot-rows { margin-top: 16rpx; }
+.hot-rows { margin-top: 16rpx; position: relative; }
+.hot-row-inner { display: inline-block; white-space: nowrap; }
+/* 横滑提示：右下角浮层，出现后 2.5s 消失 */
+.hot-swipe-tip {
+  position: absolute;
+  right: 4rpx;
+  bottom: 26rpx;
+  display: flex;
+  align-items: center;
+  padding: 6rpx 18rpx;
+  border-radius: 24rpx;
+  background: rgba(26, 26, 26, 0.7);
+  animation: hotTipIn 0.25s ease both;
+  pointer-events: none;
+}
+.hot-swipe-txt { font-size: 22rpx; color: #fff; }
+.hot-swipe-arrow {
+  font-size: 26rpx;
+  line-height: 1;
+  color: #fff;
+  margin-left: 6rpx;
+  animation: hotTipArrow 0.9s ease-in-out infinite;
+}
+@keyframes hotTipIn {
+  from { opacity: 0; transform: translateX(20rpx); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes hotTipArrow {
+  0%, 100% { transform: translateX(0); opacity: 1; }
+  50% { transform: translateX(8rpx); opacity: 0.6; }
+}
 .hot-row {
   width: 100%;
   white-space: nowrap;

@@ -47,7 +47,7 @@
   <view wx:for="{{vehicles}}" wx:key="Id" class="veh-card {{vehSel === index ? 'sel' : ''}}  {{item.CarSeatState? '' : 'CarSeatState'}}" bindtap="onVehTap" data-idx="{{index}}">
     <view class="car_left">
       <view class="car_top">
-        <text class="veh-name">{{item.CarType_Name}}</text>
+        <text class="veh-name">{{item.Name}}</text>
         <view class="veh-price">
           <text class="veh-cl">价格</text>
           <text class="veh-origin">¥{{item.OriginalPrice}}</text>

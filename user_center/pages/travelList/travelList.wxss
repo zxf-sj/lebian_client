@@ -309,7 +309,7 @@ button{
 
 .invoice-btn {
   background: #fff;
-  color: #1e9be0;
+  color: #e01e1e;
   font-size: 26rpx;
   padding: 10rpx 28rpx;
   border-radius: 28rpx;

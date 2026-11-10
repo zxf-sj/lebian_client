@@ -1,35 +1,56 @@
+<wxs module="sta">
+  // 站名超过 10 个字：拆成两列紧挨着展示
+  function cols(chars) {
+    if (!chars || !chars.length) return [];
+    if (chars.length <= 10) return [chars];
+    var half = Math.ceil(chars.length / 2);
+    return [chars.slice(0, half), chars.slice(half)];
+  }
+  module.exports = { cols: cols };
+</wxs>
+
 <view class="page">
-  <!-- 顶部站点纵览 -->
+  <!-- 顶部站点纵览：站点多时可左右滑动 -->
   <view class="sta-wrap">
-    <view class="sta-row">
-      <view
-        class="sta-col {{item.group === 'up' ? 'col-up' : 'col-down'}} {{item.split ? 'col-split' : ''}}"
-        wx:for="{{stations}}" wx:key="index"
-      >
-        <view class="sta-name {{item.mark === 'up' ? 'green' : ''}} {{item.mark === 'down' ? 'red' : ''}}">
-          <text wx:for="{{item.chars}}" wx:for-item="c" wx:key="index" class="sta-char">{{c}}</text>
+    <scroll-view class="sta-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="sta-body">
+        <view class="sta-row">
+          <view
+            class="sta-col {{item.group === 'up' ? 'col-up' : 'col-down'}} {{item.split ? 'col-split' : ''}}"
+            wx:for="{{stations}}" wx:key="index"
+          >
+            <view class="sta-name {{item.mark === 'up' ? 'green' : ''}} {{item.mark === 'down' ? 'red' : ''}}">
+              <view class="sta-name-col" wx:for="{{sta.cols(item.chars)}}" wx:for-item="col" wx:key="index">
+                <text wx:for="{{col}}" wx:for-item="c" wx:key="index" class="sta-char">{{c}}</text>
+              </view>
+            </view>
+            <view class="sta-mark {{item.mark === 'up' ? 'up' : ''}} {{item.mark === 'down' ? 'down' : ''}}" bindtap="onStaTap" data-idx="{{index}}">
+              <text wx:if="{{item.mark === 'up'}}">上</text>
+              <text wx:elif="{{item.mark === 'down'}}">下</text>
+            </view>
+          </view>
         </view>
-        <view class="sta-mark {{item.mark === 'up' ? 'up' : ''}} {{item.mark === 'down' ? 'down' : ''}}" bindtap="onStaTap" data-idx="{{index}}">
-          <text wx:if="{{item.mark === 'up'}}">上</text>
-          <text wx:elif="{{item.mark === 'down'}}">下</text>
+        <view class="sta-dash">
+          <text class="sta-dash-arrow">→</text>
+          <text class="sta-dash-arrow">→</text>
+          <text class="sta-dash-arrow">→</text>
+        </view>
+        <view class="sta-row">
+          <view
+            class="sta-col {{item.group === 'up' ? 'col-up' : 'col-down'}} {{item.split ? 'col-split' : ''}}"
+            wx:for="{{stations}}" wx:key="index"
+          >
+            <view class="sta-time">{{item.timeH}}</view>
+            <view class="sta-time">{{item.timeM}}</view>
+          </view>
         </view>
       </view>
-    </view>
-    <view class="sta-dash"></view>
-    <view class="sta-row">
-      <view
-        class="sta-col {{item.group === 'up' ? 'col-up' : 'col-down'}} {{item.split ? 'col-split' : ''}}"
-        wx:for="{{stations}}" wx:key="index"
-      >
-        <view class="sta-time">{{item.timeH}}</view>
-        <view class="sta-time">{{item.timeM}}</view>
-      </view>
-    </view>
+    </scroll-view>
     <!-- 图例：区分上车点 / 下车点 -->
-    <view class="sta-legend">
+    <!-- <view class="sta-legend">
       <view class="lg-item"><view class="lg-dot up"></view><text class="lg-txt">上车点 · {{upCity}}</text></view>
       <view class="lg-item"><view class="lg-dot down"></view><text class="lg-txt">下车点 · {{downCity}}</text></view>
-    </view>
+    </view> -->
   </view>
 
   <!-- 上下车点 / 乘车人 -->
@@ -49,16 +70,21 @@
 
     <!-- 乘车人列表：多选，选中的人逐行显示明细 -->
     <view class="psg-head">
-      <view class="psg-names">
-        <view
-          wx:for="{{passengers}}" wx:key="id"
-          class="psg-tag {{item.selected ? 'on' : ''}}"
-          bindtap="onPaxTab" data-idx="{{index}}"
-        >
-          {{item.name}}
-          <text wx:if="{{item.selected}}" class="psg-tick">✓</text>
-          <text wx:if="{{item.isChild}}" class="psg-child">儿童</text>
-        </view>
+      <!-- scroll-view 必须放在定宽容器里：真机上 flex:1 直接作用在 scroll-view 会导致横滑失效 -->
+      <view class="psg-names-wrap">
+        <scroll-view class="psg-names" scroll-x enhanced show-scrollbar="{{false}}">
+          <view class="psg-names-inner">
+            <view
+              wx:for="{{passengers}}" wx:key="id"
+              class="psg-tag {{item.selected ? 'on' : ''}}"
+              bindtap="onPaxTab" data-idx="{{index}}"
+            >
+              {{item.name}}
+              <text wx:if="{{item.selected}}" class="psg-tick">✓</text>
+              <text wx:if="{{item.isChild}}" class="psg-child">儿童</text>
+            </view>
+          </view>
+        </scroll-view>
       </view>
       <view class="psg-add" bindtap="onAddUser">新增</view>
     </view>
@@ -67,7 +93,7 @@
         <text class="psg-name">{{item.name}}</text>
         <text class="psg-type">{{item.type}}</text>
         <text class="psg-phone">{{item.idCard}}</text>
-        <text class="psg-price">¥{{platformPrice}}</text>
+        <text class="psg-price">¥{{item.isChild ? childPrice : platformPrice}}</text>
       </view>
     </block>
     <view wx:if="{{!psgCount}}" class="psg-none">请选择乘车人</view>
@@ -119,7 +145,8 @@
   <view class="mask" wx:if="{{detailOpen}}" bindtap="onDetail">
     <view class="sheet" catchtap="noop">
       <view class="sheet-title">费用明细</view>
-      <view class="sheet-row"><text>平台售票</text><text>¥{{platformPrice}} × {{psgCount}}</text></view>
+      <view class="sheet-row" wx:if="{{adultCount}}"><text>成人票</text><text>¥{{platformPrice}} × {{adultCount}}</text></view>
+      <view class="sheet-row" wx:if="{{childCount}}"><text>儿童票</text><text>¥{{childPrice}} × {{childCount}}</text></view>
       <view class="sheet-row total"><text>合计</text><text>¥{{total}}</text></view>
     </view>
   </view>

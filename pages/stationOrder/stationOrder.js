@@ -37,9 +37,13 @@ Page({
     upStation: '',
     downStation: '',
 
-    platformPrice: null,
+    platformPrice: null, // 成人票价（优惠价，无优惠时即原价）
+    originPrice: null,   // 成人原价（计算儿童价用）
+    childPrice: null,    // 儿童价 = min(成人优惠价, 成人原价 / 2)
     psgCount: 1,
-    total: 10,
+    adultCount: 0,       // 选中乘车人里的成人数
+    childCount: 0,       // 选中乘车人里的儿童数
+    total: 0,
 
     // 乘车人：onShow 从 /Api/Mobile/AddressList 拉取（同 userList 页），selected 为多选状态
     passengers: [],
@@ -93,12 +97,19 @@ Page({
     this._cityFromQuery = !!(options.upCity || options.downCity);
     if (options.upCity)   this.setData({ upCity: options.upCity });
     if (options.downCity) this.setData({ downCity: options.downCity });
-    if (options.price) {
-      const price = Number(options.price) || this.data.platformPrice;
-      this.setData({ platformPrice: price, total: price * this.data.psgCount });
+    // 成人票价 + 原价：儿童价 = min(成人优惠价, 成人原价 / 2)
+    if (options.price || options.originPrice) {
+      const adultPrice = Number(options.price) || 0;
+      const originPrice = Number(options.originPrice) || adultPrice;
+      this.setData({
+        platformPrice: adultPrice,
+        originPrice,
+        childPrice: this._calcChildPrice(adultPrice, originPrice),
+      });
     }
     // 如果上级传了站点列表（JSON 字符串），则覆盖默认 stations
     if (options.stations) {
+      console.log(stations)
       try {
         const list = JSON.parse(decodeURIComponent(options.stations));
         if (Array.isArray(list) && list.length) {
@@ -378,10 +389,29 @@ Page({
     this._recalcPsg();
   },
 
-  // 按选中人数重算 psgCount 与 total
+  // 儿童价：成人原价一半与成人优惠价取低；原价缺失时按成人票价一半兜底
+  _calcChildPrice(adultPrice, originPrice) {
+    const adult = Number(adultPrice) || 0;
+    const origin = Number(originPrice) || 0;
+    const half = (origin > 0 ? origin : adult) / 2;
+    const child = adult > 0 ? Math.min(adult, half) : half;
+    return Math.round(child * 100) / 100;
+  },
+
+  // 按选中乘车人重算人数与总价：成人按成人价、儿童按儿童价
   _recalcPsg() {
-    const n = this.data.passengers.filter(p => p.selected).length;
-    this.setData({ psgCount: n, total: this.data.platformPrice * n });
+    const picked = this.data.passengers.filter(p => p.selected);
+    const adultCount = picked.filter(p => !p.isChild).length;
+    const childCount = picked.filter(p => p.isChild).length;
+    const total =
+      adultCount * (Number(this.data.platformPrice) || 0) +
+      childCount * (Number(this.data.childPrice) || 0);
+    this.setData({
+      psgCount: picked.length,
+      adultCount,
+      childCount,
+      total: Math.round(total * 100) / 100,
+    });
   },
 
   // 新增乘车人：带上行程上下文，addPassenger 页以纯文字展示

@@ -119,13 +119,17 @@ page { background: #f4f6f9; }
 .veh-card.sel { background: #2ba9e8; border-color: #2ba9e8; box-shadow: 0 8rpx 20rpx rgba(43,169,232,.35); }
 .veh-card.sel .veh-name, .veh-card.sel .veh-seats,
 .veh-card.sel .veh-cl, .veh-card.sel .veh-origin { color: #fff; }
+.veh-card.sel .car_left .veh-special .veh-hot, .veh-card.sel .car_left .veh-special .veh-sp-price { color: #fff!important; }
 
 .car_left { width: 330rpx; flex: none; }
 .car_top { display: flex; align-items: center; }
 .veh-name { font-size: 30rpx; font-weight: 700; color: #1a1a1a; }
 .veh-price { margin-left: auto; margin-right: 10rpx; display: flex; flex-direction: column; align-items: center; }
 .veh-cl { font-size: 24rpx; color: #6b7480; }
-.veh-origin { font-size: 28rpx; font-weight: 700; color: #1a1a1a; margin-top: 2rpx; }
+.veh-origin { font-size: 28rpx; font-weight: 700; color: #1a1a1a; margin-top: 2rpx; text-decoration: line-through;
+  /* 还可自定义样式 */
+  text-decoration-color: rgb(0, 0, 0);  /* 斜杠颜色 */
+  text-decoration-thickness: 1px; /* 斜杠粗细 */}
 
 .veh-special { display: flex; align-items: baseline; justify-content: center; margin-top: 10rpx; }
 .veh-hot {

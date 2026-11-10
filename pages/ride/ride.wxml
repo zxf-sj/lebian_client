@@ -91,16 +91,24 @@
         <view class="hot-rows">
           <scroll-view
             class="hot-row" scroll-x enhanced show-scrollbar="{{false}}"
+            scroll-left="{{hotScrollLeft}}" scroll-with-animation="{{true}}"
             wx:for="{{hotRows}}" wx:for-item="row" wx:for-index="rowIdx" wx:key="rowIdx"
           >
-            <view
-              wx:for="{{row}}" wx:for-item="h" wx:for-index="colIdx" wx:key="colIdx"
-              class="hot-pill {{h.sel ? 'on' : ''}}"
-              bindtap="onHotTap"
-              data-row="{{rowIdx}}"
-              data-col="{{colIdx}}"
-            >{{h.Name}}</view>
+            <view class="hot-row-inner">
+              <view
+                wx:for="{{row}}" wx:for-item="h" wx:for-index="colIdx" wx:key="colIdx"
+                class="hot-pill {{h.sel ? 'on' : ''}}"
+                bindtap="onHotTap"
+                data-row="{{rowIdx}}"
+                data-col="{{colIdx}}"
+              >{{h.Name}}</view>
+            </view>
           </scroll-view>
+          <!-- 横滑提示：内容超出一屏时展示 2.5s 并自动消失 -->
+          <view class="hot-swipe-tip" wx:if="{{showHotTip}}">
+            <text class="hot-swipe-txt">左右滑动查看更多</text>
+            <text class="hot-swipe-arrow">›</text>
+          </view>
         </view>
       </view>
       <view class="hot-link" bindtap="onOpenStationPage">点击进入选择上下车站点</view>

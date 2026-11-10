@@ -8,8 +8,12 @@ page { background: #f4f6f9; }
   padding: 24rpx 10rpx 20rpx;
   margin-bottom: 16rpx;
 }
-.sta-row { display: flex; }
-.sta-col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; }
+/* 站点横滑区：线路站点多时可左右滑动，少时自动撑满 */
+.sta-scroll { width: 100%; }
+.sta-body { display: inline-block; vertical-align: top; min-width: 100%; box-sizing: border-box; }
+.sta-row { display: flex; align-items: flex-end; min-width: 100%; }
+/* 每列最小 68rpx：10 站以内均分撑满，超过 10 站横向滑动 */
+.sta-col { flex: 1 0 68rpx; display: flex; flex-direction: column; align-items: center; }
 
 /* 上车点 / 下车点分组：分界处画一条竖向虚线（不占宽度，不影响圆点与时间对齐） */
 .sta-col.col-split { position: relative; }
@@ -35,17 +39,24 @@ page { background: #f4f6f9; }
 .lg-dot.down { border: 3rpx solid #e64340; }
 .lg-txt { font-size: 22rpx; color: #8a94a2; }
 
-/* 站名：竖排，每列一字；固定高度使下方圆圈对齐 */
+/* 站名：竖排，每列一字；超 10 字自动分两列紧挨着，底部对齐使圆圈在同一水平线 */
 .sta-name {
-  height: 232rpx;
+  min-height: 232rpx;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
   font-size: 26rpx;
   font-weight: 700;
   color: #1a1a1a;
   line-height: 1.25;
 }
+.sta-name-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sta-name-col + .sta-name-col { margin-left: 2rpx; }
 .sta-name.green { color: #1aad19; }
 .sta-name.red { color: #e64340; }
 
@@ -67,10 +78,32 @@ page { background: #f4f6f9; }
 .sta-mark.up { border-color: #1aad19; color: #1aad19; }
 .sta-mark.down { border-color: #e64340; color: #e64340; }
 
-/* 虚线分隔 */
+/* 虚线分隔：线上三个向右箭头（箭头底色压住虚线） */
 .sta-dash {
-  border-top: 2rpx dashed #c8cdd4;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 44rpx;
   margin: 20rpx 0;
+}
+.sta-dash::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 2rpx dashed #c8cdd4;
+}
+.sta-dash-arrow {
+  position: relative;
+  z-index: 1;
+  padding: 0 14rpx;
+  background: #fff;
+  color: #2f7cf6;
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 1;
 }
 
 /* 时间：竖排两行 */
@@ -119,19 +152,40 @@ page { background: #f4f6f9; }
 }
 .line { border-top: 2rpx solid #f0f2f5; }
 
-/* 乘车人头部 */
+/* 乘车人头部：标签可横向滑动，新增固定在最右侧 */
 .psg-head {
   display: flex;
   align-items: center;
-  padding: 20rpx 0 8rpx;
+  padding: 12rpx 0 8rpx;
 }
-.psg-names { display: flex; align-items: center; gap: 16rpx; }
+/* 定宽包裹层：scroll-view 宽度由它决定，真机才能正常横滑 */
+.psg-names-wrap {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.psg-names {
+  width: 100%;
+  white-space: nowrap;
+}
+/* 真机只有 inline-block 内容才能撑出横向滚动宽度 */
+.psg-names-inner {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 0;
+  /* 上下留白避免选中角标、儿童标被 scroll-view 裁掉 */
+  padding: 18rpx 14rpx 6rpx;
+}
 .psg-tag {
   position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 16rpx;
   min-width: 76rpx;
   padding: 6rpx 18rpx;
   text-align: center;
   font-size: 26rpx;
+  line-height: 1.5;
   color: #666;
   border-radius: 8rpx;
   background: #f4f6f9;
@@ -154,7 +208,8 @@ page { background: #f4f6f9; }
   line-height: 26rpx;
 }
 .psg-add {
-  margin-left: auto;
+  flex: none;
+  margin-left: 20rpx;
   font-size: 28rpx;
   color: #2f7cf6;
 }
