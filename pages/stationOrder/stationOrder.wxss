@@ -11,7 +11,7 @@ page { background: #f4f6f9; }
 /* 站点横滑区：线路站点多时可左右滑动，少时自动撑满 */
 .sta-scroll { width: 100%; }
 .sta-body { display: inline-block; vertical-align: top; min-width: 100%; box-sizing: border-box; }
-.sta-row { display: flex; align-items: flex-end; min-width: 100%; }
+.sta-row { display: flex; align-items: flex-start; min-width: 100%; }
 /* 每列最小 68rpx：10 站以内均分撑满，超过 10 站横向滑动 */
 .sta-col { flex: 1 0 68rpx; display: flex; flex-direction: column; align-items: center; }
 
@@ -39,12 +39,12 @@ page { background: #f4f6f9; }
 .lg-dot.down { border: 3rpx solid #e64340; }
 .lg-txt { font-size: 22rpx; color: #8a94a2; }
 
-/* 站名：竖排，每列一字；超 10 字自动分两列紧挨着，底部对齐使圆圈在同一水平线 */
+/* 站名：竖排，每列一字；超 10 字自动分两列紧挨着，顶部与圆圈相接 */
 .sta-name {
-  min-height: 232rpx;
+  /* min-height: 232rpx; */
   display: flex;
   flex-direction: row;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
   font-size: 26rpx;
   font-weight: 700;
@@ -59,12 +59,14 @@ page { background: #f4f6f9; }
 .sta-name-col + .sta-name-col { margin-left: 2rpx; }
 .sta-name.green { color: #1aad19; }
 .sta-name.red { color: #e64340; }
+/* 竖排中的括号、斜杠等符号旋转 90°，符合竖排书写习惯 */
+.sta-char.rot { transform: rotate(90deg); }
 
-/* 上/下/+ 圆标记 */
+/* 选择圆圈：位于箭头线之下、站名之上 */
 .sta-mark {
   width: 34rpx;
   height: 34rpx;
-  margin-top: 12rpx;
+  margin-bottom: 12rpx;
   border-radius: 50%;
   border: 2rpx solid #c8cdd4;
   box-sizing: border-box;
@@ -78,14 +80,41 @@ page { background: #f4f6f9; }
 .sta-mark.up { border-color: #1aad19; color: #1aad19; }
 .sta-mark.down { border-color: #e64340; color: #e64340; }
 
-/* 虚线分隔：线上三个向右箭头（箭头底色压住虚线） */
+/* ④ 站点图片示意：可点开大图 */
+.sta-img-box {
+  position: relative;
+  width: 26rpx;
+  height: 34rpx;
+  margin-top: 12rpx;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.sta-img { width: 100%; height: 100%; display: block; }
+.sta-img-zoom {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 22rpx;
+  height: 22rpx;
+  line-height: 22rpx;
+  text-align: center;
+  font-size: 16rpx;
+  color: #fff;
+  background: rgba(0, 0, 0, .45);
+  border-radius: 8rpx 0 0 0;
+}
+
+/* 虚线分隔：线上三个向右箭头（箭头底色压住虚线）
+   位于横滑区之外，宽度与 .sta-scroll 一致，站点横向滚动时长度不变 */
 .sta-dash {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-around;
+  width: 100%;
+  box-sizing: border-box;
   height: 44rpx;
-  margin: 20rpx 0;
+  margin: 0 0 16rpx;
 }
 .sta-dash::before {
   content: '';
@@ -149,6 +178,22 @@ page { background: #f4f6f9; }
   font-size: 34rpx;
   color: #2f7cf6;
   flex: none;
+}
+/* 站点对应时间：标签灰色、时间醒目 */
+.pick-time {
+  display: flex;
+  align-items: center;
+  margin: -8rpx 0 12rpx;
+}
+.pick-time-label {
+  font-size: 24rpx;
+  color: #98a0ab;
+}
+.pick-time-val {
+  margin-left: 10rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #2f7cf6;
 }
 .line { border-top: 2rpx solid #f0f2f5; }
 
@@ -235,7 +280,7 @@ page { background: #f4f6f9; }
   font-size: 28rpx;
   color: #1a1a1a;
 }
-.psg-name { font-weight: 700; margin-right: 28rpx; }
+.psg-name { font-weight: 700; margin-right: 28rpx; width: 100rpx; }
 .psg-type { color: #666; margin-right: 28rpx; }
 .psg-phone { flex: 1; font-size: 26rpx; color: #333; }
 .psg-price { font-weight: 700; }
@@ -323,6 +368,59 @@ page { background: #f4f6f9; }
   font-size: 30rpx;
   font-weight: 700;
 }
+
+/* ===== 站点选择弹层 ===== */
+.sta-pick-mask {
+  position: fixed;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, .45);
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+}
+.sta-pick-sheet {
+  width: 100%;
+  max-height: 70vh;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 28rpx 24rpx calc(24rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+.sta-pick-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx solid #f0f2f5;
+}
+.sta-pick-title { font-size: 32rpx; font-weight: 700; color: #1a1a1a; }
+.sta-pick-close {
+  position: absolute;
+  right: 0;
+  top: -6rpx;
+  font-size: 44rpx;
+  line-height: 44rpx;
+  color: #999;
+  padding: 0 8rpx;
+}
+.sta-pick-list { max-height: 56vh; padding-top: 8rpx; }
+.sta-pick-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26rpx 16rpx;
+  border-bottom: 2rpx solid #f4f6f9;
+  font-size: 30rpx;
+  color: #1a1a1a;
+}
+.sta-pick-item.on { color: #2f7cf6; font-weight: 700; background: #f2f7ff; border-radius: 12rpx; }
+.sta-pick-name { flex: 1; min-width: 0; }
+.sta-pick-time { font-size: 26rpx; color: #98a0ab; margin-left: 20rpx; flex: none; }
+.sta-pick-item.on .sta-pick-time { color: #2f7cf6; }
 
 /* ===== 明细弹层 ===== */
 .mask {

@@ -45,6 +45,31 @@ page{
   color: #999;
 }
 
+/* 标题行左侧：线路名 + 订单类型标签 */
+.title-left {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+/* RouteMarker 类型标签：1 拼车 2 包车 3 捎货 */
+.route-marker {
+  flex-shrink: 0;
+  margin-left: 12rpx;
+  font-size: 20rpx;
+  line-height: 1;
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  color: #fff;
+  background: #1b3a5c;
+}
+.route-marker.marker-2 {
+  background: #ff8a4c;
+}
+.route-marker.marker-3 {
+  background: #2ba84a;
+}
+
 .iconRight{
   width: 20rpx;
   height: 20rpx;

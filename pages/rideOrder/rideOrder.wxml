@@ -107,21 +107,26 @@
       <view class="detailList_l">订单总额</view>
       <view class="detailList_r">{{TotalFare || 0}}</view>
     </view>
+    <!-- 基本票价 = 成人 + 超出半价名额的儿童（一个成人只能带一位儿童半价） -->
     <view class="detailList">
       <view class="detailList_l">基本票价</view>
-      <view class="detailList_r">{{Price || 0}} X {{passengers[0].adults}}</view>
+      <view class="detailList_r">{{Price || 0}} X {{actualAdultCount}}</view>
     </view>
-    <view class="detailList" wx:if="{{passengers[paxIdx].children > 0 && ChildPrice}}">
+    <!-- 儿童优惠票价 = min(成人, 儿童)，即真正享受半价的儿童张数 -->
+    <view class="detailList" wx:if="{{childTicketCount > 0 && ChildPrice}}">
       <view class="detailList_l">儿童优惠票价</view>
-      <view class="detailList_r">{{ChildPrice}} X {{passengers[0].children}}</view>
+      <view class="detailList_r">{{ChildPrice}} X {{childTicketCount}}</view>
     </view>
     
-    <view class="detailList" wx:if="{{rangfenceMapList.length > 0}}" wx:for="{{rangfenceMapList}}" wx:key="item">
-      <view class="detailList_l">{{item.Name}}超范围</view>
-      <view class="detailList_r">
-        <view class="additional">{{item.Price}} X {{passengers[0].adults + passengers[0].children}}</view>
+    <!-- 超范围加价：wx:for 与 wx:if 分开写，避免同一节点上两种指令同时生效导致判断错乱 -->
+    <block wx:if="{{rangfenceMapList.length > 0}}">
+      <view class="detailList" wx:for="{{rangfenceMapList}}" wx:key="Name">
+        <view class="detailList_l">{{item.Name}}超范围</view>
+        <view class="detailList_r">
+          <view class="additional">{{item.Price}} X {{passengers[0].adults + passengers[0].children}}</view>
+        </view>
       </view>
-    </view>
+    </block>
     <view class="detailList" wx:if="{{coupon_num > 0}}">
       <view class="detailList_l">优惠券</view>
       <view class="detailList_r">

@@ -57,7 +57,14 @@ Page({
     }
   },
   onShow() {
-    this.getFormTypeId();
+    // 按当前 tab 刷新：大巴订单走 GetMyOrderList，其余走 GetRideTicket
+    // （否则从详情页返回时会把大巴列表覆盖成 GetRideTicket 的数据）
+    if (this.data.menuTapCurrent == 3) {
+      this.setData({ pageNo: 1 });
+      this.getOrderList3(false, this.data.FormTypeId);
+    } else {
+      this.getFormTypeId();
+    }
     const _this = this;
     let date = new Date();
     let today = date.toISOString().split("T")[0]; // 获取今天的日期（格式：YYYY-MM-DD）
@@ -299,9 +306,7 @@ Page({
         loading: true,
         pageNo: this.data.pageNo + 1
       });
-      if(_this.data.menuTapCurrent == 2) {
-        this.getOrderList2(true, this.data.FormTypeId);
-      } else if(_this.data.menuTapCurrent == 3){
+      if(_this.data.menuTapCurrent == 3) {
         this.getOrderList3(true, this.data.FormTypeId);
       } else {
         this.getOrderList(true, this.data.FormTypeId);
@@ -353,10 +358,11 @@ Page({
       var usreinfo = wx.getStorageSync('userInfo');
       let reqData = {
         limit: 10,
-        TravelType: that.data.menuTapCurrent,
+        TravelType: 0,
         page: that.data.pageNo,
         Personal: usreinfo.Id,
         FormTypeId: FormTypeId,
+        RouteMarker:Number(that.data.menuTapCurrent) + 1,
         Where: that.data.menuTapCurrent == 0 ? "IsPickGoods = '100004-0000010002'" : "IsPickGoods = '100004-0000010001'"
       }
       http.postRequest("/Api/DispatchMobile/GetRideTicket", reqData, wx.getStorageSync('header'), res => {
@@ -384,6 +390,7 @@ Page({
                   item['is_gai'] = 0;
                 }
                 listData[index].ArrivalTime = that.getNewtime(item.ArrivalTime)
+                listData[index].RouteMarker_Name = that.getRouteMarkerName(item.RouteMarker)
               });
               that.setData({
                 listData: this.data.listData.concat(listData)
@@ -406,6 +413,7 @@ Page({
                   item['is_gai'] = 0;
                 }
                 listData[index].ArrivalTime = that.getNewtime(item.ArrivalTime)
+                listData[index].RouteMarker_Name = that.getRouteMarkerName(item.RouteMarker)
               });
               console.log(listData)
               that.setData({
@@ -433,6 +441,7 @@ Page({
                   item['is_gai'] = 0;
                 }
                 listData[index].ArrivalTime = that.getNewtime(item.ArrivalTime)
+                listData[index].RouteMarker_Name = that.getRouteMarkerName(item.RouteMarker)
               });
               console.log(listData)
               that.setData({
@@ -455,6 +464,7 @@ Page({
                   item['is_gai'] = 0;
                 }
                 listData[index].ArrivalTime = that.getNewtime(item.ArrivalTime)
+                listData[index].RouteMarker_Name = that.getRouteMarkerName(item.RouteMarker)
               });
               that.setData({
                 listData: listData
@@ -576,6 +586,11 @@ Page({
       })
     }
   },  
+  // RouteMarker：1 拼车 2 包车 3 捎货
+  getRouteMarkerName(marker) {
+    var map = { '1': '拼车', '2': '包车', '3': '捎货' };
+    return map[String(marker)] || '';
+  },
   getNewtime(originalDateTime) {
     var dateString = originalDateTime.replace(/-/g, '/');
     var date = new Date(dateString);
@@ -1395,7 +1410,8 @@ Page({
         listData: [],
         pageNo: 1
       });
-      this.getOrderList2(true, this.data.FormTypeId);
+      // 捎货订单：与拼车/包车共用 GetRideTicket，靠 RouteMarker 区分
+      this.getOrderList(true, this.data.FormTypeId);
     } else if(current == 3) {
       this.setData({
         menuTapCurrent: current,
@@ -1420,7 +1436,11 @@ Page({
       listData: [],
       pageNo: 1
     });
-    this.getOrderList(true, this.data.FormTypeId);
+    if (this.data.menuTapCurrent == 3) {
+      this.getOrderList3(true, this.data.FormTypeId);
+    } else {
+      this.getOrderList(true, this.data.FormTypeId);
+    }
     wx.hideNavigationBarLoading();
     wx.stopPullDownRefresh();
   },

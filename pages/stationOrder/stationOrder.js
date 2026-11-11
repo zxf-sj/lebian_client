@@ -3,20 +3,32 @@ const BASE_URL = require("../../utils/BASE_URL");
 const http = require("../../utils/http.js");
 const orderStorage = require("../../utils/orderStorage.js");
 const unionPayWatcher = require("../../utils/unionPayWatcher.js");
+const dayOrderGuard = require("../../utils/dayOrderGuard.js");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 
 // 儿童字典值（与 userList / addPassenger 一致）
 const CHILD = '100004-0000010001';
+// 单笔订单最多可选乘车人数
+const MAX_PSG = 5;
 
-function toCols(name, time, mark, city, locationId, group) {
+// 今天（yyyy-MM-dd），历史订单查询的 timeDay 兜底值
+function todayStr() {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+function toCols(name, time, mark, city, locationId, group, img) {
   const [h, m] = time.split(':');
   return {
     name,
     city: city || '',          // 所属城市（文水县 / 太原市），用于按城市过滤上下车点
     chars: name.split(''),
+    time: time,                // 完整时间（接口 ArrivalTime），上车点=发车时间、下车点=到达时间
     timeH: h,
     timeM: m,
     mark: mark || '',          // up=上车点 down=下车点 ''=未选
+    img: img || '',            // 站点图片示意（点击可放大预览）
     locationId: locationId || '', // 下单 Statinglocation/EndLocation 用
     group: group || '',        // up=属于上车点分组 down=属于下车点分组
     split: false,              // 是否为下车点分组的第一列（该列左侧画分割线）
@@ -25,9 +37,11 @@ function toCols(name, time, mark, city, locationId, group) {
 
 Page({
   data: {
-    // 顶部站点纵览：左半属上车站城市（文水县），右半属下车站城市（太原市）
-    // mark: up=上车点 down=下车点；green=灰色站点（途经/不可选）
-    stations: [],
+    // 接口分别返回两组站点，页面也分开存，不做合并：
+    // upStations = StartSiteList（上车点，ArrivalTime 为发车时间）
+    // downStations = EndSiteList（下车点，ArrivalTime 为到达时间）
+    upStations: [],
+    downStations: [],
 
     // 上/下城市：由上级页面 onLoad 传入，未传时给默认占位
     upCity: '文水县',
@@ -36,6 +50,17 @@ Page({
     // 上/下选中的具体站点名（与顶部圆圈 mark 双向绑定）
     upStation: '',
     downStation: '',
+
+    // 选中站点对应时间：上车点=发车时间（StartSiteList），下车点=到达时间（EndSiteList）
+    upTime: '',
+    downTime: '',
+    upTimeLabel: '发车时间',
+    downTimeLabel: '到达时间',
+
+    // 站点选择弹层
+    staPickShow: false,
+    staPickType: 'up', // up=选上车点 down=选下车点
+    staPickList: [],
 
     platformPrice: null, // 成人票价（优惠价，无优惠时即原价）
     originPrice: null,   // 成人原价（计算儿童价用）
@@ -57,7 +82,7 @@ Page({
     upLocationId: '',
     downLocationId: '',
 
-    agree: true, // 服务合同默认勾选（勾选框在乘车安全须知上方）
+    agree: false, // 服务合同默认勾选（勾选框在乘车安全须知上方）
     detailOpen: false,
 
     // ===== 底部支付方式弹框（微信支付 / 云闪付）=====
@@ -107,15 +132,19 @@ Page({
         childPrice: this._calcChildPrice(adultPrice, originPrice),
       });
     }
-    // 如果上级传了站点列表（JSON 字符串），则覆盖默认 stations
+    // 上级传了站点列表（JSON 字符串）时，按 group 拆回两组（无 group 的按城市归类）
     if (options.stations) {
-      console.log(stations)
       try {
         const list = JSON.parse(decodeURIComponent(options.stations));
         if (Array.isArray(list) && list.length) {
-          this._markGroups(list, this.data.upCity);
-          this._applyDefaultMarks(list);
-          this.setData({ stations: list });
+          const upArr = list.filter((s) => s.group === 'up');
+          const downArr = list.filter((s) => s.group === 'down');
+          list.filter((s) => !s.group).forEach((s) => {
+            (this.data.upCity && s.city === this.data.upCity ? upArr : downArr).push(s);
+          });
+          const patch = { upStations: upArr, downStations: downArr };
+          this._applyDefaultMarks(patch);
+          this.setData(patch);
         }
       } catch (e) {}
     }
@@ -184,6 +213,12 @@ Page({
             selected: old.length ? !!(prev && prev.selected) : i === 0,
           };
         });
+        // 兜底：刷新后保留的选中项也不超过 MAX_PSG 人
+        let picked = 0;
+        list.forEach((p) => {
+          if (p.selected && picked < MAX_PSG) picked++;
+          else p.selected = false;
+        });
         _this.setData({ passengers: list });
         _this._recalcPsg();
       } else {
@@ -215,39 +250,39 @@ Page({
           return;
         }
         const d = res.data.data || {};
-        // 接口实际结构：StartSiteList = 去程（上车）站点，EndSiteList = 返程（下车）站点
+        // 接口已分好组：StartSiteList = 上车点列表（ArrivalTime = 发车时间）
+        //             EndSiteList   = 下车点列表（ArrivalTime = 到达时间）
         const upList = d.StartSiteList || [];
         const downList = d.EndSiteList || [];
-        let list = upList.concat(downList);
-        if (!list.length) {
-          // 兼容旧结构：data.SiteList / data.Sites / data 本身是数组
-          list = d.SiteList || d.Sites || (Array.isArray(d) ? d : []);
+        const patch = {};
+        let upStations = [];
+        let downStations = [];
+
+        if (upList.length || downList.length) {
+          upStations = _this._mapSites(upList, 'up');
+          downStations = _this._mapSites(downList, 'down');
+        } else {
+          // 兼容旧结构：data.SiteList / data.Sites / data 本身是数组（只有混合列表，按城市拆两组）
+          const legacy = d.SiteList || d.Sites || (Array.isArray(d) ? d : []);
+          if (!Array.isArray(legacy) || !legacy.length) return;
+          _this._mapSites(legacy, '').forEach((s) => {
+            const isUp = _this.data.upCity && s.city === _this.data.upCity;
+            (isUp ? upStations : downStations).push(s);
+          });
         }
-        if (!Array.isArray(list) || !list.length) return;
 
-        const upCount = upList.length;
-        let stations = list.map((s, i) => toCols(
-          s.LocationName || s.SiteName || s.Name || '',
-          (s.ArrivalTime || s.Time || '00:00').slice(0, 5),
-          '',                       // 默认选中在下方 _applyDefaultMarks 里统一处理
-          s.County || s.CityName || s.City || '', // 文水站点 County=文水县，太原站点 County 为空用 City
-          s.LocationId,
-          upCount ? (i < upCount ? 'up' : 'down') : ''  // 前半段上车点，后半段下车点
-        ));
-        console.log(stations)
+        patch.upStations = upStations;
+        patch.downStations = downStations;
 
-        const patch = { stations };
-        // 上级没传城市时，用接口返回的城市兜底，保证左右两列能正常点选
+        // 上级没传城市时，用接口返回的城市兜底
         if (!_this._cityFromQuery) {
           const upCity = (upList[0] && (upList[0].County || upList[0].City)) || '';
           const downCity = (downList[0] && (downList[0].County || downList[0].City)) || '';
           if (upCity) patch.upCity = upCity;
           if (downCity) patch.downCity = downCity;
         }
-        // 补齐分组标记（接口没给出分组时按城市推断），并标出下车点分组的第一列
-        _this._markGroups(stations, patch.upCity || _this.data.upCity);
-        // 默认选中：第一站为上车点，最后一站为下车点
-        _this._applyDefaultMarks(stations);
+        // 默认选中：上车点列表首站、下车点列表末站
+        _this._applyDefaultMarks(patch);
         _this.setData(patch);
         _this._syncStationLabels();
       },
@@ -260,132 +295,161 @@ Page({
     });
   },
 
-  // 标记分组：group=up/down，并给下车点分组的第一列打 split（该列左侧画分割线）
-  _markGroups(list, upCity) {
-    if (!Array.isArray(list)) return list;
-    list.forEach((s) => {
-      if (!s.group) s.group = (upCity && s.city === upCity) ? 'up' : 'down';
-      s.split = false;
+  // 接口站点 → 页面结构：group 由来源列表（StartSiteList / EndSiteList）直接决定
+  _mapSites(list, group) {
+    return (list || []).map((s) => {
+      const col = toCols(
+        s.LocationName || s.SiteName || s.Name || '',
+        (s.ArrivalTime || s.Time || '00:00').slice(0, 5),
+        '',                                                  // 默认选中在 _applyDefaultMarks 里统一处理
+        s.County || s.CityName || s.City || '',              // 所属城市，仅作兜底过滤用
+        s.LocationId,
+        group,
+        s.Img || s.Image || s.Photo || s.PicUrl || s.SiteImg || '' // 站点图片示意
+      );
+      // 站点详情页需要：地址、经纬度、图片列表
+      col.address = s.Address || s.SiteAddress || s.LocationAddress || '';
+      col.lat = Number(s.Latitude || s.Lat) || 0;
+      col.lng = Number(s.Longitude || s.Lng || s.Lon) || 0;
+      col.imgs = this._normalizeImgs(s.Imgs || s.ImgList || s.SiteImgList || s.Images);
+      if (!col.img && col.imgs.length) col.img = col.imgs[0];
+      return col;
     });
-    // 下车点分组的第一列（前面已有上车点时才画分割线）
-    let idx = -1;
-    for (let i = 0; i < list.length; i++) {
-      if (list[i].group === 'down') { idx = i; break; }
-    }
-    if (idx > 0 && list[idx]) list[idx].split = true;
-    return list;
   },
 
-  // 默认选中：第一站为上车点，最后一站为下车点（用户/上级已选过的不覆盖）
-  _applyDefaultMarks(list) {
-    if (!Array.isArray(list) || !list.length) return list;
-    const hasUp = list.some((s) => s.mark === 'up');
-    const hasDown = list.some((s) => s.mark === 'down');
-    if (!hasUp) list[0].mark = 'up';
-    if (!hasDown && list.length > 1) list[list.length - 1].mark = 'down';
-    return list;
+  // 图片字段兼容：字符串数组 / 对象数组 / 逗号分隔字符串
+  _normalizeImgs(data) {
+    if (!data) return [];
+    let arr = data;
+    if (typeof arr === 'string') arr = arr.split(',');
+    if (!Array.isArray(arr)) return [];
+    return arr
+      .map((it) => (typeof it === 'string' ? it : (it && (it.Img || it.Image || it.Url || it.PicUrl || it.Path))))
+      .filter(Boolean);
   },
 
-  // 根据 stations 里的 mark 同步 upStation / downStation（并记录下单用的 LocationId）
+  // 默认选中：上车点列表首站、下车点列表末站（已选过的不覆盖）
+  _applyDefaultMarks(patch) {
+    const ups = (patch && patch.upStations) || [];
+    const downs = (patch && patch.downStations) || [];
+    if (ups.length && !ups.some((s) => s.mark === 'up')) ups[0].mark = 'up';
+    if (downs.length && !downs.some((s) => s.mark === 'down')) downs[downs.length - 1].mark = 'down';
+    return patch;
+  },
+
+  // 从两个列表里取选中站，同步站名 / LocationId / 时间
+  // upStations = StartSiteList → 发车时间；downStations = EndSiteList → 到达时间
   _syncStationLabels() {
-    let up = '', down = '', upLoc = '', downLoc = '';
-    console.log(this.data.stations)
-    this.data.stations.forEach((s) => {
-      if (s.mark === 'up')   {
-        up   = s.name;
-        upLoc = s.locationId;
-      }
-      if (s.mark === 'down') {
-        down = s.name;
-        downLoc = s.locationId;
-      }
+    const up = (this.data.upStations || []).find((s) => s.mark === 'up') || null;
+    const down = (this.data.downStations || []).find((s) => s.mark === 'down') || null;
+    this.setData({
+      upStation: up ? up.name : '',
+      downStation: down ? down.name : '',
+      upLocationId: up ? up.locationId : '',
+      downLocationId: down ? down.locationId : '',
+      upTime: up ? (up.time || '') : '',
+      downTime: down ? (down.time || '') : '',
+      upTimeLabel: '发车时间',
+      downTimeLabel: '到达时间',
     });
-    console.log(upLoc,downLoc)
-    this.setData({ upStation: up, downStation: down, upLocationId: upLoc, downLocationId: downLoc });
-
   },
 
-  // 点击圆圈：左半区（上车站城市）只在 空↔上 切换；右半区（下车站城市）只在 空↔下 切换
+  // 点击圆圈：上车点列表内互斥选 1 个（再点取消），下车点列表同理
   onStaTap(e) {
+    const kind = e.currentTarget.dataset.kind === 'down' ? 'down' : 'up';
+    const key = kind === 'up' ? 'upStations' : 'downStations';
     const idx = Number(e.currentTarget.dataset.idx);
-    if (isNaN(idx)) return;
-    const cur = this.data.stations[idx].mark || '';
-    const city = this.data.stations[idx].city;
-
-    let next = '';
-    if (city === this.data.upCity) {
-      // 上车站城市：空→上，上→空
-      next = cur === 'up' ? '' : 'up';
-    } else if (city === this.data.downCity) {
-      // 下车站城市：空→下，下→空
-      next = cur === 'down' ? '' : 'down';
-    } else {
-      // 不属于任一侧城市：默认空→上，上→空
-      next = cur === 'up' ? '' : 'up';
-    }
-
-    const stations = JSON.parse(JSON.stringify(this.data.stations));
-    stations[idx].mark = next;
-
-    // 全局最多 1 个上车、1 个下车，新标记覆盖旧的
-    if (next) {
-      for (let i = 0; i < stations.length; i++) {
-        if (i !== idx && stations[i].mark === next) stations[i].mark = '';
-      }
-    }
-    this.setData({ stations });
+    const list = JSON.parse(JSON.stringify(this.data[key] || []));
+    if (isNaN(idx) || !list[idx]) return;
+    const next = list[idx].mark === kind ? '' : kind;
+    list.forEach((s) => { s.mark = ''; });
+    list[idx].mark = next;
+    this.setData({ [key]: list });
     this._syncStationLabels();
   },
 
-  // 点中间"选择上车点"：弹出当前上城市下所有站点，选完反向点亮顶部圆圈
+  // 点击站点图片示意：进入站点详情页（上 6 图片列表 / 下 4 地图导航）
+  onStaImgTap(e) {
+    const kind = e.currentTarget.dataset.kind === 'down' ? 'down' : 'up';
+    const key = kind === 'up' ? 'upStations' : 'downStations';
+    const idx = Number(e.currentTarget.dataset.idx);
+    const s = (this.data[key] || [])[idx];
+    if (!s) return;
+    const imgs = (s.imgs && s.imgs.length) ? s.imgs.join(',') : (s.img || '');
+    const params = [
+      'name=' + encodeURIComponent(s.name || ''),
+      'address=' + encodeURIComponent(s.address || ''),
+      'locationId=' + encodeURIComponent(s.locationId || ''),
+      'lat=' + (s.lat || ''),
+      'lng=' + (s.lng || ''),
+      'imgs=' + encodeURIComponent(imgs),
+    ].join('&');
+    wx.navigateTo({ url: '/pages/stationDetail/stationDetail?' + params });
+  },
   onPickUp() {
-    const list = this.data.stations
-      .map((s, i) => ({ name: s.name, idx: i }))
-      .filter((s) => this.data.upCity && this.data.stations[s.idx].city === this.data.upCity);
-    if (!list.length) {
-      wx.showToast({ title: '当前城市暂无可选上车点', icon: 'none' });
-      return;
-    }
-    wx.showActionSheet({
-      itemList: list.map((s) => s.name),
-      success: (res) => {
-        const pickIdx = list[res.tapIndex].idx;
-        const stations = JSON.parse(JSON.stringify(this.data.stations));
-        stations.forEach((s, i) => { if (s.mark === 'up') s.mark = ''; });
-        stations[pickIdx].mark = 'up';
-        this.setData({ stations });
-        this._syncStationLabels();
-      },
-    });
+    this._openStaPicker('up');
   },
 
   // 点中间"选择下车点"：弹出当前下城市下所有站点
   onPickDown() {
-    const list = this.data.stations
-      .map((s, i) => ({ name: s.name, idx: i }))
-      .filter((s) => this.data.downCity && this.data.stations[s.idx].city === this.data.downCity);
+    this._openStaPicker('down');
+  },
+
+  // 站点选择弹层：不用 wx.showActionSheet（itemList 最多 6 项，超了直接 fail 不弹窗）
+  // 上车点取 upStations（StartSiteList），下车点取 downStations（EndSiteList）
+  _openStaPicker(type) {
+    const isDown = type === 'down';
+    const list = (isDown ? this.data.downStations : this.data.upStations) || [];
     if (!list.length) {
-      wx.showToast({ title: '当前城市暂无可选下车点', icon: 'none' });
+      wx.showToast({
+        title: isDown ? '当前线路暂无可选下车点' : '当前线路暂无可选上车点',
+        icon: 'none',
+      });
       return;
     }
-    wx.showActionSheet({
-      itemList: list.map((s) => s.name),
-      success: (res) => {
-        const pickIdx = list[res.tapIndex].idx;
-        const stations = JSON.parse(JSON.stringify(this.data.stations));
-        stations.forEach((s, i) => { if (s.mark === 'down') s.mark = ''; });
-        stations[pickIdx].mark = 'down';
-        this.setData({ stations });
-        this._syncStationLabels();
-      },
+    this.setData({
+      staPickShow: true,
+      staPickType: isDown ? 'down' : 'up',
+      staPickList: list.map((s, i) => ({
+        idx: i,
+        name: s.name || '',
+        time: s.time || '',
+        mark: s.mark || '',
+      })),
     });
   },
 
+  // 弹层里点选站点：所属列表内互斥，只保留 1 个选中
+  onStaPick(e) {
+    const idx = Number(e.currentTarget.dataset.idx);
+    const kind = this.data.staPickType === 'down' ? 'down' : 'up';
+    const key = kind === 'up' ? 'upStations' : 'downStations';
+    const list = JSON.parse(JSON.stringify(this.data[key] || []));
+    if (isNaN(idx) || !list[idx]) return;
+    list.forEach((s) => { s.mark = ''; });
+    list[idx].mark = kind;
+    this.setData({ [key]: list, staPickShow: false });
+    this._syncStationLabels();
+  },
+
+  closeStaPick() {
+    this.setData({ staPickShow: false });
+  },
+
   // 多选乘车人：点一下选中、再点取消，明细行与总价随之刷新
+  // 最多同时选中 MAX_PSG 人，已满时提示
   onPaxTab(e) {
     const idx = Number(e.currentTarget.dataset.idx);
-    const key = `passengers[${idx}].selected`;
-    this.setData({ [key]: !this.data.passengers[idx].selected });
+    if (isNaN(idx) || !this.data.passengers[idx]) return;
+    const isOn = !!this.data.passengers[idx].selected;
+    if (!isOn) {
+      const picked = this.data.passengers.filter((p) => p.selected).length;
+      if (picked >= MAX_PSG) {
+        wx.showToast({ title: '最多选择' + MAX_PSG + '位乘车人', icon: 'none' });
+        return;
+      }
+    }
+    this.setData({ [`passengers[${idx}].selected`]: !isOn });
     this._recalcPsg();
   },
 
@@ -475,7 +539,9 @@ Page({
   },
 
   // 下单（Create）→ 按支付方式拉起支付
-  submitOrder(payType) {
+  // 下单前先查当日历史订单（/Api/DispatchMobile/IsUserHaveDayOrder），
+  // 命中时让用户选择「继续下单 / 取消下单」，与旧版 pages/pingche 一致
+  async submitOrder(payType) {
     let _this = this;
     let userinfo = wx.getStorageSync('userInfo') || {};
     if (!userinfo.Id) {
@@ -483,12 +549,21 @@ Page({
       return;
     }
     // 选中乘车人：格式 -> 姓名|手机号|证件号,姓名|手机号|证件号
-    const PersonalIds = this.data.passengers
-      .filter(p => p.selected)
+    const picked = this.data.passengers.filter(p => p.selected);
+    const PersonalIds = picked
       .map(p => [p.name, p.phone, p.idCard || ''].join('|'))
       .join(',');
+    // 历史订单按乘车人手机号 + 发车日期查（多人手机号用 | 拼接）
+    const phone = dayOrderGuard.joinPhones(picked.map(p => p.phone));
+    const date = (this.data.depTime || '').slice(0, 10) || todayStr();
+
+    // 当日已有订单：先弹「下单记录」，用户选「继续下单」才往下走
+    // 注意校验要在 showLoading 之前，否则 loading 的 mask 会盖住弹窗
+    const canContinue = await dayOrderGuard.guardDayOrder(phone, date);
+    if (!canContinue) return;
+
     wx.showLoading({ title: '下单中...', mask: true });
-   
+
     wx.request({
       url: baseUrl + "/api/BusMobile/Create",
       data: {

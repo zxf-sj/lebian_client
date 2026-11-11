@@ -5,6 +5,7 @@ const throttle = require('../../utils/throttle.js').throttle;
 const http = require('../../utils/http.js');
 const orderStorage = require('../../utils/orderStorage.js');
 const unionPayWatcher = require('../../utils/unionPayWatcher.js');
+const dayOrderGuard = require('../../utils/dayOrderGuard.js');
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 const WEEK = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 // 捎货货物照片分片上传（同旧版 shaohuo 页）
@@ -1398,8 +1399,9 @@ Page({
       ChildNum: 0,
     };
 
-    http.getRequest('/Api/DispatchMobile/IsUserHaveDayOrder?phone=' + _this.data.phone + '&timeDay=' + startDate, '', '', (res) => {
-      if (res.code != 0) {
+    // 下单前查当日历史订单（/Api/DispatchMobile/IsUserHaveDayOrder，同旧版 pages/pingche）
+    dayOrderGuard.queryDayOrder(_this.data.phone, startDate).then((q) => {
+      if (!q.ok) {
         _this._finishPayFlow();
         wx.showToast({
           title: '数据请求失败，请稍后重试',
@@ -1408,20 +1410,12 @@ Page({
         });
         return;
       }
-      if (!res.count) {
+      if (!q.has) {
         _this._createOrder(reqData, user.Id);
-      } else {
-        _this._showDayOrderModal(res.data, function () {
-          _this._createOrder(reqData, user.Id);
-        });
+        return;
       }
-    }, (err) => {
-      console.log(err);
-      _this._finishPayFlow();
-      wx.showToast({
-        title: '数据请求失败，请稍后重试',
-        icon: 'none',
-        duration: 2000
+      _this._showDayOrderModal(q.list, function () {
+        _this._createOrder(reqData, user.Id);
       });
     });
   }, 5000),

@@ -27,14 +27,14 @@
     </view>
 
     <!-- 日期 -->
-    <picker mode="date" value="{{date}}" start="{{dateStart}}" end="{{dateEnd}}" bindchange="onDateChange">
+    <!-- <picker mode="date" value="{{date}}" start="{{dateStart}}" end="{{dateEnd}}" bindchange="onDateChange">
       <view class="date-row">
         <view class="date-icon">
           <image src="/assets/images/rili.png" mode="aspectFit"/>
         </view>
         <text class="date-text">{{dateLabel}}</text>
       </view>
-    </picker>
+    </picker> -->
 
     <!-- 查询按钮 -->
     <view class="search-btn" bindtap="onSearch">

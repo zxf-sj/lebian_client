@@ -1,9 +1,9 @@
 <view class="page">
   <!-- 行程信息：纯文字展示，非输入项 -->
-  <view class="trip-card" wx:if="{{tripLines.length}}">
+  <!-- <view class="trip-card" wx:if="{{tripLines.length}}">
     <view class="trip-title">行程信息</view>
     <view class="trip-line" wx:for="{{tripLines}}" wx:key="*this">{{item}}</view>
-  </view>
+  </view> -->
 
   <!-- 基础信息 -->
   <view class="card">

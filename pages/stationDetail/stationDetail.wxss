@@ -1,0 +1,153 @@
+page { background: #f4f6f9; }
+
+/* 上 6 / 下 4 分栏 */
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ===== 上：图片列表 ===== */
+.img-panel {
+  flex: 6;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 0 0 16rpx 16rpx;
+}
+.panel-head {
+  padding: 20rpx 24rpx 12rpx;
+  display: flex;
+  flex-direction: column;
+}
+.panel-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.panel-sub {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #98a0ab;
+}
+.img-scroll {
+  flex: 1;
+  min-height: 0;
+  padding: 0 20rpx 20rpx;
+  box-sizing: border-box;
+}
+.img-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.img-item {
+  position: relative;
+  width: 48.5%;
+  height: 220rpx;
+  margin-bottom: 16rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  background: #f4f6f9;
+}
+.img-thumb {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.img-zoom {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 34rpx;
+  height: 34rpx;
+  line-height: 34rpx;
+  text-align: center;
+  font-size: 20rpx;
+  color: #fff;
+  background: rgba(0, 0, 0, .45);
+  border-radius: 12rpx 0 0 0;
+}
+.img-empty {
+  padding: 80rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #98a0ab;
+}
+
+/* ===== 下：地图 ===== */
+.map-panel {
+  flex: 4;
+  min-height: 0;
+  position: relative;
+}
+.map {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.nav-btn {
+  position: absolute;
+  right: 24rpx;
+  bottom: calc(32rpx + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  height: 76rpx;
+  padding: 0 32rpx;
+  border-radius: 40rpx;
+  background: #2f7cf6;
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 700;
+  box-shadow: 0 8rpx 20rpx rgba(47, 124, 246, .35);
+}
+.nav-btn-icon {
+  margin-right: 8rpx;
+  font-size: 24rpx;
+}
+
+/* ===== 导航方式选择弹层 ===== */
+.nav-mask {
+  position: fixed;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, .45);
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+}
+.nav-sheet {
+  width: 100%;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 28rpx 24rpx calc(24rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+.nav-sheet-title {
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #f0f2f5;
+}
+.nav-sheet-item {
+  height: 104rpx;
+  line-height: 104rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #1a1a1a;
+  border-bottom: 2rpx solid #f4f6f9;
+}
+.nav-sheet-cancel {
+  margin-top: 16rpx;
+  height: 96rpx;
+  line-height: 96rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #666;
+  background: #f4f6f9;
+  border-radius: 12rpx;
+}

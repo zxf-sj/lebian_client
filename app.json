@@ -19,6 +19,7 @@
     "pages/ride/ride",
     "pages/rideOrder/rideOrder",
     "pages/stationOrder/stationOrder",
+    "pages/stationDetail/stationDetail",
     "pages/addPassenger/addPassenger",
     "pages/lvyouHome/lvyouHome",
     "pages/lvyouDetail/lvyouDetail",

@@ -10,7 +10,8 @@
       <text class="tb-label">目的地</text>
       <text class="tb-value">{{to}}</text>
     </view>
-    <view class="tb-col" bindtap="onOpenDateSheet">
+    <!-- bindtap="onOpenDateSheet" -->
+    <view class="tb-col" >
       <text class="tb-label">出发日期</text>
       <text class="tb-value">{{dateLabel}}</text>
     </view>
@@ -189,7 +190,7 @@
             <text class="cp-seats-label">余座</text>
             <text class="cp-seats">{{item.SeatNum}}</text>
           </view>
-          <view wx:if="{{item.SeatNum == 0}}" class="stamp">SOLD OUT</view>
+          <view wx:if="{{item.SeatNum == 0}}" class="stamp">售罄</view>
         </view>
       </block>
 

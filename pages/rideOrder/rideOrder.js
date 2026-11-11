@@ -49,7 +49,9 @@ Page({
       children: 0
     }, ],
     paxIdx: 0,
-    actualAdultCount: 1, //按成人票价结算的人数
+    // 票价拆分（一个成人只能带一位儿童半价，超出名额的儿童按基本票价结算）
+    actualAdultCount: 1, //按成人（基本）票价结算的人数 = 成人 + 超出名额的儿童
+    childTicketCount: 0, //按儿童优惠票价结算的人数 = min(成人, 儿童)
     phone: '',
     remark: '',
     // ===== 底部支付方式弹框 =====
@@ -97,6 +99,43 @@ Page({
         endingAddress: _this.trimDupCity(endInfo2.endAddress, _this.data.to)
       })
     }
+    // 地址（坐标）或线路变了必须重算：超范围判定与总价都依赖起终点经纬度，
+    // 不重算就会残留上一次地址的结果（选了不超范围仍显示超范围，反之亦然）
+    _this._refreshByAddrChange();
+  },
+
+  // 起终点坐标 / 线路变化时重新计算车型与价格（含 rangfenceMapList 超范围列表）
+  _refreshByAddrChange() {
+    const s = wx.getStorageSync('starInfo2') || {};
+    const e = wx.getStorageSync('endInfo2') || {};
+    const sync = wx.getStorageSync('storageSync') || {};
+    const posKey = [s.startLait, s.startLont, e.endLait, e.endLont].join(',');
+    const lineKey = sync.lineId || '';
+
+    // 首次进入只记录基线：onLoad 的「时间段 → 车型 → 价格」链路已经在算了
+    if (this._posKey === undefined) {
+      this._posKey = posKey;
+      this._lineKey = lineKey;
+      return;
+    }
+    const posChanged = posKey !== this._posKey;
+    const lineChanged = lineKey !== this._lineKey;
+    if (!posChanged && !lineChanged) return;
+
+    this._posKey = posKey;
+    this._lineKey = lineKey;
+
+    // 地址变了，旧的超范围结果立即清掉，避免请求返回前还显示上一次的结论
+    this.setData({ rangfenceMapList: [] });
+
+    if (!this.data.time) return;
+    if (lineChanged) {
+      // 线路变了车型列表也可能变，重走「车型 → 优惠券 → 价格」
+      this.resetCarTypeData();
+      this.getCarType();
+      return;
+    }
+    if (this.data.carTypeId) this.total_Price();
   },
 
   // 去掉地址里与左侧已展示城市重复的省/市前缀：
@@ -393,33 +432,56 @@ Page({
       ChildNum: pax.children,
       CouponDetailsId: pcTimeSync.hasChooseId || '',
     };
+    // 请求发出前先清空超范围：本次结果没回来之前不要保留上一次地址的判定
+    _this.setData({
+      rangfenceMapList: []
+    });
     wx.request({
       url: baseUrl + '/Api/DispatchMobile/getPriceListForLineId',
       data: data,
       method: "POST",
       success: (res) => {
-        if (res.data.code == 0) {
-          // 返回的车型列表顺序不一定和 GetCarpoolCarModel 一致，按车型 Id 匹配
-          const list = res.data.data || [];
-          const item = list.find(v => v.Id === _this.data.carTypeId);
-          if (item) {
-            // 记录各车型座位数，成人+儿童数量不能超过所选车型的 SeatNumber
-            const seatNumberMap = {};
-            list.forEach(v => {
-              if (v.SeatNumber != null) seatNumberMap[v.Id] = v.SeatNumber;
-            });
-            _this.setData({
-              TotalFare: item.TotalFare,
-              ChildPrice: item.ChildPrice,
-              rangfenceMapList: item.rangfenceMapList,
-              seatNumber: item.SeatNumber || 0,
-              seatNumberMap,
-            });
-          }
+        if (res.data.code != 0) {
+          // 失败也同样清空，避免残留
+          _this.setData({
+            rangfenceMapList: []
+          });
+          return;
         }
+        // 返回的车型列表顺序不一定和 GetCarpoolCarModel 一致，按车型 Id 匹配
+        const list = res.data.data || [];
+        const id = _this.data.carTypeId;
+        // Id 可能是同值不同类型，做宽松匹配；再兜底 CarType 字段
+        const item = list.find(v => v.Id === id) ||
+          list.find(v => v.Id == id) ||
+          list.find(v => v.CarType === id) ||
+          null;
+        if (!item) {
+          // 没匹配到车型：至少把超范围清掉，不能把上一次的结果留在页面上
+          _this.setData({
+            rangfenceMapList: []
+          });
+          return;
+        }
+        // 记录各车型座位数，成人+儿童数量不能超过所选车型的 SeatNumber
+        const seatNumberMap = {};
+        list.forEach(v => {
+          if (v.SeatNumber != null) seatNumberMap[v.Id] = v.SeatNumber;
+        });
+        _this.setData({
+          TotalFare: item.TotalFare,
+          ChildPrice: item.ChildPrice,
+          // 该车型当前地址下的超范围项（不超范围时接口返回空/不返回，统一转成空数组）
+          rangfenceMapList: Array.isArray(item.rangfenceMapList) ? item.rangfenceMapList : [],
+          seatNumber: item.SeatNumber || 0,
+          seatNumberMap,
+        });
       },
       fail(err) {
         console.error('价格接口异常:', err)
+        _this.setData({
+          rangfenceMapList: []
+        });
       }
     })
   }, 300),
@@ -550,6 +612,7 @@ Page({
       Price: '',
       ChildPrice: '',
       couponCount: 0,
+      rangfenceMapList: [], // 车型/线路变了，旧的超范围结果作废
     });
     this.clearCouponChoose();
     this.updateCouponText();
@@ -763,10 +826,12 @@ Page({
   // 人数变化后：可抵扣人数变了，已选券作废并重查张数
   onPaxChange() {
     const p = this.data.passengers[this.data.paxIdx];
-    // 每位成人最多带一位儿童价，超出按成人票结算
+    // 一个成人只能带一位儿童享受半价：儿童票张数 = min(成人, 儿童)
+    // 超出名额的儿童（children - min）只能按基本票价结算，计入成人票价人数
     const realChild = Math.min(p.adults, p.children);
     this.setData({
-      actualAdultCount: (p.adults + p.children) - realChild
+      actualAdultCount: (p.adults + p.children) - realChild,
+      childTicketCount: realChild,
     });
     this.clearCouponChoose();
     this.getCouponList();

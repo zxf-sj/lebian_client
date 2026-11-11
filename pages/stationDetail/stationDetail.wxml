@@ -1,0 +1,49 @@
+<!-- 站点详情：上 6 图片列表 / 下 4 地图 + 导航 -->
+<view class="page">
+  <!-- 上 6：本站图片列表 -->
+  <view class="img-panel">
+    <view class="panel-head">
+      <text class="panel-title">{{name || '站点详情'}}</text>
+      <text class="panel-sub" wx:if="{{address}}">{{address}}</text>
+    </view>
+    <scroll-view class="img-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+      <view class="img-grid" wx:if="{{imgs.length}}">
+        <view class="img-item" wx:for="{{imgs}}" wx:key="url" data-idx="{{index}}" bindtap="onImgTap">
+          <image class="img-thumb" src="{{item.url}}" mode="aspectFill" lazy-load></image>
+          <view class="img-zoom">⤢</view>
+        </view>
+      </view>
+      <view class="img-empty" wx:else>暂无站点图片</view>
+    </scroll-view>
+  </view>
+
+  <!-- 下 4：地图 -->
+  <view class="map-panel">
+    <map
+      id="staMap"
+      class="map"
+      latitude="{{latitude}}"
+      longitude="{{longitude}}"
+      scale="{{scale}}"
+      markers="{{markers}}"
+      show-location
+      enable-zoom
+      enable-scroll
+    ></map>
+    <view class="nav-btn" bindtap="onNavTap">
+      <text class="nav-btn-icon">➤</text>
+      <text>导航前往</text>
+    </view>
+  </view>
+
+  <!-- 导航方式选择 -->
+  <view class="nav-mask" wx:if="{{navShow}}" bindtap="closeNav">
+    <view class="nav-sheet" catchtap="noop">
+      <view class="nav-sheet-title">选择导航方式</view>
+      <view class="nav-sheet-item" wx:for="{{navList}}" wx:key="key" data-key="{{item.key}}" catchtap="onNavChoose">
+        {{item.name}}
+      </view>
+      <view class="nav-sheet-cancel" catchtap="closeNav">取消</view>
+    </view>
+  </view>
+</view>

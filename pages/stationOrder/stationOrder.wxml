@@ -6,42 +6,62 @@
     var half = Math.ceil(chars.length / 2);
     return [chars.slice(0, half), chars.slice(half)];
   }
-  module.exports = { cols: cols };
+  // 竖排中需要旋转 90° 的符号：括号、斜杠、破折号等
+  function rot(c) {
+    if (!c) return false;
+    return '（）()／/＼\\－—–·～~、，。'.indexOf(c) > -1;
+  }
+  module.exports = { cols: cols, rot: rot };
 </wxs>
 
 <view class="page">
   <!-- 顶部站点纵览：站点多时可左右滑动 -->
   <view class="sta-wrap">
+    <!-- ① 箭头线：放在横滑区外面，宽度与 sta-scroll 一致（不随站点滚动变宽） -->
+    <view class="sta-dash">
+      <text class="sta-dash-arrow">→</text>
+      <text class="sta-dash-arrow">→</text>
+      <text class="sta-dash-arrow">→</text>
+    </view>
     <scroll-view class="sta-scroll" scroll-x enhanced show-scrollbar="{{false}}">
       <view class="sta-body">
         <view class="sta-row">
-          <view
-            class="sta-col {{item.group === 'up' ? 'col-up' : 'col-down'}} {{item.split ? 'col-split' : ''}}"
-            wx:for="{{stations}}" wx:key="index"
-          >
-            <view class="sta-name {{item.mark === 'up' ? 'green' : ''}} {{item.mark === 'down' ? 'red' : ''}}">
+          <!-- 上车点列表（接口 StartSiteList） -->
+          <view class="sta-col col-up" wx:for="{{upStations}}" wx:key="index">
+            <!-- ② 选择圆圈 -->
+            <view class="sta-mark {{item.mark === 'up' ? 'up' : ''}}" bindtap="onStaTap" data-kind="up" data-idx="{{index}}">
+              <text wx:if="{{item.mark === 'up'}}">上</text>
+            </view>
+            <!-- ③ 站点名称（竖排，括号/斜杠等符号旋转） -->
+            <view class="sta-name {{item.mark === 'up' ? 'green' : ''}}" bindtap="onStaTap" data-kind="up" data-idx="{{index}}">
               <view class="sta-name-col" wx:for="{{sta.cols(item.chars)}}" wx:for-item="col" wx:key="index">
-                <text wx:for="{{col}}" wx:for-item="c" wx:key="index" class="sta-char">{{c}}</text>
+                <text wx:for="{{col}}" wx:for-item="c" wx:key="index" class="sta-char {{sta.rot(c) ? 'rot' : ''}}">{{c}}</text>
               </view>
             </view>
-            <view class="sta-mark {{item.mark === 'up' ? 'up' : ''}} {{item.mark === 'down' ? 'down' : ''}}" bindtap="onStaTap" data-idx="{{index}}">
-              <text wx:if="{{item.mark === 'up'}}">上</text>
-              <text wx:elif="{{item.mark === 'down'}}">下</text>
+            <!-- ④ 图片示意（可点开大图） -->
+            <view class="sta-img-box" bindtap="onStaImgTap" data-kind="up" data-idx="{{index}}">
+              <image class="sta-img" src="/assets/images/map_mark.png" mode="aspectFill"></image>
             </view>
           </view>
-        </view>
-        <view class="sta-dash">
-          <text class="sta-dash-arrow">→</text>
-          <text class="sta-dash-arrow">→</text>
-          <text class="sta-dash-arrow">→</text>
-        </view>
-        <view class="sta-row">
+          <!-- 下车点列表（接口 EndSiteList）：首列画分割线 -->
           <view
-            class="sta-col {{item.group === 'up' ? 'col-up' : 'col-down'}} {{item.split ? 'col-split' : ''}}"
-            wx:for="{{stations}}" wx:key="index"
+            class="sta-col col-down {{upStations.length && index === 0 ? 'col-split' : ''}}"
+            wx:for="{{downStations}}" wx:key="index"
           >
-            <view class="sta-time">{{item.timeH}}</view>
-            <view class="sta-time">{{item.timeM}}</view>
+            <!-- ② 选择圆圈 -->
+            <view class="sta-mark {{item.mark === 'down' ? 'down' : ''}}" bindtap="onStaTap" data-kind="down" data-idx="{{index}}">
+              <text wx:if="{{item.mark === 'down'}}">下</text>
+            </view>
+            <!-- ③ 站点名称（竖排，括号/斜杠等符号旋转） -->
+            <view class="sta-name {{item.mark === 'down' ? 'red' : ''}}" bindtap="onStaTap" data-kind="down" data-idx="{{index}}">
+              <view class="sta-name-col" wx:for="{{sta.cols(item.chars)}}" wx:for-item="col" wx:key="index">
+                <text wx:for="{{col}}" wx:for-item="c" wx:key="index" class="sta-char {{sta.rot(c) ? 'rot' : ''}}">{{c}}</text>
+              </view>
+            </view>
+            <!-- ④ 图片示意（可点开大图） -->
+            <view class="sta-img-box" bindtap="onStaImgTap" data-kind="down" data-idx="{{index}}">
+              <image class="sta-img" src="/assets/images/map_mark.png" mode="aspectFill"></image>
+            </view>
           </view>
         </view>
       </view>
@@ -60,11 +80,21 @@
       <text class="pick-label {{upStation ? 'picked' : ''}}">{{upStation || '选择上车点'}}</text>
       <text class="pick-arrow">⌄</text>
     </view>
+    <!-- 上车点对应站点的发车时间（StartSiteList.ArrivalTime） -->
+    <view class="pick-time" wx:if="{{upTime}}">
+      <text class="pick-time-label">{{upTimeLabel}}</text>
+      <text class="pick-time-val">{{upTime}}</text>
+    </view>
     <view class="line"></view>
     <view class="pick-row" bindtap="onPickDown">
       <text class="pick-city">{{downCity}}</text>
       <text class="pick-label {{downStation ? 'picked' : ''}}">{{downStation || '选择下车点'}}</text>
       <text class="pick-arrow">⌄</text>
+    </view>
+    <!-- 下车点对应站点的到达时间（EndSiteList.ArrivalTime） -->
+    <view class="pick-time" wx:if="{{downTime}}">
+      <text class="pick-time-label">{{downTimeLabel}}</text>
+      <text class="pick-time-val">{{downTime}}</text>
     </view>
     <view class="line"></view>
 
@@ -139,6 +169,26 @@
       <text class="pay-tri {{detailOpen ? 'up' : ''}}">▲</text>
     </view>
     <view class="pay-btn" bindtap="onPay">下单并支付</view>
+  </view>
+
+  <!-- 站点选择弹层（站点可能超过 6 个，不用 showActionSheet） -->
+  <view class="sta-pick-mask" wx:if="{{staPickShow}}" bindtap="closeStaPick">
+    <view class="sta-pick-sheet" catchtap="noop">
+      <view class="sta-pick-head">
+        <text class="sta-pick-title">{{staPickType === 'up' ? '选择上车点' : '选择下车点'}}</text>
+        <text class="sta-pick-close" catchtap="closeStaPick">×</text>
+      </view>
+      <scroll-view class="sta-pick-list" scroll-y>
+        <view
+          class="sta-pick-item {{item.mark === staPickType ? 'on' : ''}}"
+          wx:for="{{staPickList}}" wx:key="idx"
+          data-idx="{{item.idx}}" catchtap="onStaPick"
+        >
+          <text class="sta-pick-name">{{item.name}}</text>
+          <text class="sta-pick-time" wx:if="{{item.time}}">{{staPickType === 'up' ? '发车时间' : '到达时间'}}{{item.time}}</text>
+        </view>
+      </scroll-view>
+    </view>
   </view>
 
   <!-- 明细弹层 -->
