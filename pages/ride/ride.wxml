@@ -143,6 +143,7 @@
               <view class="st-stop">
                 <view class="st-dot blue"></view>
                 <text class="st-stop-name">{{item.StartSiteName}}</text>
+                <text class="st-stop-line" wx:if="{{item.LineId_Name}}">{{item.LineId_Name}}</text>
               </view>
               <scroll-view class="st-mids" scroll-x enhanced show-scrollbar="{{false}}">
                 <view wx:for="{{item.HotSiteList}}" wx:for-item="m" wx:key="index" class="st-pill">{{m.Name}}</view>
@@ -400,10 +401,11 @@
           </view>
         </view>
 
+        <view class="er-notice-link" catchtap="onShContraband">《禁止寄递物品目录》</view>
         <view class="agree" bindtap="onErAgreeTap">
           <view class="agree-box {{erAgree ? 'on' : ''}}">{{erAgree ? '✓' : ''}}</view>
           <text class="agree-text">下单即同意本服务条款</text>
-          <text class="agree-link">《用户须知》</text>
+          <text class="agree-link" catchtap="onShNotice">《用户须知》</text>
         </view>
 
         <view class="er-pay-btn" bindtap="onErrandPay">确 认 下 单</view>
@@ -467,6 +469,37 @@
     <view class="buttonsView">
       <button class="buttons1" bind:tap="tongyi">同意</button>
       <button class="buttons2" bind:tap="guanbi">取消</button>
+    </view>
+  </view>
+
+  <!-- 城际捎货：禁止寄递物品目录 -->
+  <view class="mask-center" catchtouchmove="true" wx:if="{{shContrabandShow}}">
+    <view class="box_3">
+      <view class="notice-head">禁止寄递物品目录</view>
+      <scroll-view scroll-y="true" class="notice-body">
+        <view class="notice-rich">
+          <template is="wxParse" data="{{wxParseData:contraband.nodes}}" />
+        </view>
+      </scroll-view>
+    </view>
+    <view class="buttonsView">
+      <button class="buttons1" bind:tap="closeShContraband">我知道了</button>
+    </view>
+  </view>
+
+  <!-- 城际捎货：用户须知 -->
+  <view class="mask-center" catchtouchmove="true" wx:if="{{shShow}}">
+    <view class="box_3">
+      <view class="notice-head">用户须知</view>
+      <scroll-view scroll-y="true" class="notice-body">
+        <view class="notice-rich">
+          <template is="wxParse" data="{{wxParseData:shContent.nodes}}" />
+        </view>
+      </scroll-view>
+    </view>
+    <view class="buttonsView">
+      <button class="buttons1" bind:tap="tongyiSh">同意</button>
+      <button class="buttons2" bind:tap="guanbiSh">取消</button>
     </view>
   </view>
 

@@ -1,0 +1,45 @@
+/**
+ * wxParse 富文本通用修正
+ * wxParse 用 view 承载行内文字，若未引入 wxParse.wxss 的 .wxParse-inline，
+ * 每段文字都会变成块级元素导致"每个词一行"。此文件只处理该问题，不含全局 view 规则。
+ */
+.wxParse-inline,
+.WxEmojiView,
+.wxParse-span,
+.wxParse-strong,
+.wxParse-b,
+.wxParse-em,
+.wxParse-i,
+.wxParse-u,
+.wxParse-a,
+.wxParse-big,
+.wxParse-small,
+.wxParse-s,
+.wxParse-del,
+.wxParse-sub,
+.wxParse-sup,
+.wxParse-code,
+.wxParse-tt {
+  display: inline;
+}
+
+/* 列表：圆点与正文同行，正文占满剩余宽度正常折行 */
+.wxParse-li,
+.wxParse-li-inner {
+  display: flex;
+  align-items: flex-start;
+  margin: 10rpx 0;
+}
+.wxParse-li-inner > .wxParse-li-text:last-child {
+  flex: 1;
+  min-width: 0;
+}
+.wxParse-li-text {
+  line-height: 1.8;
+}
+
+/* 图片不超宽 */
+.wxParse-img {
+  max-width: 100%;
+  height: auto;
+}

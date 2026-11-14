@@ -169,6 +169,16 @@ page { background: #f4f6f9; }
 .st-dot.blue { background: #2ba9e8; }
 .st-dot.red { background: #e64340; }
 .st-stop-name { font-size: 28rpx; font-weight: 700; color: #1a1a1a; }
+/* 线路名称：起点站名称右侧 */
+.st-stop-line {
+  margin-left: 16rpx;
+  padding: 2rpx 12rpx;
+  font-size: 22rpx;
+  color: #2ba9e8;
+  background: #e8f4fd;
+  border-radius: 6rpx;
+  flex-shrink: 0;
+}
 
 /* 途经站点：强制一行横向排列（inline-block + nowrap），超出可左右滑动 */
 .st-mids {
@@ -431,6 +441,14 @@ page { background: #f4f6f9; }
 .agree-box.on { background: #1aad19; border-color: #1aad19; }
 .agree-text { font-size: 26rpx; color: #1a1a1a; }
 .agree-link { font-size: 26rpx; color: #2ba9e8; font-weight: 700; }
+/* 城际捎货：禁止寄递物品目录入口 */
+.er-notice-link {
+  margin: 20rpx 0 -6rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #2ba9e8;
+  font-weight: 700;
+}
 
 .pay-btn {
   height: 96rpx; line-height: 96rpx; text-align: center;
@@ -612,8 +630,148 @@ page { background: #f4f6f9; }
   top: 85%;
   display: flex;
 }
-.buttons1 { width: 130rpx; font-size: 28rpx; background: #d09c0a; color: #fff; }
+.buttons1 { width: 180rpx; font-size: 28rpx; background: #d09c0a; color: #fff; }
 .buttons2 { width: 130rpx; font-size: 28rpx; background: #e60c0c; color: #fff; }
+
+/* ===== 城际捎货：用户须知 / 禁止寄递 排版 ===== */
+.notice-head {
+  height: 96rpx;
+  line-height: 96rpx;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+  border-bottom: 1rpx solid #eee;
+}
+.notice-body {
+  height: 66vh;
+  padding: 24rpx 4rpx 28rpx;
+  box-sizing: border-box;
+}
+.notice-rich {
+  font-size: 28rpx;
+  line-height: 1.85;
+  color: #333;
+  word-break: break-all;
+}
+/* wxParse 生成的标签：统一字号 / 行高 / 段间距 */
+.notice-rich .wxParse,
+.notice-rich .wxParse-p,
+.notice-rich .wxParse-div,
+.notice-rich .wxParse-section {
+  font-size: 28rpx;
+  line-height: 1.85;
+  color: #333;
+}
+.notice-rich .wxParse-p,
+.notice-rich .wxParse-div {
+  margin: 0 0 16rpx;
+}
+.notice-rich .wxParse-p:last-child,
+.notice-rich .wxParse-div:last-child {
+  margin-bottom: 0;
+}
+/* 标题 */
+.notice-rich .wxParse-h1,
+.notice-rich .wxParse-h2,
+.notice-rich .wxParse-h3,
+.notice-rich .wxParse-h4 {
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.6;
+  margin: 24rpx 0 12rpx;
+}
+.notice-rich .wxParse-h1 { font-size: 34rpx; }
+.notice-rich .wxParse-h2 { font-size: 32rpx; }
+.notice-rich .wxParse-h3 { font-size: 30rpx; }
+.notice-rich .wxParse-h4 { font-size: 28rpx; }
+.notice-rich .wxParse-h1:first-child,
+.notice-rich .wxParse-h2:first-child,
+.notice-rich .wxParse-h3:first-child {
+  margin-top: 0;
+}
+/* 行内标签：wxParse 用 view 承载文字，不设 inline 会逐段换行 */
+.notice-rich .wxParse-inline,
+.notice-rich .WxEmojiView,
+.notice-rich .wxParse-span,
+.notice-rich .wxParse-strong,
+.notice-rich .wxParse-b,
+.notice-rich .wxParse-em,
+.notice-rich .wxParse-i,
+.notice-rich .wxParse-u,
+.notice-rich .wxParse-a,
+.notice-rich .wxParse-big,
+.notice-rich .wxParse-small,
+.notice-rich .wxParse-s,
+.notice-rich .wxParse-sub,
+.notice-rich .wxParse-sup,
+.notice-rich .wxParse-code,
+.notice-rich .wxParse-tt {
+  display: inline;
+}
+/* 加粗 / 链接 */
+.notice-rich .wxParse-strong,
+.notice-rich .wxParse-b {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.notice-rich .wxParse-a {
+  color: #2ba9e8;
+}
+/* 列表 */
+.notice-rich .wxParse-ul,
+.notice-rich .wxParse-ol {
+  padding-left: 8rpx;
+  margin: 8rpx 0 16rpx;
+}
+.notice-rich .wxParse-li {
+  display: flex;
+  margin: 8rpx 0;
+}
+.notice-rich .wxParse-li-inner {
+  display: flex;
+  align-items: flex-start;
+}
+.notice-rich .wxParse-li-circle {
+  width: 8rpx;
+  height: 8rpx;
+  margin-top: 16rpx;
+  background: #2ba9e8;
+}
+.notice-rich .wxParse-li-text {
+  font-size: 28rpx;
+  line-height: 1.85;
+  color: #333;
+}
+/* 列表正文占满剩余宽度，长文本才会在卡片内正常换行 */
+.notice-rich .wxParse-li-inner > .wxParse-li-text:last-child {
+  flex: 1;
+  min-width: 0;
+}
+/* 图片不超宽 */
+.notice-rich .wxParse-img,
+.notice-rich image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8rpx;
+}
+/* 表格 */
+.notice-rich .wxParse-tr {
+  display: flex;
+}
+.notice-rich .wxParse-th,
+.notice-rich .wxParse-td {
+  flex: 1;
+  padding: 10rpx;
+  font-size: 26rpx;
+  line-height: 1.6;
+  border: 1rpx solid #e6e6e6;
+  word-break: break-all;
+}
+.notice-rich .wxParse-th {
+  background: #f7f8fa;
+  font-weight: 700;
+}
 
 /* ===== 包车：底部支付方式弹框（参考 baoche 页） ===== */
 .pay-mask {

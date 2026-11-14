@@ -1,4 +1,5 @@
 /* pages/fanchengmap/fanchengmap.wxss */
+@import '../../styles/wxparse-inline.wxss';
 @import '../../app.wxss';
 
 .page {

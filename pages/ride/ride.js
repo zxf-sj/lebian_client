@@ -129,6 +129,8 @@ Page({
     remark: '',
     agree: false,
     isshow: false, //用户须知弹框
+    shShow: false, //城际捎货：用户须知弹框
+    shContrabandShow: false, //城际捎货：禁止寄递物品目录弹框
     // ===== 底部支付方式弹框 =====
     paySheetShow: false,
     payType: 'union', //union=云闪付（默认） wechat=微信
@@ -197,8 +199,6 @@ Page({
     erTotal: 30,
     erAgree: false,
   },
-
-
   onShow() {
     unionPayWatcher.start(); // 兜底：冷启动后仍有待确认的云闪付订单时恢复监听
     // 从 starting2 选完地址返回时，回填上下车地址并重新询价
@@ -236,9 +236,10 @@ Page({
     orderStorage.touchOrderDraft();
 
     // 出发地/目的地/日期由首页 index 页查询带入
-    const from = query.from ? decodeURIComponent(query.from) : this.data.from;
-    const to = query.to ? decodeURIComponent(query.to) : this.data.to;
-
+    const from = decodeURIComponent(query.from);
+    const to = decodeURIComponent(query.to);
+    console.log(from)
+    console.log(to)
     // 可选四天固定以真实今天为基准（今天/明天/后天/第4天），不受传入日期影响
     const base = new Date();
     const dates = this.buildDates(base);
@@ -413,6 +414,59 @@ Page({
       agree: false
     })
   },
+
+  // ===== 城际捎货：用户须知 / 禁止寄递物品目录（同旧版 orderBottom）=====
+  // POST /api/CarPromotion/GetGoodsNotice?ShortCode=Car → { Notice, ContrabandGoods }
+  getGoodsNotice() {
+    if (this._goodsNoticeLoading || this._goodsNoticeDone) return;
+    this._goodsNoticeLoading = true;
+    http.postRequest("/api/CarPromotion/GetGoodsNotice?ShortCode=Car", "", wx.getStorageSync('header'), res => {
+      this._goodsNoticeLoading = false;
+      if (!res || res.code != 0) return;
+      this._goodsNoticeDone = true;
+      const d = res.data || {};
+      const WxParses = require('../../components/wxParse/wxParse.js');
+      WxParses.setImageDomain(BASE_URL);
+      WxParses.wxParse('shContent', 'html', d.Notice || '', this, 5);
+      WxParses.wxParse('contraband', 'html', d.ContrabandGoods || '', this, 5);
+    }, err => {
+      this._goodsNoticeLoading = false;
+      console.log(err)
+    })
+  },
+  // 《用户须知》
+  onShNotice() {
+    this.getGoodsNotice();
+    this.setData({
+      shShow: true
+    });
+  },
+  // 用户须知__同意
+  tongyiSh() {
+    this.setData({
+      erAgree: true,
+      shShow: false
+    });
+  },
+  // 用户须知__取消
+  guanbiSh() {
+    this.setData({
+      shShow: false,
+      erAgree: false
+    });
+  },
+  // 《禁止寄递物品目录》
+  onShContraband() {
+    this.getGoodsNotice();
+    this.setData({
+      shContrabandShow: true
+    });
+  },
+  closeShContraband() {
+    this.setData({
+      shContrabandShow: false
+    });
+  },
   //获取线路Id（cb 在请求结束后执行，供「先拿线路 Id 再取上次地址」的顺序调用）
   getLineId(cb) {
     wx.showLoading({
@@ -420,8 +474,8 @@ Page({
     })
     let _this = this;
     let data = {
-      startId: _this.data.fromId != 'null' ? _this.data.fromId : 2,
-      endId: _this.data.toId != 'null' ? _this.data.toId : 1,
+      startId: _this.data.fromId,
+      endId: _this.data.toId,
       today: _this.data.today
     };
     wx.request({
@@ -816,6 +870,7 @@ Page({
       // 跨城跑腿下的城际捎货需要接口返回的规格与时效
       if (tab === 3 && this.data.errandSub === 0) {
         this.loadCargoOptions();
+        this.getGoodsNotice();
       }
     });
   },

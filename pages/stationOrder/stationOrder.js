@@ -3,20 +3,12 @@ const BASE_URL = require("../../utils/BASE_URL");
 const http = require("../../utils/http.js");
 const orderStorage = require("../../utils/orderStorage.js");
 const unionPayWatcher = require("../../utils/unionPayWatcher.js");
-const dayOrderGuard = require("../../utils/dayOrderGuard.js");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 
 // 儿童字典值（与 userList / addPassenger 一致）
 const CHILD = '100004-0000010001';
 // 单笔订单最多可选乘车人数
 const MAX_PSG = 5;
-
-// 今天（yyyy-MM-dd），历史订单查询的 timeDay 兜底值
-function todayStr() {
-  const d = new Date();
-  const p = (n) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-}
 
 function toCols(name, time, mark, city, locationId, group, img) {
   const [h, m] = time.split(':');
@@ -43,6 +35,12 @@ Page({
     upStations: [],
     downStations: [],
 
+    // 横滑提示（站点纵览 / 乘车人列表）：内容超出一屏时短暂展示
+    showStaTip: false,
+    staScrollLeft: 0,
+    showPsgTip: false,
+    psgScrollLeft: 0,
+
     // 上/下城市：由上级页面 onLoad 传入，未传时给默认占位
     upCity: '文水县',
     downCity: '太原市',
@@ -54,8 +52,8 @@ Page({
     // 选中站点对应时间：上车点=发车时间（StartSiteList），下车点=到达时间（EndSiteList）
     upTime: '',
     downTime: '',
-    upTimeLabel: '发车时间',
-    downTimeLabel: '到达时间',
+    upTimeLabel: '预计发车时间',
+    downTimeLabel: '预计到达时间',
 
     // 站点选择弹层
     staPickShow: false,
@@ -144,7 +142,15 @@ Page({
           });
           const patch = { upStations: upArr, downStations: downArr };
           this._applyDefaultMarks(patch);
-          this.setData(patch);
+          this.setData(patch, () => {
+            this._playSwipeTip({
+              box: '.sta-scroll',
+              each: '.sta-col',
+              tipKey: 'showStaTip',
+              scrollKey: 'staScrollLeft',
+              flag: '_staTipDone',
+            });
+          });
         }
       } catch (e) {}
     }
@@ -172,6 +178,35 @@ Page({
   onShow() {
     // 从新增乘车人页返回后需要刷新列表
     this.getPassengers();
+  },
+
+  // 横滑提示：内容超出一屏时，轻推一下列表并展示提示
+  // opts.each：按子元素逐个累加宽度判断（flex 布局下包裹层宽度恒等于视口，直接比较无效）
+  _playSwipeTip(opts) {
+    if (this[opts.flag]) return;
+    wx.nextTick(() => {
+      const q = wx.createSelectorQuery().in(this);
+      q.select(opts.box).boundingClientRect();
+      if (opts.each) q.selectAll(opts.each).boundingClientRect();
+      else q.select(opts.inner).boundingClientRect();
+      q.exec((res) => {
+        const box = res && res[0];
+        const content = res && res[1];
+        if (!box) return;
+        const contentWidth = opts.each
+          ? (Array.isArray(content) ? content.reduce((sum, r) => sum + (r.width || 0), 0) : 0)
+          : ((content && content.width) || 0);
+        if (!contentWidth || contentWidth <= box.width + 8) return;
+        this[opts.flag] = true;
+        this.setData({ [opts.tipKey]: true });
+        // 先向右轻推再回弹，直观示意可横滑
+        setTimeout(() => {
+          this.setData({ [opts.scrollKey]: 70 });
+          setTimeout(() => this.setData({ [opts.scrollKey]: 0 }), 600);
+        }, 250);
+        setTimeout(() => this.setData({ [opts.tipKey]: false }), 3800);
+      });
+    });
   },
 
   // 支付成功：清草稿并跳订单详情（原代码只调用了这里，但方法没实现）
@@ -219,7 +254,15 @@ Page({
           if (p.selected && picked < MAX_PSG) picked++;
           else p.selected = false;
         });
-        _this.setData({ passengers: list });
+        _this.setData({ passengers: list }, () => {
+          _this._playSwipeTip({
+            box: '.psg-names',
+            inner: '.psg-names-inner',
+            tipKey: 'showPsgTip',
+            scrollKey: 'psgScrollLeft',
+            flag: '_psgTipDone',
+          });
+        });
         _this._recalcPsg();
       } else {
         _this.setData({ passengers: [] });
@@ -285,6 +328,13 @@ Page({
         _this._applyDefaultMarks(patch);
         _this.setData(patch);
         _this._syncStationLabels();
+        _this._playSwipeTip({
+          box: '.sta-scroll',
+          each: '.sta-col',
+          tipKey: 'showStaTip',
+          scrollKey: 'staScrollLeft',
+          flag: '_staTipDone',
+        });
       },
       fail(err) {
         console.error('网络异常:', err);
@@ -349,8 +399,8 @@ Page({
       downLocationId: down ? down.locationId : '',
       upTime: up ? (up.time || '') : '',
       downTime: down ? (down.time || '') : '',
-      upTimeLabel: '发车时间',
-      downTimeLabel: '到达时间',
+      upTimeLabel: '预计发车时间',
+      downTimeLabel: '预计到达时间',
     });
   },
 
@@ -539,8 +589,8 @@ Page({
   },
 
   // 下单（Create）→ 按支付方式拉起支付
-  // 下单前先查当日历史订单（/Api/DispatchMobile/IsUserHaveDayOrder），
-  // 命中时让用户选择「继续下单 / 取消下单」，与旧版 pages/pingche 一致
+  // 下单前先查巴士未完成订单（/api/BusMobile/GetUnfinishedOrder），
+  // 有已付款的未完成订单时仅做提示（同拼车/包车），用户可选择继续下单
   async submitOrder(payType) {
     let _this = this;
     let userinfo = wx.getStorageSync('userInfo') || {};
@@ -553,14 +603,11 @@ Page({
     const PersonalIds = picked
       .map(p => [p.name, p.phone, p.idCard || ''].join('|'))
       .join(',');
-    // 历史订单按乘车人手机号 + 发车日期查（多人手机号用 | 拼接）
-    const phone = dayOrderGuard.joinPhones(picked.map(p => p.phone));
-    const date = (this.data.depTime || '').slice(0, 10) || todayStr();
 
-    // 当日已有订单：先弹「下单记录」，用户选「继续下单」才往下走
+    // 有未完成订单时弹提示，用户选「继续下单」才往下走
     // 注意校验要在 showLoading 之前，否则 loading 的 mask 会盖住弹窗
-    const canContinue = await dayOrderGuard.guardDayOrder(phone, date);
-    if (!canContinue) return;
+    const canOrder = await this._confirmUnfinishedOrder(userinfo.Id);
+    if (!canOrder) return;
 
     wx.showLoading({ title: '下单中...', mask: true });
 
@@ -607,6 +654,48 @@ Page({
         wx.showToast({ title: '网络异常，请稍后重试', icon: 'none' });
       },
     });
+  },
+
+  // 查巴士是否有未完成订单：GET /api/BusMobile/GetUnfinishedOrder?MemberId=
+  // 仅做提示，不阻止下单：有订单时弹「继续下单 / 取消下单」；查询失败直接放行
+  _confirmUnfinishedOrder(memberId) {
+    return new Promise((resolve) => {
+      const url = '/api/BusMobile/GetUnfinishedOrder?MemberId=' + encodeURIComponent(memberId);
+      http.getRequest(url, '', wx.getStorageSync('header'), (res) => {
+        const order = (res && res.code == 0) ? this._pickUnfinishedOrder(res) : null;
+        if (!order) {
+          resolve(true);
+          return;
+        }
+        const orderNo = order.Code || order.OrderNo || order.PassengerOrderNo || '';
+        wx.showModal({
+          title: '下单提示',
+          content: '您有一笔未完成的巴士订单' +
+            (orderNo ? '，订单号为:' + orderNo : '') +
+            '，是否继续下单？',
+          cancelText: '取消下单',
+          confirmText: '继续下单',
+          success: (r) => resolve(!!r.confirm),
+          fail: () => resolve(true)
+        });
+      }, () => {
+        // 查询失败不做拦截，避免影响正常下单
+        resolve(true);
+      });
+    });
+  },
+
+  // 兼容不同返回结构：数组取第一条；对象（含 list/List）有内容即视为有订单
+  _pickUnfinishedOrder(res) {
+    const d = res && res.data;
+    if (!d) return null;
+    if (Array.isArray(d)) return d.length ? (d[0] || {}) : null;
+    if (typeof d === 'object') {
+      const list = Array.isArray(d.List) ? d.List : (Array.isArray(d.list) ? d.list : null);
+      if (list) return list.length ? (list[0] || {}) : null;
+      return Object.keys(d).length ? d : null;
+    }
+    return d ? {} : null;
   },
 
   // 微信支付

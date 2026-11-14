@@ -43,10 +43,10 @@ getCity() {
 },
   onPick(e) {
     const item = e.currentTarget.dataset.item;
-    this.setData({ selected: item.LineName });
+    this.setData({ selected: item.Alias });
     if (this.ec && typeof this.ec.emit === 'function') {
       this.ec.emit('citySelected', {
-        cityName: item.LineName,
+        cityName: item.Alias,
         cityId:item.Id
       });
       // 留一点时间让选中态可见，再返回

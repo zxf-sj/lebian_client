@@ -23,7 +23,7 @@
       <text class="sta-dash-arrow">→</text>
       <text class="sta-dash-arrow">→</text>
     </view>
-    <scroll-view class="sta-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+    <scroll-view class="sta-scroll" scroll-x enhanced show-scrollbar="{{false}}" scroll-left="{{staScrollLeft}}" scroll-with-animation="{{true}}">
       <view class="sta-body">
         <view class="sta-row">
           <!-- 上车点列表（接口 StartSiteList） -->
@@ -66,6 +66,11 @@
         </view>
       </view>
     </scroll-view>
+    <!-- 横滑提示：站点超出一屏时展示，自动消失 -->
+    <view class="swipe-tip" wx:if="{{showStaTip}}">
+      <text class="swipe-tip__txt">左右滑动查看更多</text>
+      <text class="swipe-tip__arrow">›</text>
+    </view>
     <!-- 图例：区分上车点 / 下车点 -->
     <!-- <view class="sta-legend">
       <view class="lg-item"><view class="lg-dot up"></view><text class="lg-txt">上车点 · {{upCity}}</text></view>
@@ -102,7 +107,7 @@
     <view class="psg-head">
       <!-- scroll-view 必须放在定宽容器里：真机上 flex:1 直接作用在 scroll-view 会导致横滑失效 -->
       <view class="psg-names-wrap">
-        <scroll-view class="psg-names" scroll-x enhanced show-scrollbar="{{false}}">
+        <scroll-view class="psg-names" scroll-x enhanced show-scrollbar="{{false}}" scroll-left="{{psgScrollLeft}}" scroll-with-animation="{{true}}">
           <view class="psg-names-inner">
             <view
               wx:for="{{passengers}}" wx:key="id"
@@ -115,6 +120,11 @@
             </view>
           </view>
         </scroll-view>
+        <!-- 横滑提示：乘车人超出一屏时展示，自动消失 -->
+        <view class="swipe-tip" wx:if="{{showPsgTip}}">
+          <text class="swipe-tip__txt">左右滑动查看更多</text>
+          <text class="swipe-tip__arrow">›</text>
+        </view>
       </view>
       <view class="psg-add" bindtap="onAddUser">新增</view>
     </view>
@@ -185,7 +195,7 @@
           data-idx="{{item.idx}}" catchtap="onStaPick"
         >
           <text class="sta-pick-name">{{item.name}}</text>
-          <text class="sta-pick-time" wx:if="{{item.time}}">{{staPickType === 'up' ? '发车时间' : '到达时间'}}{{item.time}}</text>
+          <text class="sta-pick-time" wx:if="{{item.time}}">{{staPickType === 'up' ? '预计发车时间' : '预计到达时间'}}{{item.time}}</text>
         </view>
       </scroll-view>
     </view>

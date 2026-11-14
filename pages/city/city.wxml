@@ -7,7 +7,7 @@
       wx:key="*this"
       bindtap="onPick"
       data-item="{{item}}"
-    >{{item.LineName}}</view>
+    >{{item.Alias}}</view>
   </view>
 </view>
 <kefu-float />

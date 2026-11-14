@@ -9,7 +9,7 @@
     <scroll-view class="img-scroll" scroll-y enhanced show-scrollbar="{{false}}">
       <view class="img-grid" wx:if="{{imgs.length}}">
         <view class="img-item" wx:for="{{imgs}}" wx:key="url" data-idx="{{index}}" bindtap="onImgTap">
-          <image class="img-thumb" src="{{item.url}}" mode="aspectFill" lazy-load></image>
+          <image class="img-thumb" src="{{ item.url}}" mode="aspectFill" lazy-load></image>
           <view class="img-zoom">⤢</view>
         </view>
       </view>

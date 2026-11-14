@@ -1,3 +1,5 @@
+@import '../../styles/wxparse-inline.wxss';
+
 page { background: #f4f6f9; }
 .page { padding: 20rpx 24rpx 0; box-sizing: border-box; }
 

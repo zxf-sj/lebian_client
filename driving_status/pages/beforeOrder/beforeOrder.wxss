@@ -1,3 +1,4 @@
+@import '../../../styles/wxparse-inline.wxss';
 @import '../../../app.wxss';
 
 .page {

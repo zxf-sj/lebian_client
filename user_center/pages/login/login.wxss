@@ -44,7 +44,7 @@ page{
 .logo{
   position: absolute;
   top:15%;
-  left:23%;
+  left:5%;
 }
 .logoimg{
   width:450rpx;

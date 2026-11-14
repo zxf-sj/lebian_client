@@ -6,6 +6,7 @@ Page({
   data: {
     hiddenLoading: false,
     agree:"",
+    BASE_URL:BASE_URL.BASE_URL,
     // avatarUrl: defaultAvatarUrl,
     // nickname:"",
     // headurl:''

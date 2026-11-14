@@ -1,3 +1,5 @@
+@import '../../../styles/wxparse-inline.wxss';
+
 /* user_center/pages/baoche/baoche.wxss */
 page {
 	width: 100%;

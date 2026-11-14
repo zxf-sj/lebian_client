@@ -1,9 +1,18 @@
 // pages/stationDetail/stationDetail.js  站点详情：上 6 图片列表 / 下 4 地图导航
 const http = require("../../utils/http.js");
+const BASE_URL = require("../../utils/BASE_URL");
 
-// 站点图片列表接口：返回 data 为数组（元素可为图片地址字符串，或含 Img/Image/Url/PicUrl 的对象）
-// 若后端接口名/参数不同，只改这两行即可
-const SITE_IMG_API = '/api/BusMobile/GetSiteImgList';
+var baseUrl = BASE_URL.BASE_URL;
+
+// 站点详情接口：GET /api/BusMobile/GetLocationInfo?Id=
+const DETAIL_API = '/api/BusMobile/GetLocationInfo';
+
+// 图片地址补全：后端返回相对路径（/wxImg/xxx.jpg），小程序 image 需完整地址
+function fullImg(p) {
+  if (!p) return '';
+  if (/^(https?:)?\/\//i.test(p) || /^data:/i.test(p)) return p;
+  return baseUrl + (p.charAt(0) === '/' ? p : '/' + p);
+}
 
 // 导航方式：appId 有值时直接拉起对应地图小程序；留空时用系统地图（wx.openLocation，
 // 由系统/微信内置地图选择已安装的高德、百度、腾讯地图进行导航）
@@ -59,13 +68,13 @@ Page({
       lat,
       lng,
       hasStationPos: !!(lat && lng),
-      imgs: passedImgs.map((url) => ({ url })),
+      imgs: passedImgs.map((url) => ({ url: fullImg(url) })),
       latitude: lat || this.data.latitude,
       longitude: lng || this.data.longitude,
     });
     wx.setNavigationBarTitle({ title: dec(options.name) || '站点详情' });
 
-    this._loadImgs();
+    this._loadDetail();
     this._initMap();
   },
 
@@ -74,37 +83,47 @@ Page({
     this._fitPoints();
   },
 
-  // 站点图片列表：有 LocationId 时以接口数据为准，接口无数据则保留上级页面带来的图片
-  _loadImgs() {
-    const locationId = this.data.locationId;
-    if (!locationId) return;
+  // 站点详情：GET /api/BusMobile/GetLocationInfo?Id=
+  _loadDetail() {
+    const id = this.data.locationId;
+    if (!id) return;
     http.getRequest(
-      SITE_IMG_API + '?LocationId=' + encodeURIComponent(locationId),
+      DETAIL_API + '?Id=' + encodeURIComponent(id),
       '',
       wx.getStorageSync('header'),
       (res) => {
-        const list = this._normalizeImgs(res && res.data);
-        if (list.length) this.setData({ imgs: list });
+        const d = (res && res.data) || null;
+        if (!d) return;
+
+        const lat = Number(d.Latitude) || 0;
+        const lng = Number(d.Longitude) || 0;
+        const imgs = (d.ImgList || [])
+          .map((it) => ({ url: fullImg(it.ImgPath) }))
+          .filter((x) => x.url);
+
+        const patch = {
+          name: d.LocationName || '',
+          address: d.DetailAddress || '',
+          lat,
+          lng,
+          hasStationPos: !!(lat && lng),
+          imgs,
+        };
+        if (lat && lng) {
+          patch.latitude = lat;
+          patch.longitude = lng;
+        }
+
+        this.setData(patch, () => {
+          wx.setNavigationBarTitle({ title: d.LocationName || '站点详情' });
+          // 坐标变化后刷新地图标注
+          const myLat = this._myLat || 0;
+          const myLng = this._myLng || 0;
+          this._applyMarkers(myLat, myLng, !(myLat && myLng));
+        });
       },
       () => {}
     );
-  },
-
-  // 兼容多种返回结构：数组 / { List|ImgList|SiteImgList|rows|Images: [] }，元素为字符串或对象
-  _normalizeImgs(data) {
-    let arr = data;
-    if (arr && !Array.isArray(arr)) {
-      arr = arr.List || arr.ImgList || arr.SiteImgList || arr.Images || arr.rows || [];
-    }
-    if (!Array.isArray(arr)) return [];
-    return arr
-      .map((it) => {
-        if (typeof it === 'string') return { url: it };
-        return {
-          url: (it && (it.Img || it.Image || it.Url || it.PicUrl || it.SiteImg || it.Path)) || '',
-        };
-      })
-      .filter((x) => x.url);
   },
 
   // 图片点击：全屏放大，可左右滑动查看全部
@@ -123,6 +142,8 @@ Page({
     wx.getLocation({
       type: 'gcj02',
       success: (res) => {
+        this._myLat = res.latitude;
+        this._myLng = res.longitude;
         this._applyMarkers(res.latitude, res.longitude, false);
       },
       fail: () => {

@@ -3,6 +3,7 @@ page { background: #f4f6f9; }
 
 /* ===== 顶部站点纵览 ===== */
 .sta-wrap {
+  position: relative;
   background: #fff;
   border-radius: 16rpx;
   padding: 24rpx 10rpx 20rpx;
@@ -205,6 +206,7 @@ page { background: #f4f6f9; }
 }
 /* 定宽包裹层：scroll-view 宽度由它决定，真机才能正常横滑 */
 .psg-names-wrap {
+  position: relative;
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -551,3 +553,35 @@ page { background: #f4f6f9; }
   background: linear-gradient(180deg, rgba(253, 209, 0, 1) 0%, rgba(240, 135, 24, 1) 100%);
   color: #fff; font-size: 32rpx; border-radius: 20rpx;
 }
+
+/* ===== 横滑提示：与 pages/ride 热门站点一致 ===== */
+.swipe-tip {
+  position: absolute;
+  right: 8rpx;
+  bottom: 12rpx;
+  display: flex;
+  align-items: center;
+  padding: 6rpx 18rpx;
+  border-radius: 24rpx;
+  background: rgba(26, 26, 26, 0.7);
+  animation: swipeTipIn 0.25s ease both;
+  pointer-events: none;
+  z-index: 5;
+}
+.swipe-tip__txt { font-size: 22rpx; color: #fff; }
+.swipe-tip__arrow {
+  font-size: 26rpx;
+  line-height: 1;
+  color: #fff;
+  margin-left: 6rpx;
+  animation: swipeTipArrow 0.9s ease-in-out infinite;
+}
+@keyframes swipeTipIn {
+  from { opacity: 0; transform: translateX(20rpx); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes swipeTipArrow {
+  0%, 100% { transform: translateX(0); opacity: 1; }
+  50% { transform: translateX(6rpx); opacity: 0.6; }
+}
+

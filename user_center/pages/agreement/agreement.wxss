@@ -1,3 +1,5 @@
+@import '../../../styles/wxparse-inline.wxss';
+
 page {
   background-color: #F5F5F5;
 }

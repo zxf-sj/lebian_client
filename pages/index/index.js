@@ -8,9 +8,9 @@ var baseUrl = BASE_URL.BASE_URL //配置基础url
 Page({
   data: {
     fromCity: '孝义',
-    fromCityId: null,
+    fromCityId: 2,
     toCity: '太原',
-    toCityId: null,
+    toCityId: 1,
     date: '',
     dateLabel: '',
     dateStart: '',
@@ -24,6 +24,20 @@ Page({
   // 下单成功的清理由各下单页在支付成功回调里做，这里兜底「中途返回不下单」的场景。
   onShow() {
     orderStorage.clearOrderDraft();
+    // this.saveCity()
+    // 从城市选择页返回时，以 onPickCity 的回传值为准，不用缓存覆盖
+    if (this._fromCityPicker) {
+      this._fromCityPicker = false;
+      return;
+    }
+    let city_record = wx.getStorageSync('city_record')
+    if (!city_record || !city_record.fromCity) return;
+    this.setData({
+      fromCity: city_record.fromCity,
+      fromCityId: city_record.fromCityId,
+      toCity: city_record.toCity,
+      toCityId: city_record.toCityId,
+    })
   },
 
   onLoad() {
@@ -99,6 +113,9 @@ Page({
 
   onPickCity(e) {
     const type = e.currentTarget.dataset.type;
+    console.log(type)
+    // 标记本次是从城市选择页返回，onShow 不再用缓存覆盖
+    this._fromCityPicker = true;
     wx.navigateTo({
       url: `/pages/city/city?from=${type}&current=${type === 'from' ? this.data.fromCity : this.data.toCity}`,
       events: {
@@ -124,9 +141,12 @@ Page({
   },
 
   onSwap() {
+    
     this.setData({
       fromCity: this.data.toCity,
+      fromCityId:this.data.toCityId,
       toCity: this.data.fromCity,
+      toCityId:this.data.fromCityId,
       selectedKey: '',
     });
     this.saveCity();
@@ -162,6 +182,8 @@ Page({
 
   onSearch() {
     // 出发地与目的地相同不允许查询
+    console.log(this.data.fromCity)
+    console.log(this.data.toCity)
     if (this.data.fromCity === this.data.toCity) {
       wx.showToast({
         title: '出发地和目的地不能相同',
@@ -176,6 +198,13 @@ Page({
       'toId=' + this.data.toCityId,
       'date=' + this.data.date,
     ].join('&');
+    let city_record = {
+      fromCity: this.data.fromCity,
+    fromCityId: this.data.fromCityId,
+    toCity: this.data.toCity,
+    toCityId: this.data.toCityId,
+    }
+    wx.setStorageSync('city_record', city_record)
     wx.navigateTo({
       url: '/pages/ride/ride?' + query,
     });
