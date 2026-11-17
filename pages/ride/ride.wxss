@@ -164,20 +164,47 @@ page { background: #f4f6f9; }
   width: 2rpx;
   background: #c3cede;
 }
-.st-stop { position: relative; display: flex; align-items: center; }
-.st-dot { width: 20rpx; height: 20rpx; border-radius: 50%; margin-right: 16rpx; flex-shrink: 0; }
+.st-stop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 36rpx;
+  min-height: 36rpx;
+}
+.st-dot {
+  position: absolute;
+  left: 0;
+  top: 8rpx;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
 .st-dot.blue { background: #2ba9e8; }
 .st-dot.red { background: #e64340; }
-.st-stop-name { font-size: 28rpx; font-weight: 700; color: #1a1a1a; }
-/* 线路名称：起点站名称右侧 */
+/* 站名：单行省略，防止过长把右侧挤爆 */
+.st-stop-name {
+  width: 100%;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 线路名称：站名下方独立一行 */
 .st-stop-line {
-  margin-left: 16rpx;
+  margin-top: 6rpx;
   padding: 2rpx 12rpx;
   font-size: 22rpx;
   color: #2ba9e8;
   background: #e8f4fd;
   border-radius: 6rpx;
-  flex-shrink: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* 途经站点：强制一行横向排列（inline-block + nowrap），超出可左右滑动 */

@@ -43,6 +43,8 @@ Page({
 
     // 图片列表：[{ url }]
     imgs: [],
+    // 轮播当前索引（角标 1/N）
+    currentImg: 0,
 
     // 地图
     latitude: 39.908823,
@@ -126,6 +128,11 @@ Page({
     );
   },
 
+  // 轮播切换：更新角标
+  onSwiperChange(e) {
+    this.setData({ currentImg: e.detail.current || 0 });
+  },
+
   // 图片点击：全屏放大，可左右滑动查看全部
   onImgTap(e) {
     const idx = Number(e.currentTarget.dataset.idx);
@@ -153,11 +160,31 @@ Page({
     });
   },
 
-  _applyMarkers(myLat, myLng, noLoc) {
+  // 我的位置：重新获取定位，并把地图移回我的位置
+  onLocateTap() {
+    wx.showLoading({ title: '定位中', mask: true });
+    wx.getLocation({
+      type: 'gcj02',
+      success: (res) => {
+        wx.hideLoading();
+        this._myLat = res.latitude;
+        this._myLng = res.longitude;
+        this._applyMarkers(res.latitude, res.longitude, false, 'me');
+      },
+      fail: () => {
+        wx.hideLoading();
+        wx.showToast({ title: '定位失败，请检查定位权限', icon: 'none' });
+      },
+    });
+  },
+
+  // center: 'fit'（默认，两点都在视野内）| 'me'（以我的位置为中心）
+  _applyMarkers(myLat, myLng, noLoc, center) {
     const { lat, lng, name, hasStationPos } = this.data;
     const markers = [];
+    const hasMe = !noLoc && myLat && myLng;
 
-    if (!noLoc && myLat && myLng) {
+    if (hasMe) {
       markers.push({
         id: 1,
         latitude: myLat,
@@ -197,14 +224,28 @@ Page({
     }
 
     const patch = { markers };
-    if (hasStationPos) {
+    if (center === 'me' && hasMe) {
+      patch.latitude = myLat;
+      patch.longitude = myLng;
+      patch.scale = 17;
+    } else if (hasStationPos) {
       patch.latitude = lat;
       patch.longitude = lng;
-    } else if (myLat && myLng) {
+    } else if (hasMe) {
       patch.latitude = myLat;
       patch.longitude = myLng;
     }
-    this.setData(patch, () => this._fitPoints());
+
+    this.setData(patch, () => {
+      if (center === 'me' && hasMe) {
+        // 部分机型定位图层跟随后需要 moveToLocation 才能真正回到当前位置
+        if (this.mapCtx && this.mapCtx.moveToLocation) {
+          this.mapCtx.moveToLocation({ latitude: myLat, longitude: myLng });
+        }
+        return;
+      }
+      this._fitPoints();
+    });
   },
 
   // 让两个点都在可视范围内
