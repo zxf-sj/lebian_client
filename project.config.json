@@ -42,7 +42,7 @@
     "disableSWC": true
   },
   "compileType": "miniprogram",
-  "appid": "wx32762e377aa4adf6",
+  "appid": "wx0ad634bd7eeb5bc8",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {
     "wxext14566970e7e9f62": "2.27.3"

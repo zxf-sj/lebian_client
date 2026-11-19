@@ -1,8 +1,133 @@
 @import '../../../styles/wxparse-inline.wxss';
 
 page {
-  background-color: #F5F5F5;
+  background-color: #f5f6f8;
 }
-.wxParse{
-  padding: 20rpx 20rpx;
+
+/* 正文外层：留白 + 底部安全间距，内容以白色卡片承载 */
+.gywm {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 24rpx 24rpx calc(60rpx + env(safe-area-inset-bottom));
+}
+
+.wxParse {
+  box-sizing: border-box;
+  padding: 44rpx 36rpx;
+  background-color: #fff;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.04);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 30rpx;
+  line-height: 1.9;
+  letter-spacing: 1rpx;
+  color: #2b2f36;
+  word-break: break-all;
+}
+
+/* ===== 标题层级 ===== */
+.wxParse-h1 {
+  margin: 0 0 32rpx;
+  font-size: 40rpx;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #1f2329;
+  text-align: center;
+}
+
+.wxParse-h2 {
+  margin: 44rpx 0 20rpx;
+  padding-left: 18rpx;
+  border-left: 6rpx solid #0d88d0;
+  font-size: 34rpx;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #1f2329;
+}
+
+/* 服务端文档用 h2 作首行大标题：居中、去掉竖条 */
+.wxParse > .wxParse-h2:first-child {
+  margin: 0 0 36rpx;
+  padding-left: 0;
+  border-left: none;
+  font-size: 40rpx;
+  text-align: center;
+}
+
+.wxParse-h3 {
+  margin: 32rpx 0 16rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 1.6;
+  color: #1f2329;
+}
+
+.wxParse-h4,
+.wxParse-h5,
+.wxParse-h6 {
+  margin: 24rpx 0 12rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 1.6;
+  color: #1f2329;
+}
+
+/* ===== 段落与行内元素 ===== */
+.wxParse-p {
+  margin: 0 0 24rpx;
+}
+
+.wxParse-p:last-child {
+  margin-bottom: 0;
+}
+
+.wxParse-strong,
+.wxParse-b {
+  font-weight: 600;
+  color: #1f2329;
+}
+
+.wxParse-a {
+  color: #0d88d0;
+}
+
+.wxParse-em,
+.wxParse-i {
+  font-style: italic;
+}
+
+/* ===== 列表 ===== */
+.wxParse-li {
+  margin: 12rpx 0;
+}
+
+.wxParse-li-text {
+  line-height: 1.9;
+}
+
+.wxParse-li-circle {
+  width: 10rpx;
+  height: 10rpx;
+  margin: 24rpx 14rpx 0 0;
+  border-radius: 50%;
+  background-color: #0d88d0;
+  flex-shrink: 0;
+}
+
+/* ===== 图片 ===== */
+.wxParse-img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 24rpx auto;
+  border-radius: 12rpx;
+}
+
+/* ===== 表格：窄屏下按比例收缩，避免撑破卡片 ===== */
+.wxParse-table {
+  width: 100%;
+  margin: 24rpx 0;
+  font-size: 26rpx;
+  line-height: 1.7;
+  border-collapse: collapse;
 }

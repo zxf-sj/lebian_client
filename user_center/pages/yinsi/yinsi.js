@@ -21,7 +21,13 @@ Page({
     // 3.data为传入的具体数据(必填)
     // 4.target为Page对象, 一般为this(必填)
     // 5.imagePadding为当图片自适应是左右的单一padding(默认为0, 可选)
-    var content = res.data.PrivacyPolicy;
+    // 服务端富文本自带行内 style（Tahoma 字体、px 字号、灰色字等）会覆盖页面排版，
+    // 去掉后统一由页面样式控制字体；同时清掉制表符与首尾空白，避免段落前出现莫名缩进
+    var content = (res.data.PrivacyPolicy || '')
+      .replace(/\sstyle\s*=\s*("[^"]*"|'[^']*')/gi, '')
+      .replace(/<\/?font[^>]*>/gi, '')
+      .replace(/\t+/g, '')
+      .trim();
     const WxParses = require('../../../components/wxParse/wxParse.js');
     WxParses.setImageDomain(BASE_URL);
     WxParses.wxParse('content', 'html', content, that, 5);

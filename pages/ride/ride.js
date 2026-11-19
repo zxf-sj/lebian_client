@@ -4,6 +4,7 @@ const BASE_URL = require("../../utils/BASE_URL");
 const throttle = require('../../utils/throttle.js').throttle;
 const http = require('../../utils/http.js');
 const orderStorage = require('../../utils/orderStorage.js');
+const auth = require('../../utils/auth.js');
 const unionPayWatcher = require('../../utils/unionPayWatcher.js');
 const dayOrderGuard = require('../../utils/dayOrderGuard.js');
 var baseUrl = BASE_URL.BASE_URL //配置基础url
@@ -234,6 +235,8 @@ Page({
     console.log('query', query)
     // 进入下单流程，记录草稿时间（用于冷启动清理超时草稿）
     orderStorage.touchOrderDraft();
+    // 未登录统一提示（如 文水→太原 只有巴士线路，不会有带 MemberId 的请求触发请求守卫，需在这里主动引导）
+    if (!auth.isLogin()) auth.requireLogin();
 
     // 出发地/目的地/日期由首页 index 页查询带入
     const from = decodeURIComponent(query.from);

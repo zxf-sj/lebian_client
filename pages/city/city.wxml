@@ -2,9 +2,9 @@
 <view class="page">
   <view class="grid">
     <view
-      class="item {{item === selected ? 'on' : ''}}"
+      class="item {{item.Alias === selected ? 'on' : ''}} {{item.IsOpen ? '' : 'IsOpen'}}"
       wx:for="{{cities}}"
-      wx:key="*this"
+      wx:key="Id"
       bindtap="onPick"
       data-item="{{item}}"
     >{{item.Alias}}</view>

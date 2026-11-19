@@ -32,3 +32,6 @@ page { background: #f4f6f9; }
   color: #fff;
   box-shadow: 0 6rpx 16rpx rgba(43,169,232,.35);
 }
+.IsOpen {
+  background-color: #999;
+}

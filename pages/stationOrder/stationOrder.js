@@ -2,6 +2,7 @@
 const BASE_URL = require("../../utils/BASE_URL");
 const http = require("../../utils/http.js");
 const orderStorage = require("../../utils/orderStorage.js");
+const auth = require("../../utils/auth.js");
 const unionPayWatcher = require("../../utils/unionPayWatcher.js");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 
@@ -530,6 +531,11 @@ Page({
 
   // 新增乘车人：带上行程上下文，addPassenger 页以纯文字展示
   onAddUser() {
+    // 未登录不进入新增乘车人页，先引导登录
+    if (!auth.isLogin()) {
+      auth.requireLogin();
+      return;
+    }
     const d = this.data;
     const params = [
       'upCity=' + encodeURIComponent(d.upCity || ''),

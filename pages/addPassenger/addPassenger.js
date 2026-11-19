@@ -1,5 +1,6 @@
 // pages/addPassenger/addPassenger.js  新增乘车人
 const http = require('../../utils/http.js');
+const auth = require('../../utils/auth.js');
 
 // 儿童字典值（与旧版 addUser2 / userList 保持一致）
 const CHILD = '100004-0000010001';
@@ -83,11 +84,19 @@ Page({
       wx.showToast({ title: '请输入正确的手机号', icon: 'none' });
       return;
     }
-    const userinfo = wx.getStorageSync('userInfo');
-    if (!userinfo || !userinfo.Id) {
-      wx.showToast({ title: '请先登录', icon: 'none' });
+    if (!auth.isLogin()) {
+      wx.showModal({
+        title: '提示',
+        content: '保存乘车人需先登录，是否现在去登录？',
+        confirmText: '确定',
+        cancelText: '取消',
+        success(res) {
+          if (res.confirm) auth.gotoLogin();
+        }
+      });
       return;
     }
+    const userinfo = auth.getUserInfo();
 
     // 对接旧版同款接口：GET /Api/Mobile/AddressEdit（中文需转码，避免参数被截断）
     let url = '/Api/Mobile/AddressEdit?MemberId=' + userinfo.Id

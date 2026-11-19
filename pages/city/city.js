@@ -43,6 +43,9 @@ getCity() {
 },
   onPick(e) {
     const item = e.currentTarget.dataset.item;
+    if(!item.IsOpen) {
+      return false
+    }
     this.setData({ selected: item.Alias });
     if (this.ec && typeof this.ec.emit === 'function') {
       this.ec.emit('citySelected', {
