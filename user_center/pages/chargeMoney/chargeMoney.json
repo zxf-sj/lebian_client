@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "余额充值",
-  "usingComponents": {
-    "kefu-float": "/components/kefu-float/kefu-float"
-  }
-}

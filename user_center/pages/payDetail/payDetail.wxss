@@ -517,3 +517,25 @@ page {
   height: 6rpx;
   z-index: 1;
 }
+
+/* 返程订单：去程 / 返程线路 */
+.GoLine {
+  flex: 1;
+  text-align: center;
+  color: #328944;
+}
+.GoLineName {
+  flex: 1;
+  text-align: center;
+  color: #328944;
+}
+.RoundLine {
+  flex: 1;
+  text-align: center;
+  color: #FF8008;
+}
+.RoundLineName {
+  flex: 1;
+  text-align: center;
+  color: #FF8008;
+}

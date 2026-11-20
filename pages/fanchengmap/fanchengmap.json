@@ -1,7 +1,6 @@
 {
   "usingComponents": {
     "information": "/components/information/information",
-    "distanceNav": "/components/distanceNav/distanceNav",
     "mp-dialog": "weui-miniprogram/dialog/dialog",
     "remarks": "/components/remarks/remarks",
     "slideCoupon": "/components/slideCoupon/slideCoupon",

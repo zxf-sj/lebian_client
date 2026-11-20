@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "等待应答",
-  "usingComponents": {
-    "daohang": "/components/daohang/daohang",
-    "kefu-float": "/components/kefu-float/kefu-float"
-  }
-}

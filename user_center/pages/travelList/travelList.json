@@ -5,7 +5,6 @@
   "navigationBarTextStyle": "black",
   "enablePullDownRefresh": true,
   "usingComponents": {
-    "daohang": "/components/daohang/daohang",
     "custom-input-modal": "/components/custom-input-modal/custom-input-modal",
     "tabbar": "/components/tabbar/tabbar",
     "kefu-float": "/components/kefu-float/kefu-float"

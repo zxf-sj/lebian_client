@@ -277,7 +277,7 @@ Page({
                       console.log('支付成功')
                       setTimeout(function () {
                         wx.reLaunch({
-                          url: '/user_center/pages/payDetail3/payDetail3?orderId=' + ress.count + "&from=orderList"
+                          url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.count + "&biz=roundTrip&from=orderList"
                         })
                       }, 1000)
                     }
@@ -291,7 +291,7 @@ Page({
                   wx.removeStorageSync('to_ending')
                   setTimeout(function () {
                     wx.reLaunch({
-                      url: '/user_center/pages/payDetail3/payDetail3?orderId=' + ress.count + "&from=orderList"
+                      url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.count + "&biz=roundTrip&from=orderList"
                     })
                   }, 1000)
                 }

@@ -220,7 +220,7 @@ Page({
       confirmText: '我知道了',
       success: () => {
         wx.reLaunch({
-          url: `/user_center/pages/payDetail2/payDetail2?orderId=${orderId}&from=orderList`
+          url: `/user_center/pages/payDetail/payDetail?orderId=${orderId}&biz=bus&from=orderList`
         });
       }
     });
@@ -733,7 +733,7 @@ Page({
               console.log('支付失败', err);
               setTimeout(() => {
                 wx.reLaunch({
-                  url: `/user_center/pages/payDetail2/payDetail2?orderId=${orderId}&from=orderList`
+                  url: `/user_center/pages/payDetail/payDetail?orderId=${orderId}&biz=bus&from=orderList`
                 });
               }, 1000);
             }
@@ -783,7 +783,7 @@ Page({
                 success(r) {
                   if (r.confirm) {
                     wx.reLaunch({
-                      url: `/user_center/pages/payDetail2/payDetail2?orderId=${orderId}&from=orderList`
+                      url: `/user_center/pages/payDetail/payDetail?orderId=${orderId}&biz=bus&from=orderList`
                     });
                   }
                 }

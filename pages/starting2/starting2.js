@@ -515,12 +515,8 @@ Page({
           wx.setStorageSync('endInfo2', newStarInfo);
         }
         wx.hideLoading()
-        // 原 type=='pc' 跳转的 pingche2、type=='sh' 跳转的 shaohuo 页已下线，分支移除
-        if (that.data.type == 'bc') {
-          wx.reLaunch({
-            url: '/user_center/pages/baoche/baoche',
-          })
-        } else if (that.data.type == 'ly' ) {
+        // 原 type=='pc' 跳转的 pingche2、type=='sh' 跳转的 shaohuo、type=='bc' 的旧版包车页已下线，分支移除
+        if (that.data.type == 'ly' ) {
           if (that.data.direction == 'starting') {
             var BMap = new bmap.BMapWX({
               // ak: 'MnTm62X4dihvBjjN0FBtlgFkG0kTHpAx'

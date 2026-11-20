@@ -1,11 +1,33 @@
 // pages/payDetail/payDetail.js
+// 统一支付详情页：biz = car（专车/拼车/包车，默认）| bus（大巴）| roundTrip（返程）
 import http from '../../../utils/http';
 import qqmapsdk from '../../../libs/qqMap';
 const BASE_URL = require("../../../utils/BASE_URL");
 var baseUrl = BASE_URL.BASE_URL //配置基础url
 var app = getApp();
+
+// 各业务对应的接口配置
+const BIZ_API = {
+  car: {
+    detailUrl: '/Api/DispatchMobile/GetOrderInfo',
+    payUrl: '/Api/DispatchMobile/GoUnionPayOrderRide',
+    refundUrl: '/Api/DispatchMobile/UnionPayRefundOrder'
+  },
+  bus: {
+    detailUrl: '/api/BusMobile/GetOrderInfo',
+    payUrl: '/api/BusMobile/GoUnionOrderPay',
+    refundUrl: '/api/BusMobile/UnionPayRefundOrder'
+  },
+  roundTrip: {
+    detailUrl: '/api/CarPromotion/RoundTripOrderInfo',
+    payUrl: '/api/CarPromotion/GoRoundTripOrderPay',
+    refundUrl: '/api/BusMobile/UnionPayRefundOrder'
+  }
+};
+
 Page({
   data: {
+    biz: 'car', // car | bus | roundTrip
     isClosed: false,
     startAddress: '',
     endAddress: '',
@@ -62,6 +84,10 @@ Page({
    */
   onLoad: function (options) {
     var orderId = options.orderId;
+    var biz = options.biz;
+    if (biz !== 'bus' && biz !== 'roundTrip') {
+      biz = 'car';
+    }
     if (options.from && options.from === 'orderList') {
       wx.setNavigationBarTitle({
         title: '订单详情',
@@ -74,6 +100,7 @@ Page({
     this.setData({
       userinfoId: userinfo.Id,
       orderId: orderId,
+      biz: biz,
       httpsUrl: app.globalData.httpsUrl
     })
   },
@@ -83,12 +110,19 @@ Page({
         pay_btn:false
       })
     }, 10000);
-    this.getOrderInfo();
-    this.getOrderInfo2()
+    if (this.data.biz === 'roundTrip') {
+      this.getRoundTripOrderInfo();
+    } else if (this.data.biz === 'bus') {
+      this.getBusOrderInfo();
+    } else {
+      this.getOrderInfo();
+      this.getBusOrderInfo();
+    }
     this.getSijiLocation();
   },
   onUnload() {
-    this.clearTimer();
+    clearInterval(this.data.timer);
+    clearInterval(this.data.Interval);
   },
   clearTimer() {
     if (this.data.timer) {
@@ -168,132 +202,104 @@ Page({
       steps
     });
   },
-  getOrderInfo2() {
+  /**
+   * 大巴订单详情
+   */
+  getBusOrderInfo() {
     var userinfo = wx.getStorageSync('userInfo');
     var orderId = this.data.orderId;
     let data = {
       Personal: userinfo.Id,
       Id: orderId
     }
-    if (orderId) {
-      http.postRequest('/api/BusMobile/GetOrderInfo', data, '', res => {
-        if (res.code == 0) {
-          // res.data.ArrivalTime = this.getNewtime(res.data.ArrivalTime);
-          let datass = []
-          if (res.data.OrderStatus_Name == "未派单") {
-            datass = [{
-                label: '下单成功',
-                status: 'done'
-              }, //  done  current  pending
-              {
-                label: '已派单',
-                status: 'pending'
-              },
-              {
-                label: '接送中',
-                status: 'pending'
-              },
-              {
-                label: '已完成',
-                status: 'pending'
-              }
-            ]
-          } else if (res.data.OrderStatus_Name == "已派单") {
-            datass = [{
-                label: '下单成功',
-                status: 'done'
-              }, //  done  current  pending
-              {
-                label: '已派单',
-                status: 'done'
-              },
-              {
-                label: '接送中',
-                status: 'pending'
-              },
-              {
-                label: '已完成',
-                status: 'pending'
-              }
-            ]
-          } else if (res.data.OrderStatus_Name == "已上车" || res.data.FormState_Name == "已下车") {
-            datass = [{
-                label: '下单成功',
-                status: 'done'
-              }, //  done  current  pending
-              {
-                label: '已派单',
-                status: 'done'
-              },
-              {
-                label: '接送中',
-                status: 'done'
-              },
-              {
-                label: '已完成',
-                status: 'pending'
-              }
-            ]
-          } else if (res.data.OrderStatus_Name == "完成") {
-            datass = [{
-                label: '下单成功',
-                status: 'done'
-              }, //  done  current  pending
-              {
-                label: '已派单',
-                status: 'done'
-              },
-              {
-                label: '接送中',
-                status: 'done'
-              },
-              {
-                label: '已完成',
-                status: 'done'
-              }
-            ]
-          }
-          // if(res.data.Note != null) {
-          //   this.setData({
-          //     note:res.data.Note.split('-')[0]
-          //   })
-          // }
-          console.log(res.data)
-          this.setData({
-            // count:count,
-            detailData: res.data,
-            steps: datass,
-            orderTime: res.data.CreateDate,
-            arrivalTime: res.data.ArrivalTime,
-            driver_name: res.data.DispatchListId_DriverId_Name != null ? res.data.DispatchListId_DriverId_Name.slice(0, 1) : '',
-            driver_phone: res.data.DispatchListId_DriverId_Phone
-          })
-          // this.startCountdown()
-          //if(res.data.FormState=='100004-0001020006'){
-          this.setData({
-            showHid: true
-          })
-          
-          var data = {};
-          data = {
-            'srcLat': res.data.StatingLocation_lat,
-            'srcLng': res.data.StatingLocation_lng,
-            'desLat': res.data.EndLocation_lat,
-            'desLng': res.data.EndLocation_lng,
-          };
-          this.setData({
-            datas: data,
-            driverInfo: res.data,
-            carId: res.data.DispatchListId_CarDirId,
-            formTypeState: res.data.FormState
-          })
-          this.getLine();
-        }
-        //}
-      }, err => {
-        console.log(err)
+    if (!orderId) {
+      return;
+    }
+    this.mapCtx = wx.createMapContext("map");
+    http.postRequest(BIZ_API.bus.detailUrl, data, '', res => {
+      if (res.code != 0) {
+        return;
+      }
+      var detail = res.data || {};
+      this.setData({
+        detailData: detail,
+        orderTime: detail.CreateDate,
+        arrivalTime: detail.ArrivalTime,
+        driver_name: detail.DispatchListId_DriverId_Name != null ? detail.DispatchListId_DriverId_Name.slice(0, 1) : '',
+        driver_phone: detail.DispatchListId_DriverId_Phone,
+        showHid: true,
+        datas: {
+          srcLat: detail.StatingLocation_lat,
+          srcLng: detail.StatingLocation_lng,
+          desLat: detail.EndLocation_lat,
+          desLng: detail.EndLocation_lng
+        },
+        driverInfo: detail,
+        carId: detail.DispatchListId_CarDirId,
+        formTypeState: detail.FormState
+      })
+      this.drawBusLine(detail);
+    }, err => {
+      console.log(err)
+    })
+  },
+  /**
+   * 大巴订单路线图（优先使用详情接口返回的路线，没有则只标记起终点）
+   */
+  drawBusLine(detail) {
+    var points = [{
+      latitude: parseFloat(detail.StatingLocation_lat),
+      longitude: parseFloat(detail.StatingLocation_lng)
+    }, {
+      latitude: parseFloat(detail.EndLocation_lat),
+      longitude: parseFloat(detail.EndLocation_lng)
+    }];
+    var routes = detail.MapResponse && detail.MapResponse.Result && detail.MapResponse.Result.Routes;
+    if (routes && routes.length) {
+      var datas = routes[0];
+      var arr = datas.Steps || [];
+      var pl = [];
+      for (var i = 0; i < arr.length; i++) {
+        pl.push({
+          latitude: arr[i].StartLocation.lat,
+          longitude: arr[i].StartLocation.lng
+        })
+      }
+      this.setData({
+        polyline: [{
+          points: pl,
+          color: '#4dd08b',
+          width: 4,
+          arrowLine: true
+        }],
+        yjTimes: (datas.duration / 60).toFixed(2),
+        countLen: (datas.distance / 1000).toFixed(2)
       })
     }
+    this.mapCtx.includePoints({
+      padding: [120],
+      points: points,
+    })
+  },
+  /**
+   * 返程订单详情
+   */
+  getRoundTripOrderInfo() {
+    var orderId = this.data.orderId;
+    if (!orderId) {
+      return;
+    }
+    http.getRequest(BIZ_API.roundTrip.detailUrl, {
+      Id: orderId
+    }, '', res => {
+      if (res.code == 0) {
+        this.setData({
+          detailData: res.data
+        })
+      }
+    }, err => {
+      console.log(err)
+    })
   },
   getOrderInfo() {
     var userinfo = wx.getStorageSync('userInfo');
@@ -303,7 +309,7 @@ Page({
       Id: orderId
     }
     if (orderId) {
-      http.postRequest('/Api/DispatchMobile/GetOrderInfo', data, '', res => {
+      http.postRequest(BIZ_API.car.detailUrl, data, '', res => {
         if (res.code == 0) {
           res.data.ArrivalTime = this.getNewtime(res.data.ArrivalTime);
           let datass = []
@@ -497,26 +503,30 @@ Page({
       content: '确定取消订单吗',
       success: function (res) {
         if (res.confirm) { //这里是点击了确定以后
-          // http.getRequest("/Api/DispatchMobile/OrderCancel?formTypeId="+wx.getStorageSync('FormTypeId')+"&id="+orderId, '', wx.getStorageSync('header'), res => {
-          //   if (res.code == 0) {
-          //     wx.showToast({
-          //       title: res.msg,
-          //       icon: 'loading',
-          //     });
-          //     setTimeout(function(){
-          //       wx.navigateTo({
-          //         url: '/user_center/pages/payDetail/payDetail?from=orderList&orderId='+orderId,
-          //       })
-          //     },3000)
-          //   }else{
-          //     wx.showToast({
-          //       title: '取消失败',
-          //       icon:'error'
-          //     })
-          //   }
-          // }, err => {
-          //   console.log(err)
-          // })
+          if (that.data.biz === 'bus') {
+            var usreinfo = wx.getStorageSync('userInfo');
+            let params = {
+              MemberId: usreinfo.Id,
+              Id: orderId,
+              Mark: ""
+            }
+            http.postRequest(BIZ_API.bus.refundUrl, params, wx.getStorageSync('header'), res => {
+              if (res.code == 0) {
+                wx.showToast({
+                  title: '取消成功',
+                  icon: 'success',
+                  duration: 2000
+                })
+              } else {
+                wx.showToast({
+                  title: '取消失败',
+                  icon: 'error'
+                })
+              }
+            }, err => {
+              console.log(err)
+            })
+          }
           wx.navigateTo({
             url: '/user_center/pages/orderCancel/orderCancel?orderId=' + orderId,
           })
@@ -526,39 +536,40 @@ Page({
     })
   },
   gotopay(e) {
+    let that = this;
     var orderId = e.currentTarget.dataset.ids;
-    // wx.navigateTo({
-    //   url: '/driving_status/pages/gotopay/gotopay?orderId='+orderId,
-    // })
-    // console.log('去拿支付所需信息')
     var user = wx.getStorageSync('userInfo');
     let appid = wx.getStorageSync('appId')
-    http.getRequest('/Api/DispatchMobile/GoUnionPayOrderRide?appid=' + appid + '&Id=' + orderId + '&MemberInfoId=' + user.Id, "", wx.getStorageSync('header'), (LayerOrderRes) => {
-      console.log('请求成功',LayerOrderRes)
+    var payUrl = BIZ_API[that.data.biz].payUrl + '?appid=' + appid + '&Id=' + orderId + '&MemberInfoId=' + user.Id;
+    http.getRequest(payUrl, "", wx.getStorageSync('header'), (LayerOrderRes) => {
+      console.log('请求成功', LayerOrderRes)
       if (LayerOrderRes.code == 0) {
         console.log('获取支付所需信息成功')
         var payData = LayerOrderRes.data
         console.log('拉起支+付')
         wx.requestPayment({
           timeStamp: payData.TimeStamp,
-            nonceStr: payData.NonceStr,
-            package: payData.Package,
-            signType: payData.SignType,
-            paySign: payData.PaySign,
+          nonceStr: payData.NonceStr,
+          package: payData.Package,
+          signType: payData.SignType,
+          paySign: payData.PaySign,
           success(paymentRes) {
             console.log('支付成功')
+            if (that.data.biz === 'roundTrip') {
+              wx.reLaunch({
+                url: '/user_center/pages/payDetail/payDetail?orderId=' + orderId + '&from=orderList&biz=roundTrip'
+              })
+              return;
+            }
             wx.showModal({
               title: '预约成功',
               content: '订单已预约成功，司机将会在您出发前一小时联系你',
               showCancel: false, // 隐藏取消按钮，强制用户点击确认
               confirmText: '我知道了',
-            
               success: function () {
-                console.log('111')
                 setTimeout(function () {
-                  console.log('222')
                   wx.reLaunch({
-                    url: '/user_center/pages/payDetail/payDetail?orderId=' + orderId + "&from=orderList"
+                    url: '/user_center/pages/payDetail/payDetail?orderId=' + orderId + "&from=orderList" + (that.data.biz === 'bus' ? '&biz=bus' : '')
                   })
                 }, 1000)
                 that.setSubscribeMessage();
@@ -567,11 +578,6 @@ Page({
           },
           fail(paymentErr) {
             console.log('拉起支付失败', paymentErr)
-            // setTimeout(function () {
-            //   wx.reLaunch({
-            //     url: '/user_center/pages/payDetail/payDetail?orderId=' + ress.data.Id + "&from=orderList"
-            //   })
-            // }, 1000)
           }
         })
       } else {
@@ -666,7 +672,7 @@ Page({
       "Id": that.data.orderId,
       "Mark": value
     }
-    http.postRequest("/Api/DispatchMobile/UnionPayRefundOrder", request, '', (res) => {
+    http.postRequest(BIZ_API[that.data.biz].refundUrl, request, '', (res) => {
       console.log('申请退款', res)
       if (res.code == 0) {
         wx.showToast({
@@ -676,7 +682,7 @@ Page({
         });
         setTimeout(function () {
           wx.redirectTo({
-            url: '/user_center/pages/travelList/travelList',
+            url: that.data.biz === 'car' ? '/user_center/pages/travelList/travelList' : '/pages/index/index',
           })
         }, 3000)
       } else if(res.code == 430) {
@@ -708,7 +714,13 @@ Page({
       modalValue: that.data.inputValue, // 可选：回显已有值
       orderId:e.currentTarget.dataset.ids
     });
+    if (that.data.biz !== 'car' || !that.data.arrivalTime) {
+      return;
+    }
     let data1 = that.data.arrivalTime.split(' ')
+    if (data1.length < 2) {
+      return;
+    }
     let data2 = data1[1].split('-')[0]
     let isNo = that.isWithinOneHour(data1[0] + ' ' + data2);
     if (isNo) {
@@ -791,12 +803,6 @@ Page({
         
       },
     })
-    // http.postRequest('/api/MapWebApi/GetDriverCarline?CreateUserId=' + userInfo.Id + "&Id=" + _this.data.orderId, "", "", res => {
-      
-    // }, err => {
-    //   console.log(1111, err)
-    // })
- 
   },
   moveCar(latitude, longitude) {
     this.mapCtx.translateMarker({
@@ -844,10 +850,6 @@ Page({
     }
   },
   onHide() {
-    let that = this;
-    clearInterval(that.data.Interval);
-  },
-  onUnload() {
     let that = this;
     clearInterval(that.data.Interval);
   },

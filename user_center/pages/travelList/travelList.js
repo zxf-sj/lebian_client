@@ -632,7 +632,7 @@ Page({
       })
     } else {
       wx.navigateTo({
-        url: '/user_center/pages/payDetail2/payDetail2?from=orderList&orderId=' + e.currentTarget.dataset.item.Id,
+        url: '/user_center/pages/payDetail/payDetail?from=orderList&biz=bus&orderId=' + e.currentTarget.dataset.item.Id,
       })
     }
   },

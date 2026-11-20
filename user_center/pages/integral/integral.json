@@ -4,7 +4,6 @@
   "navigationBarTitleText": "我的积分",
   "navigationBarTextStyle": "white",
   "usingComponents": {
-    "daohang": "/components/daohang/daohang",
     "kefu-float": "/components/kefu-float/kefu-float"
   }
 }

@@ -5,15 +5,30 @@
 </block>
 <block wx:if="{{!isClosed}}">
   <view class="over">
-    <block>
+    <block wx:if="{{biz === 'roundTrip'}}">
       <view class="h2">
-        <view class="str">{{detailData.IntoLocation}}</view>
-        <view class="car-img">
-          <image src="/assets/images/line_mr.png"></image>
-        </view>
-        <view class="end">{{detailData.OffLocation}}</view>
+        <view class="GoLine">去程：</view>
+        <view class="GoLineName">{{detailData.GoLineName}}</view>
+      </view>
+      <view class="h2">
+        <view class="RoundLine">返程：</view>
+        <view class="RoundLineName">{{detailData.RoundLineName}}</view>
       </view>
     </block>
+    <view class="h2" wx:elif="{{biz === 'bus'}}">
+      <view class="str">{{detailData.StatingLocation_Name}}</view>
+      <view class="car-img">
+        <image src="/assets/images/line_mr.png"></image>
+      </view>
+      <view class="end">{{detailData.EndLocation_Name}}</view>
+    </view>
+    <view class="h2" wx:else>
+      <view class="str">{{detailData.IntoLocation}}</view>
+      <view class="car-img">
+        <image src="/assets/images/line_mr.png"></image>
+      </view>
+      <view class="end">{{detailData.OffLocation}}</view>
+    </view>
     <block wx:if="{{detailData.DispatchListId_DriverId_Name}}">
       <view class="driver-info">
         <view class="left">
@@ -61,22 +76,23 @@
       </view>
     </view>
   </view>
-  <view class="orderOk" wx:if="{{detailData.FormState_Name == '未派单'}}">下单成功，发车前1小时显示车辆及司机信息。</view>
-  <view class="orderOk" wx:if="{{detailData.BtnPay && status === 'active'}}">{{ mm }}:{{ ss }} 下单5分钟内未付款自动取消。</view>
+  <view class="orderOk" wx:if="{{biz !== 'roundTrip' && detailData.FormState_Name == '未派单'}}">下单成功，发车前1小时显示车辆及司机信息。</view>
+  <view class="orderOk" wx:if="{{biz !== 'roundTrip' && detailData.BtnPay && status === 'active'}}">{{ mm }}:{{ ss }} 下单5分钟内未付款自动取消。</view>
+  <view class="orderOk" wx:if="{{biz === 'roundTrip' && detailData.IsPayment == 0}}">{{ mm }}:{{ ss }} 下单5分钟内未付款自动取消。</view>
   <view class="btn-list" style="justify-content: center;margin-top: 10rpx;">
-    <view class="btn-area" wx:if="{{detailData.DispatchListId && detailData.FormState=='100004-0001020002'}}">
+    <view class="btn-area" wx:if="{{biz !== 'roundTrip' && detailData.DispatchListId && detailData.FormState=='100004-0001020002'}}">
       <button catchtap="xingcheng" style="width: 250rpx !important;" class="xingcheng" data-ids="{{detailData.Id}}">查看行程</button>
     </view>
-    <view class="btn-area" wx:if="{{detailData.BtnPay}}">
+    <view class="btn-area" wx:if="{{(biz === 'roundTrip' && detailData.IsPayment == 0) || (biz !== 'roundTrip' && detailData.BtnPay)}}">
       <button type="primary" size="" catchtap="gotopay" disabled="{{pay_btn}}" data-ids="{{detailData.Id}}" style="font-size: 28rpx;width: 250rpx !important;">支付</button>
     </view>
-    <view class="btn-area" wx:if="{{detailData.FormState  == '100004-0001020004'  && detailData.IsEvaluate=='100004-0000010002'}}">
+    <view class="btn-area" wx:if="{{biz !== 'roundTrip' && detailData.FormState  == '100004-0001020004'  && detailData.IsEvaluate=='100004-0000010002'}}">
       <button size="" catchtap="toComment" data-ids="{{detailData.Id}}" style="width: 250rpx !important;" class="pingjia">评价</button>
     </view>
   </view>
   <view class="container">
     <view class="shadow-box">
-      <view class="shadow-box" wx:if="{{detailData.IsPickGoods != '100004-0000010001' && detailData.CarDirId_Name != ''}}">
+      <view class="shadow-box" wx:if="{{biz === 'car' && detailData.IsPickGoods != '100004-0000010001' && detailData.CarDirId_Name != ''}}">
       <block>
         <view class="pay-title">
           <text class="font-30">司机信息</text>
@@ -108,23 +124,23 @@
             <view class="border-bottom">
               <view class="flex-box font-28">
                 <text class="mini-pay">订单编号</text>
-                <text class="mini-pay">{{detailData.Code}}</text>
+                <text class="mini-pay">{{biz === 'bus' ? detailData.OrderNo : detailData.Code}}</text>
               </view>
             </view>
-            <view class="border-bottom">
+            <view class="border-bottom" wx:if="{{biz === 'car'}}">
               <view class="flex-box font-28">
                 <text class="mini-pay">车辆类型</text>
                 <text class="mini-pay">{{detailData.CarType_Name}}</text>
               </view>
             </view>
-            <view class="border-bottom">
+            <view class="border-bottom" wx:if="{{biz === 'car'}}">
               <view class="flex-box font-28">
                 <text class="mini-pay" wx:if="{{detailData.IsPickGoods != '100004-0000010001'}}">拼车/包车</text>
                 <text class="mini-pay" wx:else>货物信息</text>
                 <text class="mini-pay">{{detailData.SelectCarType_Name}}</text>
               </view>
             </view>
-            <view class="border-bottom">
+            <view class="border-bottom" wx:if="{{biz === 'car'}}">
               <view class="flex-box font-28">
                 <text class="mini-pay">付款方式</text>
                 <text class="mini-pay">{{detailData.PaymentType_Name}}</text>
@@ -136,34 +152,62 @@
                 <text class="mini-pay">{{detailData.PayAmount}}</text>
               </view>
             </view>
-            <view class="border-bottom">
+            <view class="border-bottom" wx:if="{{biz === 'car'}}">
               <view class="flex-box font-28">
                 <text class="mini-pay">订单状态</text>
                 <text class="mini-pay">{{detailData.FormState_Name =="未派单"?"车辆预约成功":detailData.FormState_Name}}</text>
               </view>
             </view>
-            <view class="border-bottom" wx:if="{{detailData.IsPickGoods != '100004-0000010001'}}">
+            <view class="border-bottom" wx:if="{{biz === 'bus'}}">
+              <view class="flex-box font-28">
+                <text class="mini-pay">订单状态</text>
+                <text class="mini-pay">{{detailData.OrderStatus_Name}}</text>
+              </view>
+            </view>
+            <block wx:if="{{biz === 'roundTrip'}}">
+              <view class="border-bottom">
+                <view class="flex-box font-28">
+                  <text class="mini-pay">去程出发时间</text>
+                  <text class="mini-pay">{{detailData.GoArrivalTime}}</text>
+                </view>
+              </view>
+              <view class="border-bottom">
+                <view class="flex-box font-28">
+                  <text class="mini-pay">返程出发时间</text>
+                  <text class="mini-pay">{{detailData.ReturnArrivalTime}}</text>
+                </view>
+              </view>
+            </block>
+            <view class="border-bottom" wx:elif="{{biz === 'bus'}}">
               <view class="flex-box font-28">
                 <text class="mini-pay">出发时间</text>
-                <text class="mini-pay">{{detailData.ArrivalTime}}</text>
+                <text class="mini-pay">{{detailData.DepartureTime}}</text>
               </view>
             </view>
-            <view class="border-bottom" wx:if="{{detailData.IsPickGoods == '100004-0000010001'}}">
-              <view class="flex-box font-28">
-                <text class="mini-pay">收件联系方式</text>
-                <text class="mini-pay">{{detailData.DeliverGoodsTel}}</text>
+            <block wx:else>
+              <view class="border-bottom" wx:if="{{detailData.IsPickGoods != '100004-0000010001'}}">
+                <view class="flex-box font-28">
+                  <text class="mini-pay">出发时间</text>
+                  <text class="mini-pay">{{detailData.ArrivalTime}}</text>
+                </view>
               </view>
-            </view>
-            <view class="border-bottom" wx:if="{{detailData.IsPickGoods == '100004-0000010001'}}">
-              <view class="flex-box font-28">
-                <text class="mini-pay">寄件联系方式</text>
-                <text class="mini-pay">{{detailData.TakeOverGoodsTel}}</text>
+              <view class="border-bottom" wx:if="{{detailData.IsPickGoods == '100004-0000010001'}}">
+                <view class="flex-box font-28">
+                  <text class="mini-pay">收件联系方式</text>
+                  <text class="mini-pay">{{detailData.DeliverGoodsTel}}</text>
+                </view>
               </view>
-            </view>
+              <view class="border-bottom" wx:if="{{detailData.IsPickGoods == '100004-0000010001'}}">
+                <view class="flex-box font-28">
+                  <text class="mini-pay">寄件联系方式</text>
+                  <text class="mini-pay">{{detailData.TakeOverGoodsTel}}</text>
+                </view>
+              </view>
+            </block>
             <view class="border-bottom">
               <view class="flex-box font-28">
                 <text class="mini-pay">备注：</text>
-                <text class="mini-pay">{{note}}</text>
+                <text class="mini-pay">{{biz === 'roundTrip' ? detailData.Note : note}}</text>
               </view>
             </view>
           </block>
@@ -179,14 +223,14 @@
           <block>
             <view class="border-bottom">
               <view class="flex-box font-28">
-                <text class="mini-pay">乘客人数</text>
-                <text class="mini-pay">{{detailData.PassengerNumber}}人</text>
+                <text class="mini-pay">{{biz === 'roundTrip' ? '单数' : '乘客人数'}}</text>
+                <text class="mini-pay">{{biz === 'bus' ? detailData.TicketNum : detailData.PassengerNumber}}{{biz === 'roundTrip' ? '单' : '人'}}</text>
               </view>
             </view>
             <view class="border-bottom">
               <view class="flex-box font-28">
                 <text class="mini-pay" style="min-width: 140rpx;">乘客信息</text>
-                <text class="mini-pay">{{detailData.PersonalIds}}</text>
+                <text class="mini-pay">{{biz === 'bus' ? detailData.PassengerPhone : detailData.PersonalIds}}</text>
               </view>
             </view>
           </block>
@@ -213,10 +257,10 @@
     </view>
   </view>
   <view class="btn-list">
-    <view class="btn-area" wx:if="{{detailData.BtnCancel}}">
+    <view class="btn-area" wx:if="{{biz !== 'roundTrip' && detailData.BtnCancel}}">
       <button type="warn" size="" catchtap="cancel" data-ids="{{detailData.Id}}" style="font-size: 28rpx;">取消</button>
     </view>
-    <view class="btn-area" wx:if="{{detailData.BtnRefund}}">
+    <view class="btn-area" wx:if="{{biz !== 'roundTrip' && detailData.BtnRefund}}">
       <button size="" catchtap="tuikuan" data-ids="{{detailData.Id}}" class="tuik">取消订单并申请退款</button>
     </view>
   </view>
