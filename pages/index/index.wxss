@@ -237,3 +237,79 @@ page {
   color: #ff4d4f;
   font-weight: 700;
 }
+
+/* --- 最新订单卡片（底部） --- */
+.latest-order {
+  margin: 24rpx 24rpx 40rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 28rpx 32rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+.latest-order:active {
+  opacity: 0.85;
+}
+.lo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14rpx;
+}
+.lo-title {
+  display: flex;
+  align-items: center;
+}
+.lo-badge {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-right: 14rpx;
+}
+.lo-type {
+  font-size: 22rpx;
+  color: #1a7fd4;
+  background: rgba(26, 127, 212, 0.1);
+  border-radius: 8rpx;
+  padding: 4rpx 14rpx;
+  font-weight: 500;
+}
+.lo-arrow {
+  font-size: 40rpx;
+  color: #ccc;
+  line-height: 1;
+}
+.lo-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.lo-route {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1a1a1a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lo-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+.lo-time {
+  font-size: 24rpx;
+  color: #888;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lo-status {
+  font-size: 22rpx;
+  color: #1a7fd4;
+  background: rgba(26, 127, 212, 0.1);
+  border-radius: 20rpx;
+  padding: 4rpx 18rpx;
+  flex-shrink: 0;
+}

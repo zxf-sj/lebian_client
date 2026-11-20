@@ -27,8 +27,8 @@
     <view class="img-empty" wx:else>暂无站点图片</view>
   </view>
 
-  <!-- 下 4：地图 -->
-  <view class="map-panel">
+  <!-- 下 4：地图（没有坐标时隐藏，只显示占位） -->
+  <view class="map-panel" wx:if="{{hasStationPos}}">
     <map
       id="staMap"
       class="map"
@@ -48,6 +48,9 @@
       <text class="nav-btn-icon">➤</text>
       <text>导航前往</text>
     </view>
+  </view>
+  <view class="map-panel map-empty" wx:else>
+    <text class="map-empty-text">站点坐标待补充</text>
   </view>
 
   <!-- 导航方式选择 -->

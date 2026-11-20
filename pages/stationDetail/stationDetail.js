@@ -62,22 +62,32 @@ Page({
     const lat = Number(options.lat) || 0;
     const lng = Number(options.lng) || 0;
     const passedImgs = dec(options.imgs).split(',').filter(Boolean);
+    const orderId = dec(options.orderId);
+    const statingLocation = dec(options.statingLocation);
+    // stationDetail 原有入口传 locationId；首页最新订单入口传 statingLocation（起点站 Id）
+    const locationId = dec(options.locationId) || statingLocation;
 
     this.setData({
       name: dec(options.name),
       address: dec(options.address),
-      locationId: dec(options.locationId),
+      locationId,
       lat,
       lng,
       hasStationPos: !!(lat && lng),
       imgs: passedImgs.map((url) => ({ url: fullImg(url) })),
       latitude: lat || this.data.latitude,
       longitude: lng || this.data.longitude,
+      orderId,
     });
     wx.setNavigationBarTitle({ title: dec(options.name) || '站点详情' });
 
-    this._loadDetail();
-    this._initMap();
+    // 有 locationId（含 statingLocation）就拉站点详情
+    if (locationId) {
+      this._loadDetail();
+      this._initMap();
+      return;
+    }
+    // 只有 orderId 但没站点 Id：暂无接口，先只显示线路名/站点名
   },
 
   onReady() {

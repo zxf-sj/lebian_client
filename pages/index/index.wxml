@@ -82,5 +82,23 @@
   </view>
 
   <tabbar current="home"></tabbar>
+
+  <!-- 最新订单卡片：登录且有订单时展示 -->
+  <view wx:if="{{latestOrder}}" class="latest-order" bindtap="tapLatestOrder">
+    <view class="lo-head">
+      <view class="lo-title">
+        <text class="lo-badge">最新订单</text>
+        <text class="lo-type">{{latestOrder.typeText}}</text>
+      </view>
+      <text class="lo-arrow">›</text>
+    </view>
+    <view class="lo-body">
+      <view class="lo-route">{{latestOrder.route}}</view>
+      <view class="lo-meta">
+        <text class="lo-time">{{latestOrder.timeText}}</text>
+        <text wx:if="{{latestOrder.statusText}}" class="lo-status">{{latestOrder.statusText}}</text>
+      </view>
+    </view>
+  </view>
 </view>
 <kefu-float />
