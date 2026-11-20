@@ -3,13 +3,10 @@
   "pages": [
     "pages/index/index",
     "pages/priceRules/priceRules",
-    "pages/notice/notice",
     "pages/starting2/starting2",
     "pages/starting3/starting3",
     "components/slideCoupon/slideCoupon",
     "components/remarks/remarks",
-    "components/information/information",
-    "components/modelComponent/modelComponent",
     "pages/fancheng/fancheng",
     "pages/fanchengmap/fanchengmap",
     "pages/city/city",

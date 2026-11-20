@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "消息中心",
-  "usingComponents": {
-    "kefu-float": "/components/kefu-float/kefu-float"
-  }
-}
